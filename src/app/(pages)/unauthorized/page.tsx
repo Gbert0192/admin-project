@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const UnauthorizedPageFromDesign: React.FC = () => (
+const UnauthorizedPage = () => (
   <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center text-gray-800 px-5 box-border font-sans">
     <div className="relative w-[700px] h-[600px]">
       <Image
@@ -23,7 +23,7 @@ const UnauthorizedPageFromDesign: React.FC = () => (
       Please refer to your system administrator
     </p>
 
-    <Link href="/" legacyBehavior>
+    <Link href="/sign-in" legacyBehavior>
       <a className="inline-block px-8 py-3 text-base font-medium text-white bg-teal-500 rounded-lg hover:bg-teal-600 transition-colors duration-200 no-underline">
         Go Back
       </a>
@@ -31,4 +31,4 @@ const UnauthorizedPageFromDesign: React.FC = () => (
   </div>
 );
 
-export default UnauthorizedPageFromDesign;
+export default UnauthorizedPage;
