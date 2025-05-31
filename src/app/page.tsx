@@ -3,5 +3,10 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 export default async function HomePage() {
-  return <>Sign in</>;
+  const session = await auth();
+  return (
+    <>
+      <h1>{JSON.stringify(session, null, 2)}</h1>
+    </>
+  );
 }

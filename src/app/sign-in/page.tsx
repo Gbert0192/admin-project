@@ -7,7 +7,7 @@ const SignInPage = async () => {
         <CardHeader className="flex items-center justify-center">
           <CardTitle className="text-2xl">Sign In</CardTitle>
         </CardHeader>
-        {/* <SignInForm /> */}
+        <SignInForm />
       </Card>
     </section>
   );

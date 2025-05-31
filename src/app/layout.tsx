@@ -1,6 +1,7 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -19,7 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(montserrat.className)}>{children}</body>
+      <body className={cn(montserrat.className)}>
+        <Toaster richColors closeButton position="top-right" />
+
+        {children}
+      </body>
     </html>
   );
 }

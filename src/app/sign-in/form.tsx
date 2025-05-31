@@ -1,5 +1,6 @@
 "use client";
 
+import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import {
@@ -71,9 +72,9 @@ const SignInForm = () => {
             name="student_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Student Id</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Username" {...field} />
+                  <Input placeholder="Enter Student Id" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,8 +87,8 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  {/* <PasswordInput placeholder="Enter Password" {...field} /> */}
-                  <Input placeholder="password"></Input>
+                  <PasswordInput placeholder="Enter Password" {...field} />
+                  {/* <Input placeholder="password"></Input> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>

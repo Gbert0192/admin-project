@@ -1,5 +1,7 @@
-import NextAuth, { NextAuthConfig, User } from "next-auth";
+import NextAuth, { CredentialsSignin, NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { toast } from "sonner";
+import { AuthenticationError } from "./error";
 
 export const BASE_PATH = "/api/auth";
 
@@ -17,6 +19,7 @@ const authOptions: NextAuthConfig = {
   },
   providers: [
     Credentials({
+      name: "credentials",
       credentials: {
         student_id: {
           type: "number",
@@ -45,19 +48,25 @@ const authOptions: NextAuthConfig = {
           }
         );
 
+        if (res.status !== 200) {
+          throw new AuthenticationError();
+        }
+
         if (!res.ok) return null;
 
-        const user = await res.json();
-        if (!user) {
+        const data = await res.json();
+        if (!data) {
           throw new Error("Invalid credentials");
         }
 
         return {
-          id: user.id,
-          student_id: user.student_id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
+          id: data.data.user.id,
+          student_id: data.data.user.student_id,
+          name: data.data.user.name,
+          email: data.data.user.email,
+          role: data.data.user.role,
+          token: data.data.token,
+          permission: data.data.permission,
         };
       },
     }),
@@ -72,6 +81,8 @@ const authOptions: NextAuthConfig = {
         token.id = user.id;
         token.role = user.role;
         token.student_id = user.student_id;
+        token.token = user.token;
+        token.permission = user.permission;
       }
       return token;
     },
@@ -80,6 +91,8 @@ const authOptions: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.student_id = token.student_id as string;
+        session.user.token = token.token as string;
+        session.user.permission = token.permission as Array<string>;
       }
       return session;
     },

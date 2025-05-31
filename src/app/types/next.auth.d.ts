@@ -8,6 +8,7 @@ declare module "next-auth" {
       email: string;
       role: string;
       student_id: string;
+      permission: string[];
     };
   }
 
@@ -17,6 +18,8 @@ declare module "next-auth" {
     email: string;
     role: string;
     student_id: string;
+    token: string;
+    permission: string[];
   }
 }
 
@@ -25,5 +28,6 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     student_id: string;
+    permission: string[];
   }
 }
