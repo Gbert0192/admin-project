@@ -1,6 +1,7 @@
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import React from "react";
-import UnauthorizedPageContent from "./unauthorized/page";
 
-export default function HomePage() {
-  return <UnauthorizedPageContent />;
+export default async function HomePage() {
+  return <>Sign in</>;
 }

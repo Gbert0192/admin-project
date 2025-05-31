@@ -15,6 +15,8 @@ const eslintConfig = [
     rules: {
       semi: ["error"],
       quotes: ["error", "double"],
+      "typescript-eslint/no-unused-vars": "warn",
+      "typescript-eslint/no-explicit-any": "warn",
       "no-console": ["warn"],
       "no-debugger": "error",
       "no-duplicate-imports": "error",
@@ -76,7 +78,6 @@ const eslintConfig = [
       "require-await": "warn",
       "require-yield": "warn",
       "rest-spread-spacing": ["warn", "never"],
-      "sort-imports": ["warn", { ignoreCase: true }],
       "symbol-description": "warn",
       "template-curly-spacing": ["warn", "never"],
       "yield-star-spacing": ["warn", "both"],
