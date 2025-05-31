@@ -1,20 +1,20 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import SignInForm from "./form";
-const SignInPage = async () => {
+import SignUpForm from "./form";
+
+const SignUpPage = () => {
   return (
     <section className="flex min-h-screen flex-col items-center justify-center gap-2">
       <Card className="w-[400px]">
         <CardHeader className="flex items-center justify-center">
-          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardTitle className="text-2xl">Sign Up</CardTitle>
         </CardHeader>
-        <SignInForm />
+        <SignUpForm />
         <p className="text-sm text-center mt-2 mb-4">
-  Don't have an account? <a href="/sign-up" className="text-blue-500 hover:underline">Sign up</a>
+  Already have an account? <a href="/sign-in" className="text-blue-500 hover:underline">Sign in</a>
 </p>
-
       </Card>
     </section>
   );
 };
 
-export default SignInPage;
+export default SignUpPage;
