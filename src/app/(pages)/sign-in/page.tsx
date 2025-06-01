@@ -1,5 +1,4 @@
-// page.tsx (no changes from the version accommodating font inheritance)
-import AuthForm from "./AuthForm"; // Or the correct path to your AuthForm component
+import AuthForm from "./AuthForm";
 
 const SignInPage = async () => {
   return (
