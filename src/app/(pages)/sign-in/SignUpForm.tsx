@@ -1,10 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, MouseEvent } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
+
 import { z } from "zod";
 
+import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,35 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/password-input";
-
-const signUpSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  student_id: z.string().min(5, { message: "Student ID must be valid." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
-});
+import api from "@/lib/api";
+import { signUpSchema } from "@/lib/schema";
+import { toast } from "sonner";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 interface SignUpFormProps {
-  inputClasses?: string;
-  buttonClasses?: string;
-  formPaddingClasses?: string;
   onSwitchToSignIn?: () => void;
 }
 
-const SignUpForm = ({
-  inputClasses = "bg-gray-100 border-none p-3 my-2 w-full focus:outline-none text-sm",
-  buttonClasses = "rounded-full bg-custom-blue text-white text-xs sm:text-sm font-bold py-3 px-6 uppercase",
-  formPaddingClasses = "px-4 md:px-5 lg:px-8",
-  onSwitchToSignIn,
-}: SignUpFormProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [signUpMessage, setSignUpMessage] = useState<string | null>(null);
-
-  const form = useForm<SignUpFormValues>({
+const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
+  const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
@@ -52,26 +37,33 @@ const SignUpForm = ({
     },
   });
 
-  const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-    setIsLoading(true);
-    setSignUpMessage(null);
-    console.log("Sign Up Data:", data);
-    setSignUpMessage(
-      "Sign-up feature is not yet implemented. Please check back later!"
-    );
-    setIsLoading(false);
+  const { mutate: handleSignUp, isPending } = useMutation({
+    mutationFn: async (data: SignUpFormValues) => {
+      const res = await api.post("/auth/sign-up", data);
+      return res.data as SignUpFormValues;
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+    onSuccess: () => {
+      form.reset();
+      toast.success("Register Successfully!");
+      onSwitchToSignIn?.();
+    },
+  });
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = (data) => {
+    handleSignUp(data);
   };
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center w-full h-full ${formPaddingClasses}`}
-    >
+    <div className="flex flex-col items-center justify-center w-full h-full px-4 md:px-5 lg:px-8">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col items-center justify-center w-full space-y-3 text-center bg-white"
+          className="flex flex-col items-center justify-center w-full space-y-3 bg-white"
         >
-          <h1 className="font-bold text-xl sm:text-2xl md:text-3xl m-0">
+          <h1 className="font-bold text-xl sm:text-2xl md:text-3xl m-0 text-center">
             Create Account
           </h1>
           <div className="social-container my-2 sm:my-3"></div>
@@ -85,7 +77,7 @@ const SignUpForm = ({
                   <Input
                     placeholder="Name"
                     {...field}
-                    className={inputClasses}
+                    className="bg-gray-100 border-none p-3 my-2 w-full focus:outline-none text-sm"
                   />
                 </FormControl>
                 <FormMessage />
@@ -102,7 +94,7 @@ const SignUpForm = ({
                   <Input
                     placeholder="Student ID"
                     {...field}
-                    className={inputClasses}
+                    className="bg-gray-100 border-none p-3 my-2 w-full focus:outline-none text-sm"
                   />
                 </FormControl>
                 <FormMessage />
@@ -119,22 +111,19 @@ const SignUpForm = ({
                   <PasswordInput
                     placeholder="Password"
                     {...field}
-                    className={inputClasses}
+                    className="bg-gray-100 border-none p-3 my-2 w-full focus:outline-none text-sm"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {signUpMessage && (
-            <p className="text-red-500 text-xs mt-1 mb-0 px-1">
-              {signUpMessage}
-            </p>
-          )}
+          <FormMessage />
+
           <Button
-            isLoading={isLoading}
+            isLoading={isPending}
             type="submit"
-            className={`${buttonClasses} mt-2 w-auto`}
+            className="rounded-full bg-primary text-white text-xs sm:text-sm font-bold py-3 px-6 uppercase mt-2 w-auto"
           >
             Sign Up
           </Button>
@@ -144,7 +133,7 @@ const SignUpForm = ({
               <button
                 type="button"
                 onClick={onSwitchToSignIn}
-                className="font-semibold text-custom-blue hover:underline focus:outline-none"
+                className="font-semibold text-primary hover:underline focus:outline-none"
               >
                 Sign In
               </button>

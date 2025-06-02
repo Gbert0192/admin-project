@@ -1,7 +1,7 @@
-import NextAuth, { CredentialsSignin, NextAuthConfig, User } from "next-auth";
+import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { toast } from "sonner";
 import { AuthenticationError } from "./error";
+import { JWT } from "next-auth/jwt";
 
 export const BASE_PATH = "/api/auth";
 
@@ -35,7 +35,7 @@ const authOptions: NextAuthConfig = {
 
       async authorize(credentials): Promise<User | null> {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`,
           {
             method: "POST",
             headers: {
@@ -54,7 +54,20 @@ const authOptions: NextAuthConfig = {
 
         if (!res.ok) return null;
 
-        const data = await res.json();
+        const data = (await res.json()) as {
+          data: {
+            user: {
+              id: string;
+              student_id: string;
+              name: string;
+              email: string;
+              role: string;
+            };
+            token: string;
+            permission: string[];
+          };
+        };
+
         if (!data) {
           throw new Error("Invalid credentials");
         }
@@ -76,7 +89,7 @@ const authOptions: NextAuthConfig = {
     authorized({ auth }) {
       return !!auth?.user;
     },
-    async jwt({ token, user }) {
+    jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -86,13 +99,13 @@ const authOptions: NextAuthConfig = {
       }
       return token;
     },
-    async session({ session, token }) {
+    session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.student_id = token.student_id as string;
-        session.user.token = token.token as string;
-        session.user.permission = token.permission as Array<string>;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.student_id = token.student_id;
+        session.user.token = token.token;
+        session.user.permission = token.permission;
       }
       return session;
     },
