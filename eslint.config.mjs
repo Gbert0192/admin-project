@@ -39,7 +39,6 @@ export default tseslint.config(
           endOfLine: "auto",
         },
       ],
-      "linebreak-style": ["warn", "unix"],
       "react/react-in-jsx-scope": "off",
       "react/jsx-filename-extension": [
         1,
