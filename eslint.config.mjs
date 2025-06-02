@@ -40,6 +40,7 @@ export default tseslint.config(
         },
       ],
       "linebreak-style": ["warn", "unix"],
+      "linebreak-style": ["error", "windows"],
       "react/react-in-jsx-scope": "off",
       "react/jsx-filename-extension": [
         1,
