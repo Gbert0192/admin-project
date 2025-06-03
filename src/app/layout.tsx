@@ -1,8 +1,8 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-import Providers from "@/components/providers";
+import { Toaster } from "sonner";
+import Providers from "../components/providers";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
