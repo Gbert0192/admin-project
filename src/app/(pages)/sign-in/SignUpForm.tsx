@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { signUpSchema } from "@/lib/schema";
 import { toast } from "sonner";
+import { errorHandler } from "@/lib/handler/errorHandler";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
@@ -43,7 +44,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
       return res.data as SignUpFormValues;
     },
     onError: (err) => {
-      toast.error(err.message);
+      errorHandler(err);
     },
     onSuccess: () => {
       form.reset();

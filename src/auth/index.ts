@@ -1,7 +1,9 @@
 import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { AuthenticationError } from "./error";
+import { AuthenticationError, InvalidUserError } from "./error";
 import { JWT } from "next-auth/jwt";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 export const BASE_PATH = "/api/auth";
 
@@ -47,11 +49,16 @@ const authOptions: NextAuthConfig = {
             }),
           }
         );
+        const user = await api.get(
+          `/user/${JSON.stringify(credentials.student_id)}`
+        );
 
-        if (res.status !== 200) {
+        if (!user.data) {
+          throw new InvalidUserError();
+        }
+        if (!res.ok) {
           throw new AuthenticationError();
         }
-
         if (!res.ok) return null;
 
         const data = (await res.json()) as {
@@ -60,8 +67,7 @@ const authOptions: NextAuthConfig = {
               id: string;
               student_id: string;
               name: string;
-              email: string;
-              role: string;
+              role_id: number;
             };
             token: string;
             permission: string[];
@@ -76,10 +82,9 @@ const authOptions: NextAuthConfig = {
           id: data.data.user.id,
           student_id: data.data.user.student_id,
           name: data.data.user.name,
-          email: data.data.user.email,
-          role: data.data.user.role,
           token: data.data.token,
           permission: data.data.permission,
+          role_id: data.data.user.role_id,
         };
       },
     }),
@@ -92,7 +97,7 @@ const authOptions: NextAuthConfig = {
     jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role_id = user.role_id;
         token.student_id = user.student_id;
         token.token = user.token;
         token.permission = user.permission;
@@ -102,7 +107,7 @@ const authOptions: NextAuthConfig = {
     session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         session.user.id = token.id;
-        session.user.role = token.role;
+        session.user.role_id = token.role_id;
         session.user.student_id = token.student_id;
         session.user.token = token.token;
         session.user.permission = token.permission;

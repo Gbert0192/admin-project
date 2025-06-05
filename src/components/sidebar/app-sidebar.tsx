@@ -2,18 +2,19 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
+  ChevronRight,
   LayoutDashboard,
   Settings,
-  ChevronRight,
   Target,
   TrendingUp,
+  User,
   Users,
 } from "lucide-react";
 
@@ -39,9 +40,9 @@ const operations: Item[] = [
 
 const feature: Item[] = [
   {
-    title: "Overview",
-    url: "/overview",
-    icon: LayoutDashboard,
+    title: "Users",
+    url: "/users",
+    icon: Users,
   },
   {
     title: "Rangking",
@@ -52,11 +53,6 @@ const feature: Item[] = [
     title: "Recent Activity",
     url: "/recent-activity",
     icon: TrendingUp,
-  },
-  {
-    title: "Users",
-    url: "/users",
-    icon: Users,
   },
 ];
 
