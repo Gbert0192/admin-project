@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
-import { signUpSchema } from "@/lib/schema";
 import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
+import { signUpSchema } from "@/lib/schema/AuthSchema";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 

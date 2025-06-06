@@ -17,6 +17,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 
 interface Item {
   title: string;
@@ -33,7 +34,7 @@ const operations: Item[] = [
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "settings",
     icon: Settings,
   },
 ];
@@ -58,7 +59,7 @@ const feature: Item[] = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r-0 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <Sidebar className="border-r-0 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 max-w-[250px]">
       <SidebarContent className="p-0">
         <SidebarGroup className="px-0">
           <div className="p-6 pb-4 border-b border-slate-200/50">
@@ -78,8 +79,8 @@ export function AppSidebar() {
               {operations.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
-                    <a
-                      href={`admin/${item.url}`}
+                    <Link
+                      href={`admin${item.url}`}
                       className="relative group/item flex items-center gap-3 px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800/50 border border-transparent h-full rounded-xl"
                     >
                       <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10 group-hover/item:from-blue-500/20 group-hover/item:to-indigo-500/20">
@@ -95,7 +96,7 @@ export function AppSidebar() {
                       </div>
 
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 -z-10"></div>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -106,8 +107,8 @@ export function AppSidebar() {
               {feature.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
-                    <a
-                      href={`admin/${item.url}`}
+                    <Link
+                      href={`/admin${item.url}`}
                       className="relative group/item flex items-center gap-3 px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800/50 border border-transparent h-full rounded-xl"
                     >
                       <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10 group-hover/item:from-blue-500/20 group-hover/item:to-indigo-500/20">
@@ -123,7 +124,7 @@ export function AppSidebar() {
                       </div>
 
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 -z-10"></div>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

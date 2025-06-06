@@ -1,9 +1,7 @@
 import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { AuthenticationError, InvalidUserError } from "./error";
 import { JWT } from "next-auth/jwt";
-import api from "@/lib/api";
-import { toast } from "sonner";
+import Credentials from "next-auth/providers/credentials";
+import { InvalidCredentialsError, InvalidUserError } from "./error";
 
 export const BASE_PATH = "/api/auth";
 
@@ -49,17 +47,16 @@ const authOptions: NextAuthConfig = {
             }),
           }
         );
-        const user = await api.get(
-          `/user/${JSON.stringify(credentials.student_id)}`
-        );
 
-        if (!user.data) {
+        if (res.status === 401) {
+          throw new InvalidCredentialsError();
+        }
+        if (res.status === 404) {
           throw new InvalidUserError();
         }
         if (!res.ok) {
-          throw new AuthenticationError();
+          throw new Error("An error occurred while signing in");
         }
-        if (!res.ok) return null;
 
         const data = (await res.json()) as {
           data: {
