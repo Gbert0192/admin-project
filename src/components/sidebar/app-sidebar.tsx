@@ -46,8 +46,8 @@ const feature: Item[] = [
     icon: Users,
   },
   {
-    title: "Rangking",
-    url: "/rangking",
+    title: "Ranking",
+    url: "/ranking",
     icon: Target,
   },
   {
@@ -59,10 +59,10 @@ const feature: Item[] = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r-0 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 max-w-[250px]">
+    <Sidebar className="border-r-0 max-w-[250px]">
       <SidebarContent className="p-0">
         <SidebarGroup className="px-0">
-          <div className="p-6 pb-4 border-b border-slate-200/50">
+          <div className="p-6 pb-4 border-b">
             <SidebarGroupLabel className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-0 px-0 h-auto">
               Admin Project
             </SidebarGroupLabel>
@@ -131,8 +131,8 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
 
-          <div className="mt-auto p-4 border-t border-slate-200/50 dark:border-slate-700/50">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100/50 dark:border-blue-800/30">
+          <div className="mt-auto p-4 border-t dark:border-slate-700/50">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue dark:border-blue-800/30">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
                 <span className="text-white text-xs font-bold">A</span>
               </div>

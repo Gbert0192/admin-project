@@ -37,7 +37,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ session }) => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className=" dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="p-4 lg:p-6 space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

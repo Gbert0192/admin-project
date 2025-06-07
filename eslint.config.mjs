@@ -45,7 +45,6 @@ export default tseslint.config(
         { extensions: [".js", ".jsx", ".ts", ".tsx"] },
       ],
       "import/prefer-default-export": "off",
-      "linebreak-style": ["error", "windows"],
       "react/prop-types": "off",
       "react/jsx-props-no-spreading": "off",
       "import/extensions": "off",

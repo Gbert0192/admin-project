@@ -14,6 +14,7 @@ import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserSchema } from "@/lib/schema/UserSchema";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const CreateDialog = () => {
   const form = useForm({
@@ -31,6 +32,7 @@ const CreateDialog = () => {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
+          <DialogTitle className="font-bold">Create User</DialogTitle>
           <DialogDescription>
             Click Create to add a new user. You can edit the details later.
           </DialogDescription>
@@ -42,7 +44,7 @@ const CreateDialog = () => {
 
         <DialogFooter>
           <Button type="submit" className="text-white">
-            Simpan Perubahan
+            Create
           </Button>
         </DialogFooter>
       </DialogContent>
