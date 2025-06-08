@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInSchema } from "@/lib/schema";
+import { signInSchema } from "@/lib/schema/AuthSchema";
 
 interface SignInFormProps {
   onSwitchToSignUp?: () => void;
@@ -52,14 +52,14 @@ const SignInForm = ({ onSwitchToSignUp }: SignInFormProps) => {
       });
 
       if (res?.error) {
-        toast.error(res.error || "Invalid credentials. Please try again.");
+        toast.error(res.code ?? "Invalid credentials. Please try again.");
       } else {
         toast.success("Login Success");
         router.push(callbackUrl ?? "/");
       }
     } catch (error: unknown) {
       if (error instanceof AuthError) {
-        toast.error(error.message);
+        toast.error(error.name);
       } else {
         toast.error("An unexpected error occurred during login.");
       }

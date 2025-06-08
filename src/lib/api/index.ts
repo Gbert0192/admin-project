@@ -58,7 +58,7 @@ api.interceptors.response.use(
           redirect("/sign-in");
         }
       } else {
-        toast.error(`Request failed: ${error.message}`);
+        toast.error("An error occurred. Please try again later.");
       }
       if (error.response?.status === 403) {
         redirect("/error?code=403");
