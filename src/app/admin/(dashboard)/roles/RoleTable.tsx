@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
-import CreateDialog from "./CreateDialog";
 
 export interface User {
   uuid: string;
@@ -78,9 +77,8 @@ const UserTable = () => {
       <DataTable
         columns={columns}
         data={usersData ?? []}
-        filterColumnId="student_id"
-        filterPlaceholder="Search by Student ID"
-        tableActionsButton={<CreateDialog />}
+        filterColumnId=""
+        filterPlaceholder=""
       />
     </>
   );

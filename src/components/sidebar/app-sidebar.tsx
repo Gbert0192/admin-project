@@ -12,6 +12,7 @@ import {
   ChevronRight,
   LayoutDashboard,
   Settings,
+  Shield,
   Target,
   TrendingUp,
   User,
@@ -57,6 +58,18 @@ const feature: Item[] = [
   },
 ];
 
+const superAdmin: Item[] = [
+  {
+    title: "Roles",
+    url: "/roles",
+    icon: Shield,
+  },
+  {
+    title: "Permissions",
+    url: "/Permissions",
+    icon: Shield,
+  },
+];
 export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 max-w-[250px]">
@@ -105,6 +118,34 @@ export function AppSidebar() {
                 Feature
               </h1>
               {feature.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild className="p-0 max-h-10">
+                    <Link
+                      href={`/admin${item.url}`}
+                      className="relative group/item flex items-center gap-3 px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800/50 border border-transparent h-full rounded-xl"
+                    >
+                      <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10 group-hover/item:from-blue-500/20 group-hover/item:to-indigo-500/20">
+                        <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+
+                      <div className="flex-1 min-w-0 flex items-center justify-between">
+                        <span className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors duration-300">
+                          {item.title}
+                        </span>
+
+                        <ChevronRight className="ml-2 w-3 h-3 sm:w-4 sm:h-4 text-slate-400 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200" />
+                      </div>
+
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 -z-10"></div>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+
+              <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
+                Super Admin
+              </h1>
+              {superAdmin.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
                     <Link

@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInSchema } from "@/lib/schema";
+import { signInSchema } from "@/lib/schema/AuthSchema";
 
 interface SignInFormProps {
   onSwitchToSignUp?: () => void;
