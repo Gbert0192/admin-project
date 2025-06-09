@@ -7,26 +7,21 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 
-export interface User {
+export interface Role {
   uuid: string;
-  student_id: string;
-  name: string;
-  role_id: number;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+  created_at: string;
+  updated_at: string | null;
+  deleted_at: string | null;
+  permission_id: number[];
+  role_name: string;
 }
 
-const UserTable = () => {
-  const columns = useMemo<ColumnDef<User>[]>(
+const RoleTable = () => {
+  const columns = useMemo<ColumnDef<Role>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
-      },
-      {
-        accessorKey: "student_id",
-        header: "Student ID",
+        accessorKey: "role_name",
+        header: "Role Name",
       },
       {
         accessorKey: "created_at",
@@ -61,10 +56,10 @@ const UserTable = () => {
     ],
     []
   );
-  const { data: usersData, isLoading } = useQuery({
-    queryKey: ["users"],
+  const { data: rolesData, isLoading } = useQuery({
+    queryKey: ["roles"],
     queryFn: async () => {
-      const { data } = await api.get<{ data: User[] }>("/user");
+      const { data } = await api.get<{ data: Role[] }>("/roles");
       return data.data;
     },
   });
@@ -76,11 +71,11 @@ const UserTable = () => {
     <>
       <DataTable
         columns={columns}
-        data={usersData ?? []}
-        filterColumnId=""
-        filterPlaceholder=""
+        data={rolesData ?? []}
+        filterColumnId="role_name"
+        filterPlaceholder="Role Name"
       />
     </>
   );
 };
-export default UserTable;
+export default RoleTable;

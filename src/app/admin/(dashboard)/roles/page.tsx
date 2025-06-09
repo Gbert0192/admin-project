@@ -1,5 +1,11 @@
+import RoleTable from "./RoleTable";
+
 const RolesPage = () => {
-  return <></>;
+  return (
+    <>
+      <RoleTable />
+    </>
+  );
 };
 
 export default RolesPage;
