@@ -2,25 +2,23 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Separator } from "@/components/ui/separator";
-import { Plus } from "lucide-react";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 const events = [
   {
     date: new Date("2025-06-10"),
-    title: "Presentasi Proyek Akhir",
+    title: "Final Project Presentation",
   },
   {
     date: new Date("2025-06-10"),
-    title: "Meeting dengan Klien",
+    title: "Meeting with Client",
   },
   {
     date: new Date("2025-06-22"),
-    title: "Deadline Pengumpulan Form",
+    title: "Form Submission Deadline",
   },
 ];
 
@@ -40,11 +38,11 @@ export const CalendarWidget = () => {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-bold">
           {selectedDate
-            ? format(selectedDate, "d MMM", { locale: id }).toUpperCase()
+            ? format(selectedDate, "d MMM", { locale: enUS }).toUpperCase()
             : ""}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="p-6">
         <div className="space-y-6">
           <div className="flex justify-center">

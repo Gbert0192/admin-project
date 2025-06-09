@@ -15,7 +15,7 @@ const NewQuizItem = ({
       <p className="text-sm text-muted-foreground">{category}</p>
     </div>
     <Button variant="outline" size="sm">
-      Mulai
+      Start
     </Button>
   </div>
 );
@@ -23,17 +23,17 @@ const NewQuizItem = ({
 export const NewQuizzes = () => (
   <Card>
     <CardHeader>
-      <CardTitle>Kuis & Form Baru</CardTitle>
+      <CardTitle>New Quizzes & Forms</CardTitle>
     </CardHeader>
     <CardContent className="grid gap-4">
       <NewQuizItem
-        title="Kuis Pengetahuan Umum #5"
-        category="Pengetahuan Umum"
+        title="General Knowledge Quiz #5"
+        category="General Knowledge"
       />
-      <NewQuizItem title="Feedback Pengalaman Pengguna" category="Survey" />
+      <NewQuizItem title="User Experience Feedback" category="Survey" />
       <NewQuizItem
-        title="Tes Psikologi: Tipe Kepribadian"
-        category="Psikotes"
+        title="Psychological Test: Personality Type"
+        category="Psychological Test"
       />
     </CardContent>
   </Card>
