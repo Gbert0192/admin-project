@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserSchema } from "@/lib/schema/UserSchema";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const CreateDialog = () => {
   const form = useForm({
@@ -44,7 +45,7 @@ const CreateDialog = () => {
 
         <DialogFooter>
           <Button type="submit" className="text-white">
-            Simpan Perubahan
+            Create
           </Button>
         </DialogFooter>
       </DialogContent>
