@@ -47,10 +47,10 @@ const UnauthorizedPageFromDesign: React.FC = () => (
     >
       The page you&apos;re trying to access has restricted access.
       <br />
-      Please refer to your system administrator
+      Please Sign In with your account to continue.
     </motion.p>
 
-    <Link href="/" legacyBehavior passHref>
+    <Link href="/sign-in" legacyBehavior passHref>
       <motion.a
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
