@@ -57,10 +57,6 @@ const UserTable: React.FC<UserProps> = ({ data }) => {
     []
   );
 
-  // if (isLoading) {
-  //   return <div>Loading data...</div>;
-  // }
-
   return (
     <>
       <DataTable
