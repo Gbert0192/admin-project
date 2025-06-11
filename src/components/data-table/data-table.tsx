@@ -1,25 +1,23 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   ChevronDown,
+  Search, // Optional: for a search icon on the button
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,88 +44,147 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// --- INTERFACE PROPS ---
-// Mendefinisikan "kontrak" atau properti yang bisa diterima oleh komponen DataTable
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  pageCount: number;
   filterColumnId: string;
+  filterPlaceholder: string;
   tableActionsButton?: React.ReactNode;
 }
 
-// --- KOMPONEN UTAMA ---
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageCount,
   filterColumnId,
   tableActionsButton,
+  filterPlaceholder,
 }: DataTableProps<TData, TValue>) {
-  // --- STATE MANAGEMENT ---
-  // State untuk sorting, filter, dan visibilitas kolom
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // --- INISIALISASI TABLE INSTANCE ---
-  // Hook utama dari TanStack Table yang mengelola semua logika
+  const page = searchParams.get("page") ?? "1";
+  const limit = searchParams.get("limit") ?? "10";
+  const filterValue = searchParams.get(filterColumnId) ?? "";
+
+  // --- MODIFICATION START ---
+  // 1. Add local state to control the input field value independently.
+  const [localFilterValue, setLocalFilterValue] = React.useState(filterValue);
+
+  // 2. Synchronize local state if the URL search param changes (e.g., back button).
+  React.useEffect(() => {
+    setLocalFilterValue(filterValue);
+  }, [filterValue]);
+  // --- MODIFICATION END ---
+
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString());
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null || value === "") {
+          newSearchParams.delete(key);
+        } else {
+          newSearchParams.set(key, String(value));
+        }
+      }
+      return newSearchParams.toString();
+    },
+    [searchParams]
+  );
+
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+    pageCount: pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
+    manualFiltering: true,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-    },
-    initialState: {
       pagination: {
-        pageSize: 10, // Default jumlah baris per halaman
+        pageIndex: Number(page) - 1,
+        pageSize: Number(limit),
       },
+      columnFilters: [
+        {
+          id: filterColumnId,
+          value: filterValue,
+        },
+      ],
     },
   });
 
+  const handleUrlChange = (params: Record<string, string | number | null>) => {
+    const newQueryString = createQueryString(params);
+    router.replace(`${pathname}?${newQueryString}`, {
+      scroll: false,
+    });
+    router.refresh();
+  };
+
+  // --- MODIFICATION START ---
+  // 3. Create a dedicated search handler function.
+  const handleSearch = () => {
+    handleUrlChange({
+      [filterColumnId]: localFilterValue || null,
+      page: 1, // Reset to page 1 for every new search
+    });
+  };
+  // --- MODIFICATION END ---
+
   return (
-    <div className="w-full">
-      {/* --- BAGIAN TOOLBAR ATAS (FILTER, AKSI, KOLOM) --- */}
-      <div className="flex items-center py-4">
-        {/* Sisi Kiri: Filter */}
-        <div className="flex items-center space-x-2">
+    <div className="w-full max-w-full px-4 pd:mx-6 pd:mx-8">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 py-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-1">
+          {/* --- MODIFICATION START --- */}
+          {/* 4. Update the Input component */}
           <Input
-            placeholder={`Filter by ${filterColumnId}...`}
-            value={
-              (table.getColumn(filterColumnId)?.getFilterValue() as string) ??
-              ""
-            }
-            onChange={(event) =>
-              table
-                .getColumn(filterColumnId)
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
+            placeholder={filterPlaceholder ?? "Search..."}
+            // Bind value to local state
+            value={localFilterValue}
+            // On change, only update the local state, don't trigger search
+            onChange={(event) => setLocalFilterValue(event.target.value)}
+            // Trigger search on "Enter" key press for better UX
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleSearch();
+              }
+            }}
+            className="w-full sm:max-w-sm"
           />
-          <Button
-            variant="outline"
-            onClick={() => table.getColumn(filterColumnId)?.setFilterValue("")}
-          >
-            Clear
+          {/* 5. Add a "Search" button to trigger the search */}
+          <Button onClick={handleSearch} size="sm" className="w-full sm:w-auto">
+            <Search className="mr-2 h-4 w-4" />
+            Search
           </Button>
+          {/* 6. Modify the "Clear" button */}
+          {filterValue && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Also clear the local input state when clearing the search
+                setLocalFilterValue("");
+                handleUrlChange({
+                  [filterColumnId]: null,
+                  page: 1,
+                });
+              }}
+              className="w-full sm:w-auto"
+            >
+              Clear
+            </Button>
+          )}
+          {/* --- MODIFICATION END --- */}
         </div>
 
-        {/* Sisi Kanan: Tombol Aksi Kustom & Tombol Pilihan Kolom */}
-        <div className="ml-auto flex items-center space-x-2">
-          {tableActionsButton} {/* Slot untuk tombol aksi kustom Anda */}
+        <div className="flex items-center gap-2">
+          {tableActionsButton}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" size="sm" className="whitespace-nowrap">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -141,7 +198,7 @@ export function DataTable<TData, TValue>({
                     className="capitalize"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
+                      table.getColumn(column.id)?.toggleVisibility(!!value)
                     }
                   >
                     {column.id}
@@ -152,14 +209,14 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* --- BAGIAN TABEL UTAMA --- */}
-      <div className="rounded-md border">
+      {/* The rest of the component remains the same */}
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="whitespace-nowrap">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -179,7 +236,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="whitespace-nowrap">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -202,27 +259,27 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {/* --- BAGIAN PAGINATION BAWAH --- */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
           Total {table.getFilteredRowModel().rows.length} row(s).
         </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 lg:gap-8">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium whitespace-nowrap">
+              Rows per page
+            </p>
             <Select
-              value={`${table.getState().pagination.pageSize}`}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
+              value={limit}
+              onValueChange={(value) =>
+                handleUrlChange({ limit: value, page: 1 })
+              }
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue
-                  placeholder={table.getState().pagination.pageSize}
-                />
+                <SelectValue placeholder={limit} />
               </SelectTrigger>
               <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
+                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>
@@ -230,15 +287,17 @@ export function DataTable<TData, TValue>({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+
+          <div className="text-sm font-medium whitespace-nowrap">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </div>
-          <div className="flex items-center space-x-2">
+
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
+              className="hidden h-8 w-8 p-0 sm:flex"
+              onClick={() => handleUrlChange({ page: 1 })}
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Go to first page</span>
@@ -247,7 +306,11 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
+              onClick={() =>
+                handleUrlChange({
+                  page: table.getState().pagination.pageIndex,
+                })
+              }
               disabled={!table.getCanPreviousPage()}
             >
               <span className="sr-only">Go to previous page</span>
@@ -256,7 +319,11 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
+              onClick={() =>
+                handleUrlChange({
+                  page: table.getState().pagination.pageIndex + 2,
+                })
+              }
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Go to next page</span>
@@ -264,8 +331,8 @@ export function DataTable<TData, TValue>({
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              className="hidden h-8 w-8 p-0 sm:flex"
+              onClick={() => handleUrlChange({ page: table.getPageCount() })}
               disabled={!table.getCanNextPage()}
             >
               <span className="sr-only">Go to last page</span>

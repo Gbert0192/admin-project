@@ -1,24 +1,18 @@
 "use client";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import CreateDialog from "./CreateDialog";
+import { User, UserData } from "./page";
 
-export interface User {
-  uuid: string;
-  student_id: string;
-  name: string;
-  role_id: number;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date;
+interface UserProps {
+  searchParams: Record<string, string | undefined>;
+  data: UserData;
 }
 
-const UserTable = () => {
+const UserTable: React.FC<UserProps> = ({ data }) => {
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
@@ -62,23 +56,15 @@ const UserTable = () => {
     ],
     []
   );
-  const { data: usersData, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const { data } = await api.get<{ data: User[] }>("/user");
-      return data.data;
-    },
-  });
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
 
   return (
     <>
       <DataTable
         columns={columns}
-        data={usersData ?? []}
+        data={data?.data ?? []}
+        pageCount={data?.totalPages ?? 0}
         filterColumnId="student_id"
+        filterPlaceholder="Search by Student ID..."
         tableActionsButton={<CreateDialog />}
       />
     </>

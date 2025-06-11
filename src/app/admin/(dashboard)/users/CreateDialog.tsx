@@ -32,7 +32,7 @@ const CreateDialog = () => {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-bold">Create User</DialogTitle>
+          <DialogTitle className="font-bold">Create New User</DialogTitle>
           <DialogDescription>
             Click Create to add a new user. You can edit the details later.
           </DialogDescription>

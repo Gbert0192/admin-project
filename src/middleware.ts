@@ -1,32 +1,51 @@
 // middleware.ts
 
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { auth } from "./auth";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
   const { pathname } = request.nextUrl;
 
-  if (!session) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+  });
+
+  if (!token?.token) {
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  const userRole = Number(session.user?.role_id);
+  const isExpired = Date.now() / 1000 > token.exp!;
+  if (isExpired) {
+    const unauthorizedUrl = new URL("/unauthorized", request.url);
+    unauthorizedUrl.searchParams.set("callbackUrl", pathname);
+    unauthorizedUrl.searchParams.set("error", "SessionExpired");
+    return NextResponse.redirect(unauthorizedUrl);
+  }
 
-  if (userRole !== 1 && !pathname.startsWith("/admin")) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+
+  const userRole = Number(session.user?.role_id);
+  const isAdmin = userRole === 1;
+  const isAccessingAdminPages = pathname.startsWith("/admin");
+
+  if (!isAdmin && !isAccessingAdminPages) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
-  if (userRole === 1 && !pathname.startsWith("/")) {
+  if (isAdmin && isAccessingAdminPages) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
 }
 
-// Config matcher Anda sudah benar.
 export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-out|reset-password|forget-password|unauthorized).*)",
