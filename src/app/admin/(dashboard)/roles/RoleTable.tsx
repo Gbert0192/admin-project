@@ -1,22 +1,16 @@
 "use client";
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
-
-export interface Role {
-  uuid: string;
-  created_at: string;
-  updated_at: string | null;
-  deleted_at: string | null;
-  permission_id: number[];
-  role_name: string;
+import { Role, RoleData } from "./page";
+interface RolesProps {
+  searchParams: Record<string, string | undefined>;
+  data: RoleData;
 }
 
-const RoleTable = () => {
+const RoleTable: React.FC<RolesProps> = ({ data }) => {
   const columns = useMemo<ColumnDef<Role>[]>(
     () => [
       {
@@ -56,22 +50,12 @@ const RoleTable = () => {
     ],
     []
   );
-  const { data: rolesData, isLoading } = useQuery({
-    queryKey: ["roles"],
-    queryFn: async () => {
-      const { data } = await api.get<{ data: Role[] }>("/roles");
-      return data.data;
-    },
-  });
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
 
   return (
     <>
       <DataTable
         columns={columns}
-        data={rolesData ?? []}
+        data={data.data ?? []}
         filterColumnId="role_name"
         filterPlaceholder="Role Name"
       />
