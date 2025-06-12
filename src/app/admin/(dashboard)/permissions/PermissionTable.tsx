@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { Permission, PermissionData } from "./page";
+import CreateDialog from "./CreateDialog";
 
 interface PermissionProps {
   searchParams: Record<string, string | undefined>;
@@ -56,17 +57,6 @@ const PermissionTable: React.FC<PermissionProps> = ({ data }) => {
     ],
     []
   );
-  const { data: permissionData, isLoading } = useQuery({
-    queryKey: ["permissions"],
-    queryFn: async () => {
-      const { data } = await api.get<{ data: Permission[] }>("/permissions");
-      return data.data;
-    },
-  });
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
-
   return (
     <>
       <DataTable
@@ -75,6 +65,7 @@ const PermissionTable: React.FC<PermissionProps> = ({ data }) => {
         pageCount={data?.totalPages ?? 0}
         filterColumnId="permission_name"
         filterPlaceholder="Search by Permission Name"
+        tableActionsButton={<CreateDialog />}
       />
     </>
   );
