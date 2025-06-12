@@ -33,7 +33,7 @@ const RolesPage = async ({ searchParams }: SearchParams) => {
   const { data } = await getRoles({ searchParams: params });
   return (
     <>
-      <RoleTable searchParms={params} data={data} />
+      <RoleTable searchParams={params} data={data} />
     </>
   );
 };
