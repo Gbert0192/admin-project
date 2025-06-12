@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { Role, RoleData } from "./page";
+import CreateDialog from "./createDialog";
 interface RolesProps {
   searchParams: Record<string, string | undefined>;
   data: RoleData;
@@ -56,8 +57,10 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
       <DataTable
         columns={columns}
         data={data.data ?? []}
+        pageCount={data?.totalPages ?? 0}
         filterColumnId="role_name"
         filterPlaceholder="Role Name"
+        tableActionsButton={<CreateDialog />}
       />
     </>
   );
