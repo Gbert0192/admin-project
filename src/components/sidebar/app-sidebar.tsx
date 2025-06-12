@@ -66,7 +66,7 @@ const superAdmin: Item[] = [
   },
   {
     title: "Permissions",
-    url: "/Permissions",
+    url: "/permissions",
     icon: Shield,
   },
 ];
