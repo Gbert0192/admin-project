@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { MultiSelectForm } from "@/components/Select/multi-select-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,8 +29,6 @@ import {
 import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { createRoleSchema } from "@/lib/schema/RoleSchema";
-import { useSonner } from "sonner";
-import { MultiSelectForm } from "@/components/Select/multi-select-form";
 
 interface Permission {
   uuid: string;
@@ -44,8 +43,8 @@ type CreateRolePayload = z.infer<typeof createRoleSchema>;
 
 const CreateRoleDialog = () => {
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const { toasts } = useSonner();
+  //   const queryClient = useQueryClient();
+  //   const { toasts } = useSonner();
 
   const form = useForm<CreateRolePayload>({
     resolver: zodResolver(createRoleSchema),
@@ -65,7 +64,7 @@ const CreateRoleDialog = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const onSubmit = async (): Promise<void> => {};
+  //   const onSubmit = async (): Promise<void> => {};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -87,7 +86,7 @@ const CreateRoleDialog = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form className="space-y-6">
             <div className="space-y-4">
               <FormField
                 control={form.control}
