@@ -2,22 +2,17 @@
 
 import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo } from "react";
+import { Permission, PermissionData } from "./page";
 
-export interface Permission {
-  uuid: string;
-  created_at: string;
-  updated_at: string | null;
-  deleted_at: string | null;
-  route: string;
-  permission_name: string;
+interface PermissionProps {
+  searchParams: Record<string, string | undefined>;
+  data: PermissionData;
 }
 
-const PermissionTable = () => {
+const PermissionTable: React.FC<PermissionProps> = ({ data }) => {
   const columns = useMemo<ColumnDef<Permission>[]>(
     () => [
       {
@@ -61,22 +56,12 @@ const PermissionTable = () => {
     ],
     []
   );
-  const { data: permissionData, isLoading } = useQuery({
-    queryKey: ["permissions"],
-    queryFn: async () => {
-      const { data } = await api.get<{ data: Permission[] }>("/permissions");
-      return data.data;
-    },
-  });
-  if (isLoading) {
-    return <div>Loading data...</div>;
-  }
-
   return (
     <>
       <DataTable
         columns={columns}
-        data={permissionData ?? []}
+        data={data?.data ?? []}
+        pageCount={data?.totalPages ?? 0}
         filterColumnId="permission_name"
         filterPlaceholder="Search by Permission Name"
       />
