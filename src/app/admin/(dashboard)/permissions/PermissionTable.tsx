@@ -64,10 +64,11 @@ const PermissionTable = () => {
   const { data: permissionData, isLoading } = useQuery({
     queryKey: ["permissions"],
     queryFn: async () => {
-      const { data } = await api.get<{ data: Permission[] }>("/permissions");
+      const { data } = await api.get<{ data: Permission[] }>("/permission");
       return data.data;
     },
   });
+
   if (isLoading) {
     return <div>Loading data...</div>;
   }

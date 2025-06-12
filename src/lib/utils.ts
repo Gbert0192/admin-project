@@ -18,3 +18,7 @@ export function createQueryParams(
 
   return params.toString();
 }
+
+export interface SearchParams {
+  searchParams: Promise<Record<string, string | undefined>>;
+}
