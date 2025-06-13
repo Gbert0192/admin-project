@@ -28,7 +28,7 @@ const getPermission = async ({
 }) => {
   const params = createQueryParams(searchParams);
 
-  const data = await serverApi.get(`permissions?${params}`);
+  const data = await serverApi.get(`permission?${params}`);
 
   return data;
 };
