@@ -40,7 +40,6 @@ export default function Sidebar() {
                 <DropdownMenuItem
                   className="flex items-center gap-2 text-red-500 cursor-pointer"
                   onClick={() => {
-                    // 🚀 Tambahkan logika logout di sini
                     window.location.href = "/login";
                   }}
                 >

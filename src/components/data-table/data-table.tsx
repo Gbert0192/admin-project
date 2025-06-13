@@ -17,7 +17,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ChevronDown,
-  Search, // Optional: for a search icon on the button
+  Search,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -69,15 +69,11 @@ export function DataTable<TData, TValue>({
   const limit = searchParams.get("limit") ?? "10";
   const filterValue = searchParams.get(filterColumnId) ?? "";
 
-  // --- MODIFICATION START ---
-  // 1. Add local state to control the input field value independently.
   const [localFilterValue, setLocalFilterValue] = React.useState(filterValue);
 
-  // 2. Synchronize local state if the URL search param changes (e.g., back button).
   React.useEffect(() => {
     setLocalFilterValue(filterValue);
   }, [filterValue]);
-  // --- MODIFICATION END ---
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
@@ -124,29 +120,21 @@ export function DataTable<TData, TValue>({
     router.refresh();
   };
 
-  // --- MODIFICATION START ---
-  // 3. Create a dedicated search handler function.
   const handleSearch = () => {
     handleUrlChange({
       [filterColumnId]: localFilterValue || null,
-      page: 1, // Reset to page 1 for every new search
+      page: 1,
     });
   };
-  // --- MODIFICATION END ---
 
   return (
     <div className="w-full max-w-full px-4 pd:mx-6 pd:mx-8">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 py-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-1">
-          {/* --- MODIFICATION START --- */}
-          {/* 4. Update the Input component */}
           <Input
             placeholder={filterPlaceholder ?? "Search..."}
-            // Bind value to local state
             value={localFilterValue}
-            // On change, only update the local state, don't trigger search
             onChange={(event) => setLocalFilterValue(event.target.value)}
-            // Trigger search on "Enter" key press for better UX
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 handleSearch();
@@ -154,18 +142,15 @@ export function DataTable<TData, TValue>({
             }}
             className="w-full sm:max-w-sm"
           />
-          {/* 5. Add a "Search" button to trigger the search */}
           <Button onClick={handleSearch} size="sm" className="w-full sm:w-auto">
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
-          {/* 6. Modify the "Clear" button */}
           {filterValue && (
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
-                // Also clear the local input state when clearing the search
                 setLocalFilterValue("");
                 handleUrlChange({
                   [filterColumnId]: null,
@@ -177,7 +162,6 @@ export function DataTable<TData, TValue>({
               Clear
             </Button>
           )}
-          {/* --- MODIFICATION END --- */}
         </div>
 
         <div className="flex items-center gap-2">
@@ -209,7 +193,6 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* The rest of the component remains the same */}
       <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>

@@ -11,7 +11,7 @@ export interface Role {
 
 export const createRoleSchema = z.object({
   role_name: z.string().min(1, "Role name is required"),
-  permissions: z.array(z.string()),
+  permissions: z.array(z.string()).min(1, "Permission Is Required Min.1"),
 });
 
 export type CreateRoleSchema = z.infer<typeof createRoleSchema>;

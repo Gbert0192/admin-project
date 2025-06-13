@@ -89,7 +89,7 @@ export const MultiSelectForm = <
                   className="w-full justify-between"
                 >
                   {selectedValues.length > 0
-                    ? `Terpilih ${selectedValues.length} item`
+                    ? `Choosed ${selectedValues.length} ${selectedValues.length > 1 ? "Item(s)" : "Item"}`
                     : placeholder}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>

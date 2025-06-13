@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,9 @@ import {
 import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { createRoleSchema } from "@/lib/schema/RoleSchema";
+import { toast } from "sonner";
+import { errorHandler } from "@/lib/handler/errorHandler";
+import { useRouter } from "next/navigation";
 
 interface Permission {
   uuid: string;
@@ -39,12 +42,18 @@ interface Permission {
   deleted_at: string | null;
 }
 
+interface CreateRolePayloadReturn {
+  uuid: string;
+  role_name: string;
+  permission_id: number[];
+  created_at: string;
+}
+
 type CreateRolePayload = z.infer<typeof createRoleSchema>;
 
 const CreateRoleDialog = () => {
   const [open, setOpen] = useState(false);
-  //   const queryClient = useQueryClient();
-  //   const { toasts } = useSonner();
+  const router = useRouter();
 
   const form = useForm<CreateRolePayload>({
     resolver: zodResolver(createRoleSchema),
@@ -54,20 +63,42 @@ const CreateRoleDialog = () => {
     },
   });
 
-  // Fetching permissions data
   const { data: permissions, isLoading: isLoadingPermissions } = useQuery({
     queryKey: ["permissions"],
     queryFn: async () => {
       const { data } = await api.get<{ data: Permission[] }>("/permission");
       return data.data;
     },
-    staleTime: 1000 * 60 * 5,
   });
 
-  //   const onSubmit = async (): Promise<void> => {};
+  const { mutate: createRole, isPending } = useMutation<
+    CreateRolePayloadReturn,
+    Error,
+    CreateRolePayload
+  >({
+    mutationFn: async (data: CreateRolePayload) => {
+      const res = await api.post("/role", data);
+      return res.data as CreateRolePayloadReturn;
+    },
+    onError: (err) => {
+      errorHandler(err);
+    },
+    onSuccess: () => {
+      setOpen(false);
+      form.reset();
+      router.refresh();
+      toast.success("Add Role Successfully!");
+    },
+  });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setOpen(!open);
+        form.reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="text-white">
           <Plus className="mr-2 h-4 w-4" />
@@ -86,7 +117,10 @@ const CreateRoleDialog = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit((data) => createRole(data))}
+            className="space-y-6"
+          >
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -95,11 +129,7 @@ const CreateRoleDialog = () => {
                   <FormItem>
                     <FormLabel>Role Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., Administrator"
-                        {...field}
-                        // disabled={isPending}
-                      />
+                      <Input placeholder="e.g., Administrator" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,14 +151,6 @@ const CreateRoleDialog = () => {
                         labelKey="permission_name"
                         options={permissions ?? []}
                       />
-                      {/* <SelectForm
-                        formName="permissions"
-                        control={form.control}
-                        placeholder="Select a user to assign..."
-                        options={permissions ?? []}
-                        valueKey="route"
-                        labelKey="permission_name"
-                      /> */}
                     </FormControl>
                     {isLoadingPermissions && (
                       <p className="text-sm text-muted-foreground flex items-center">
@@ -147,14 +169,13 @@ const CreateRoleDialog = () => {
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                // disabled={isPending}
               >
                 Cancel
               </Button>
-              {/* <Button type="submit" disabled={isPending}>
+              <Button type="submit" className="text-white">
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isPending ? "Creating..." : "Create Role"}
-              </Button> */}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
