@@ -3,15 +3,42 @@ import { DataTable } from "@/components/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Role, RoleData } from "./page";
-import CreateDialog from "./createDialog";
+import CreateDialog from "./CreateRoleDialog";
+import EditDialog from "./EditRoleDialog";
+import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
+import { useMutation } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { errorHandler } from "@/lib/handler/errorHandler";
+import { useRouter } from "next/navigation";
 interface RolesProps {
   searchParams: Record<string, string | undefined>;
   data: RoleData;
 }
 
 const RoleTable: React.FC<RolesProps> = ({ data }) => {
+  const router = useRouter();
+
+  const [editDialog, setEditDialog] = useState<{
+    data: Role | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
+
+  const { mutate: deleteRole, isPending } = useMutation({
+    mutationFn: async (uuid: string) => {
+      await api.delete(`/role/${uuid}`);
+    },
+    onSuccess: () => {
+      toast.success("Role deleted successfully.");
+      router.refresh();
+    },
+    onError: (error) => {
+      errorHandler(error);
+      toast.error("Failed to delete role.");
+    },
+  });
   const columns = useMemo<ColumnDef<Role>[]>(
     () => [
       {
@@ -32,18 +59,29 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
       },
       {
         header: "Actions",
-        cell: () => {
+        cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2">
-              <Button variant={"default"} size={"icon"}>
+              <Button
+                variant={"default"}
+                size={"icon"}
+                onClick={() => {
+                  setEditDialog({ data: row.original, isOpen: true });
+                }}
+              >
                 <Pen className="h-4 w-4 text-white" />
               </Button>
               <Button variant={"warning"} size={"icon"}>
                 <Eye className="h-4 w-4 text-white" />
               </Button>
-              <Button variant={"destructive"} size={"icon"}>
-                <Trash2 className="h-4 w-4 text-white" />
-              </Button>
+              <DeleteWrapper
+                onConfirm={() => deleteRole(row.original.uuid)}
+                isPending={isPending}
+              >
+                <Button variant={"destructive"} size={"icon"}>
+                  <Trash2 className="h-4 w-4 text-white" />
+                </Button>
+              </DeleteWrapper>
             </div>
           );
         },
@@ -61,6 +99,11 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
         filterColumnId="role_name"
         filterPlaceholder="Role Name"
         tableActionsButton={<CreateDialog />}
+      />
+      <EditDialog
+        isOpen={editDialog.isOpen}
+        setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
+        data={editDialog.data}
       />
     </>
   );

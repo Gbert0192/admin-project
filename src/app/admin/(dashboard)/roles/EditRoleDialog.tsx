@@ -2,10 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2, Plus } from "lucide-react";
-import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { toast } from "sonner";
 
 import { MultiSelectForm } from "@/components/Select/multi-select-form";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -28,97 +28,93 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
-import { createRoleSchema } from "@/lib/schema/RoleSchema";
-import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
-import { useRouter } from "next/navigation";
+import {
+  UpdateRolePermissionPayload,
+  updateRolePermissionPayloadSchema,
+} from "@/lib/schema/RoleSchema";
+import { GetPermissionsResponse, Permission, Role } from "./page";
 
-interface Permission {
+interface RoleData {
   uuid: string;
-  route: string;
-  permission_name: string;
   created_at: string;
   updated_at: string | null;
   deleted_at: string | null;
-}
-
-interface CreateRolePayloadReturn {
-  uuid: string;
+  permissions: Permission[];
   role_name: string;
-  permission_id: number[];
-  created_at: string;
 }
 
-type CreateRolePayload = z.infer<typeof createRoleSchema>;
+interface EditDialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  data: RoleData | null;
+}
 
-const CreateRoleDialog = () => {
-  const [open, setOpen] = useState(false);
+const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
   const router = useRouter();
 
-  const form = useForm<CreateRolePayload>({
-    resolver: zodResolver(createRoleSchema),
+  const form = useForm<UpdateRolePermissionPayload>({
+    resolver: zodResolver(updateRolePermissionPayloadSchema),
+
     defaultValues: {
       role_name: "",
       permissions: [],
     },
   });
 
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        role_name: data.role_name,
+        permissions: data.permissions.map((p) => p.uuid),
+      });
+    }
+  }, [data, form]);
+
   const { data: permissions, isLoading: isLoadingPermissions } = useQuery({
     queryKey: ["permissions"],
     queryFn: async () => {
-      const { data } = await api.get<{ data: Permission[] }>("/permission");
-      return data.data;
+      const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
+        "/permission"
+      );
+      return res.data;
     },
+    enabled: isOpen,
   });
 
-  const { mutate: createRole, isPending } = useMutation<
-    CreateRolePayloadReturn,
-    Error,
-    CreateRolePayload
-  >({
-    mutationFn: async (data: CreateRolePayload) => {
-      const res = await api.post("/role", data);
-      return res.data as CreateRolePayloadReturn;
+  const { mutate: updateRole, isPending } = useMutation({
+    mutationFn: async (payload: UpdateRolePermissionPayload) => {
+      const filteredPayload = { uuid: data?.uuid, ...payload };
+      const res = await api.put<Role>(`/role`, filteredPayload);
+      return res.data;
     },
     onError: (err) => {
       errorHandler(err);
     },
     onSuccess: () => {
-      setOpen(false);
-      form.reset();
+      toast.success("Role Updated successfully!");
+      setIsOpen(false);
       router.refresh();
-      toast.success("Add Role Successfully!");
     },
   });
 
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={() => {
-        setOpen(!open);
-        form.reset();
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className="text-white">
-          <Plus className="mr-2 h-4 w-4" />
-          Create New Role
-        </Button>
-      </DialogTrigger>
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            Create New Role
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Edit Role</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new user role.
+            Update the details for the selected role below.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => createRole(data))}
+            onSubmit={form.handleSubmit((payload) => updateRole(payload))}
             className="space-y-6"
           >
             <div className="space-y-4">
@@ -165,16 +161,12 @@ const CreateRoleDialog = () => {
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" className="text-white">
+              <Button type="submit" disabled={isPending} className="text-white">
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isPending ? "Creating..." : "Create Role"}
+                {isPending ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
@@ -184,4 +176,4 @@ const CreateRoleDialog = () => {
   );
 };
 
-export default CreateRoleDialog;
+export default EditDialog;
