@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
@@ -22,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { CreatePermissionSchema } from "@/lib/schema/PermissionSchema";
+import { UpdatePermissionSchema } from "@/lib/schema/PermissionSchema";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import api from "@/lib/api";
@@ -30,67 +29,71 @@ import { errorHandler } from "@/lib/handler/errorHandler";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Permission } from "./page";
 
-interface CreatePermissionPayloadReturn {
+interface PermissionData {
   uuid: string;
   route: string;
   permission_name: string;
   created_at: string;
+  updated_at: string | null;
+  deleted_at: string | null;
 }
 
-type CreatePermissionPayload = z.infer<typeof CreatePermissionSchema>;
+interface EditDialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  data: PermissionData | null;
+}
 
-const CreatePermissionDialog = () => {
-  const [open, setOpen] = useState(false);
+type UpdatePermissionPayload = z.infer<typeof UpdatePermissionSchema>;
+
+const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
   const router = useRouter();
 
-  const form = useForm({
-    resolver: zodResolver(CreatePermissionSchema),
+  const form = useForm<UpdatePermissionPayload>({
+    resolver: zodResolver(UpdatePermissionSchema),
     defaultValues: {
       permission_name: "",
       route: "/",
     },
   });
 
-  const { mutate: createPermission, isPending } = useMutation<
-    CreatePermissionPayloadReturn,
-    Error,
-    CreatePermissionPayload
-  >({
-    mutationFn: async (data: CreatePermissionPayload) => {
-      const res = await api.post("/permission", data);
-      return res.data as CreatePermissionPayloadReturn;
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        permission_name: data.permission_name,
+        route: data.route,
+      });
+    }
+  }, [data, form]);
+
+  const { mutate: updatePermission, isPending } = useMutation({
+    mutationFn: async (payload: UpdatePermissionPayload) => {
+      const filteredPayload = { uuid: data?.uuid, ...payload };
+      const res = await api.put<Permission>(
+        `/permission/${data?.uuid}`,
+        filteredPayload
+      );
+      return res.data;
     },
     onError: (err) => {
       errorHandler(err);
     },
     onSuccess: () => {
-      setOpen(false);
-      form.reset();
+      toast.success("Role Updated successfully!");
+      setIsOpen(false);
       router.refresh();
-      toast.success("Add Permission Successfully!");
     },
   });
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={() => {
-        setOpen(!open);
-        form.reset();
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button className="bg-blue-500 text-white hover:bg-blue-600">
-          Create New Route
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-bold">Create New Route</DialogTitle>
+          <DialogTitle className="font-bold">Edit Route</DialogTitle>
           <DialogDescription>
-            Click Create to add a new route. You can edit the details later.
+            Update the details of the permission route.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -125,21 +128,15 @@ const CreatePermissionDialog = () => {
         </Form>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
+          <Button>Cancel</Button>
           <Button
             type="submit"
             className="text-white"
-            onClick={form.handleSubmit((data) => createPermission(data))}
             disabled={isPending}
+            onClick={form.handleSubmit((payload) => updatePermission(payload))}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isPending ? "Creating..." : "Create Route"}
+            {isPending ? "Saving..." : "Save Changes"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -147,4 +144,4 @@ const CreatePermissionDialog = () => {
   );
 };
 
-export default CreatePermissionDialog;
+export default EditPermissionDialog;
