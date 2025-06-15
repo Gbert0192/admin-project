@@ -13,6 +13,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
 import { useRouter } from "next/navigation";
+import DetailDialog from "./DetailRoleDialog";
 interface RolesProps {
   searchParams: Record<string, string | undefined>;
   data: RoleData;
@@ -22,6 +23,11 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
   const router = useRouter();
 
   const [editDialog, setEditDialog] = useState<{
+    data: Role | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
+
+  const [detailDialog, setDetailDialog] = useState<{
     data: Role | null;
     isOpen: boolean;
   }>({ data: null, isOpen: false });
@@ -71,7 +77,13 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
               >
                 <Pen className="h-4 w-4 text-white" />
               </Button>
-              <Button variant={"warning"} size={"icon"}>
+              <Button
+                variant={"warning"}
+                size={"icon"}
+                onClick={() => {
+                  setDetailDialog({ data: row.original, isOpen: true });
+                }}
+              >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
               <DeleteWrapper
@@ -104,6 +116,12 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
         isOpen={editDialog.isOpen}
         setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
         data={editDialog.data}
+      />
+
+      <DetailDialog
+        isOpen={detailDialog.isOpen}
+        setIsOpen={() => setDetailDialog({ ...detailDialog, isOpen: false })}
+        data={detailDialog.data}
       />
     </>
   );

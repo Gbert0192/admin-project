@@ -142,7 +142,11 @@ export function DataTable<TData, TValue>({
             }}
             className="w-full sm:max-w-sm"
           />
-          <Button onClick={handleSearch} size="sm" className="w-full sm:w-auto">
+          <Button
+            onClick={handleSearch}
+            size="sm"
+            className="w-full sm:w-auto text-white"
+          >
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
