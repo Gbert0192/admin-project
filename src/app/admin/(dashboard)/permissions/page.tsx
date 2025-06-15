@@ -1,6 +1,7 @@
 import { createQueryParams } from "@/lib/utils";
 import PermissionTable from "./PermissionTable";
 import serverApi from "@/lib/api/serverApi";
+import { Method } from "@/lib/schema/PermissionSchema";
 
 interface PermissionPageProps {
   searchParams: Promise<Record<string, string | undefined>>;
@@ -9,6 +10,7 @@ interface PermissionPageProps {
 export interface Permission {
   uuid: string;
   created_at: string;
+  method: Method[];
   updated_at: string | null;
   deleted_at: string | null;
   route: string;

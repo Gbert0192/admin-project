@@ -17,4 +17,5 @@ export const signUpSchema = object({
   password: string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
+  role_name: string().optional(),
 });

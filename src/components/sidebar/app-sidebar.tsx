@@ -33,11 +33,6 @@ const operations: Item[] = [
     url: "/",
     icon: LayoutDashboard,
   },
-  {
-    title: "Settings",
-    url: "settings",
-    icon: Settings,
-  },
 ];
 
 const feature: Item[] = [
@@ -93,7 +88,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
                     <Link
-                      href={`admin${item.url}`}
+                      href={`/admin${item.url}`}
                       className="relative group/item flex items-center gap-3 px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800/50 border border-transparent h-full rounded-xl"
                     >
                       <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10 group-hover/item:from-blue-500/20 group-hover/item:to-indigo-500/20">

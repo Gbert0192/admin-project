@@ -30,6 +30,7 @@ import { errorHandler } from "@/lib/handler/errorHandler";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { MultiSelectForm } from "@/components/Select/multi-select-form";
 
 interface CreatePermissionPayloadReturn {
   uuid: string;
@@ -49,6 +50,7 @@ const CreatePermissionDialog = () => {
     defaultValues: {
       permission_name: "",
       route: "/",
+      method: [],
     },
   });
 
@@ -82,7 +84,7 @@ const CreatePermissionDialog = () => {
     >
       <DialogTrigger asChild>
         <Button className="bg-blue-500 text-white hover:bg-blue-600">
-          Create New Route
+          Create New Permission
         </Button>
       </DialogTrigger>
 
@@ -116,6 +118,43 @@ const CreatePermissionDialog = () => {
                   <FormLabel>Route</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Enter route name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="method"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Permissions</FormLabel>
+                  <FormControl>
+                    <MultiSelectForm
+                      placeholder="Select Method"
+                      control={form.control}
+                      formName="method"
+                      valueKey="value"
+                      labelKey="name"
+                      options={[
+                        {
+                          name: "GET",
+                          value: "GET",
+                        },
+                        {
+                          name: "POST",
+                          value: "POST",
+                        },
+                        {
+                          name: "PUT",
+                          value: "PUT",
+                        },
+                        {
+                          name: "DELETE",
+                          value: "DELETE",
+                        },
+                      ]}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

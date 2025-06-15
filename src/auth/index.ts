@@ -64,6 +64,7 @@ const authOptions: NextAuthConfig = {
               id: string;
               student_id: string;
               name: string;
+              role_name: string;
               role_id: number;
             };
             token: string;
@@ -82,6 +83,7 @@ const authOptions: NextAuthConfig = {
           token: data.data.token,
           permission: data.data.permission,
           role_id: data.data.user.role_id,
+          role_name: data.data.user.role_name,
         };
       },
     }),
@@ -95,6 +97,7 @@ const authOptions: NextAuthConfig = {
       if (user) {
         token.id = user.id;
         token.role_id = user.role_id;
+        token.role_name = user.role_name;
         token.student_id = user.student_id;
         token.token = user.token;
         token.permission = user.permission;
@@ -105,6 +108,7 @@ const authOptions: NextAuthConfig = {
       if (token) {
         session.user.id = token.id;
         session.user.role_id = token.role_id;
+        session.user.role_name = token.role_name;
         session.user.student_id = token.student_id;
         session.user.token = token.token;
         session.user.permission = token.permission;

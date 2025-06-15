@@ -35,12 +35,14 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
       name: "",
       student_id: "",
       password: "",
+      role_name: "User",
     },
   });
 
   const { mutate: handleSignUp, isPending } = useMutation({
     mutationFn: async (data: SignUpFormValues) => {
-      const res = await api.post("/auth/sign-up", data);
+      const payload = { role_name: "User", ...data };
+      const res = await api.post("/auth/sign-up", payload);
       return res.data as SignUpFormValues;
     },
     onError: (err) => {

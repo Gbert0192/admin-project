@@ -1,23 +1,35 @@
-import { object, string, z } from "zod";
+import { z } from "zod";
 
-export const CreatePermissionSchema = object({
-  route: string()
+export const CreatePermissionSchema = z.object({
+  route: z
+    .string()
     .min(1, { message: "Route is required." })
     .startsWith("/", { message: "Route must start with a '/'" }),
-  permission_name: string().min(1, { message: "Permission name is required." }),
+  permission_name: z
+    .string()
+    .min(1, { message: "Permission name is required." }),
+  method: z.array(z.enum(["GET", "POST", "PUT", "DELETE"])),
 });
 
-export const UpdatePermissionSchema = object({
-  route: string()
+export const UpdatePermissionSchema = z.object({
+  route: z
+    .string()
     .min(1, { message: "Route is required." })
     .startsWith("/", { message: "Route must start with a '/'" }),
-  permission_name: string().min(1, { message: "Permission name is required." }),
+  permission_name: z
+    .string()
+    .min(1, { message: "Permission name is required." }),
+  method: z.array(z.enum(["GET", "POST", "PUT", "DELETE"])),
 });
 
-export const DeletePermissionSchema = object({
-  uuid: string().min(1, { message: "UUID is required." }),
+export const DeletePermissionSchema = z.object({
+  uuid: z.string().min(1, { message: "UUID is required." }),
 });
+
+export const MethodEnum = z.enum(["GET", "POST", "PUT", "DELETE"]);
+export type Method = z.infer<typeof MethodEnum>;
 
 export type CreatePermissionSchemaType = z.infer<typeof CreatePermissionSchema>;
 export type UpdatePermissionSchemaType = z.infer<typeof UpdatePermissionSchema>;
+
 export type DeletePermissionSchemaType = z.infer<typeof DeletePermissionSchema>;

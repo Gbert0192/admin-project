@@ -53,7 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="w-full h-full p-4 md:p-6">{children}</main>
+          <main className="w-full h-full">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </div>
