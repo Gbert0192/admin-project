@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { MultiSelectForm } from "@/components/Select/multi-select-form";
+import { Switch } from "@/components/ui/switch";
 
 interface CreatePermissionPayloadReturn {
   uuid: string;
@@ -49,8 +50,9 @@ const CreatePermissionDialog = () => {
     resolver: zodResolver(CreatePermissionSchema),
     defaultValues: {
       permission_name: "",
-      route: "/",
+      route: "",
       method: [],
+      is_menu: false,
     },
   });
 
@@ -88,7 +90,7 @@ const CreatePermissionDialog = () => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="font-bold">Create New Route</DialogTitle>
           <DialogDescription>
@@ -96,7 +98,7 @@ const CreatePermissionDialog = () => {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-6">
+          <form className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="permission_name"
@@ -123,43 +125,68 @@ const CreatePermissionDialog = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name="method"
-              render={() => (
+              name="is_menu"
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Permissions</FormLabel>
+                  <FormLabel>Route</FormLabel>
                   <FormControl>
-                    <MultiSelectForm
-                      placeholder="Select Method"
-                      control={form.control}
-                      formName="method"
-                      valueKey="value"
-                      labelKey="name"
-                      options={[
-                        {
-                          name: "GET",
-                          value: "GET",
-                        },
-                        {
-                          name: "POST",
-                          value: "POST",
-                        },
-                        {
-                          name: "PUT",
-                          value: "PUT",
-                        },
-                        {
-                          name: "DELETE",
-                          value: "DELETE",
-                        },
-                      ]}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {field.value ? "Is Menu" : "Is Not Menu"}
+                      </span>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {!form.watch("is_menu") && (
+              <FormField
+                control={form.control}
+                name="method"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Method</FormLabel>
+                    <FormControl>
+                      <MultiSelectForm
+                        placeholder="Select Method"
+                        control={form.control}
+                        formName="method"
+                        valueKey="value"
+                        labelKey="name"
+                        options={[
+                          {
+                            name: "GET",
+                            value: "GET",
+                          },
+                          {
+                            name: "POST",
+                            value: "POST",
+                          },
+                          {
+                            name: "PUT",
+                            value: "PUT",
+                          },
+                          {
+                            name: "DELETE",
+                            value: "DELETE",
+                          },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </form>
         </Form>
 

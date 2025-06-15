@@ -160,7 +160,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
         </Form>
 
         <DialogFooter>
-          <Button>Cancel</Button>
+          <Button className="text-white">Cancel</Button>
           <Button
             type="submit"
             className="text-white"

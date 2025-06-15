@@ -11,6 +11,7 @@ export interface Permission {
   uuid: string;
   created_at: string;
   method: Method[];
+  is_menu: boolean;
   updated_at: string | null;
   deleted_at: string | null;
   route: string;

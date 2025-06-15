@@ -8,7 +8,7 @@ import { Role, RoleData } from "./page";
 import CreateDialog from "./CreateRoleDialog";
 import EditDialog from "./EditRoleDialog";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
@@ -21,7 +21,7 @@ interface RolesProps {
 
 const RoleTable: React.FC<RolesProps> = ({ data }) => {
   const router = useRouter();
-
+  const queryClient = useQueryClient();
   const [editDialog, setEditDialog] = useState<{
     data: Role | null;
     isOpen: boolean;
@@ -36,7 +36,8 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
     mutationFn: async (uuid: string) => {
       await api.delete(`/role/${uuid}`);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["permissions"] });
       toast.success("Role deleted successfully.");
       router.refresh();
     },
@@ -47,6 +48,13 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
   });
   const columns = useMemo<ColumnDef<Role>[]>(
     () => [
+      {
+        accessorKey: "index",
+        header: "No",
+        cell: ({ row }) => {
+          return <div>{row.index + 1}</div>;
+        },
+      },
       {
         accessorKey: "role_name",
         header: "Role Name",

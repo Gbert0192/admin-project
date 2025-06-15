@@ -2,6 +2,7 @@ import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import { InvalidCredentialsError, InvalidUserError } from "./error";
+import { ISessionMenu, ISessionPermission } from "@/app/types/next.auth";
 
 export const BASE_PATH = "/api/auth";
 
@@ -65,10 +66,11 @@ const authOptions: NextAuthConfig = {
               student_id: string;
               name: string;
               role_name: string;
-              role_id: number;
+              role_id: string;
             };
             token: string;
-            permission: string[];
+            permission: ISessionPermission[];
+            menus: ISessionMenu[];
           };
         };
 
@@ -84,6 +86,7 @@ const authOptions: NextAuthConfig = {
           permission: data.data.permission,
           role_id: data.data.user.role_id,
           role_name: data.data.user.role_name,
+          menus: data.data.menus,
         };
       },
     }),
@@ -101,6 +104,7 @@ const authOptions: NextAuthConfig = {
         token.student_id = user.student_id;
         token.token = user.token;
         token.permission = user.permission;
+        token.menus = user.menus;
       }
       return token;
     },
@@ -112,6 +116,7 @@ const authOptions: NextAuthConfig = {
         session.user.student_id = token.student_id;
         session.user.token = token.token;
         session.user.permission = token.permission;
+        session.user.menus = token.menus;
       }
       return session;
     },

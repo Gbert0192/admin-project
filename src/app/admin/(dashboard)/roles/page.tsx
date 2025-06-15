@@ -6,6 +6,7 @@ export interface Permission {
   uuid: string;
   route: string;
   permission_name: string;
+  is_menu: boolean;
 }
 
 export interface Role {

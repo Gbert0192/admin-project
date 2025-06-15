@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -18,13 +19,20 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import React from "react";
 
 interface Item {
   title: string;
   url: string;
   icon: React.ComponentType<{ className?: string }>;
   description?: string;
+}
+
+interface SessionMenu {
+  route: string;
+  permission_name: string;
 }
 
 const operations: Item[] = [
@@ -66,6 +74,18 @@ const superAdmin: Item[] = [
   },
 ];
 export function AppSidebar() {
+  const session = useSession();
+  const allowedRoutes = React.useMemo(() => {
+    if (session?.data?.user?.menus) {
+      return session.data.user.menus.map((menu: SessionMenu) => menu.route);
+    }
+    return [];
+  }, [session]);
+
+  const filteredSuperAdminMenu = superAdmin.filter((item) =>
+    allowedRoutes.includes(item.url)
+  );
+
   return (
     <Sidebar className="border-r-0 max-w-[250px]">
       <SidebarContent className="p-0">
@@ -140,7 +160,7 @@ export function AppSidebar() {
               <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
                 Super Admin
               </h1>
-              {superAdmin.map((item) => (
+              {filteredSuperAdminMenu.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
                     <Link

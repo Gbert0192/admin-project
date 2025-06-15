@@ -59,6 +59,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
     defaultValues: {
       role_name: "",
       permissions: [],
+      menus: [],
     },
   });
 
@@ -66,7 +67,10 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
     if (data) {
       form.reset({
         role_name: data.role_name,
-        permissions: data.permissions.map((p) => p.uuid),
+        permissions: data.permissions
+          .filter((p) => !p.is_menu)
+          .map((p) => p.uuid),
+        menus: data.permissions.filter((p) => p.is_menu).map((p) => p.uuid),
       });
     }
   }, [data, form]);
@@ -75,16 +79,31 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
     queryKey: ["permissions"],
     queryFn: async () => {
       const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
-        "/permission"
+        "/permission/no-menu"
       );
       return res.data;
     },
-    enabled: isOpen,
   });
+
+  const { data: permissionsMenu, isLoading: isLoadingPermissionsMenu } =
+    useQuery({
+      queryKey: ["permissionsMenu"],
+      queryFn: async () => {
+        const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
+          "/permission/menu"
+        );
+        return res.data;
+      },
+    });
 
   const { mutate: updateRole, isPending } = useMutation({
     mutationFn: async (payload: UpdateRolePermissionPayload) => {
-      const filteredPayload = { uuid: data?.uuid, ...payload };
+      const filteredPayload = {
+        uuid: data?.uuid,
+        ...payload,
+        permissions: [...payload?.permissions, ...payload.menus],
+      };
+
       const res = await api.put<Role>(`/role`, filteredPayload);
       return res.data;
     },
@@ -149,6 +168,33 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
                       />
                     </FormControl>
                     {isLoadingPermissions && (
+                      <p className="text-sm text-muted-foreground flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading permissions...
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="menus"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Menus</FormLabel>
+                    <FormControl>
+                      <MultiSelectForm
+                        placeholder="Select permissions"
+                        control={form.control}
+                        formName="menus"
+                        valueKey="uuid"
+                        labelKey="permission_name"
+                        options={permissionsMenu ?? []}
+                      />
+                    </FormControl>
+                    {isLoadingPermissionsMenu && (
                       <p className="text-sm text-muted-foreground flex items-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Loading permissions...

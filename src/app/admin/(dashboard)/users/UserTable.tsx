@@ -21,6 +21,13 @@ const UserTable: React.FC<UserProps> = ({ data }) => {
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
+        accessorKey: "index",
+        header: "No",
+        cell: ({ row }) => {
+          return <div>{row.index + 1}</div>;
+        },
+      },
+      {
         accessorKey: "name",
         header: "Name",
       },
