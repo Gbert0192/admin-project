@@ -6,7 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Permission, PermissionData } from "./page";
-import CreateDialog from "./CreateDialog";
 import { useRouter } from "next/navigation";
 import EditPermissionDialog from "./EditPermissionDialog";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
@@ -14,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
+import CreatePermissionDialog from "./CreatePermissionDialog";
 
 interface PermissionProps {
   searchParams: Record<string, string | undefined>;
@@ -103,7 +103,7 @@ const PermissionTable: React.FC<PermissionProps> = ({ data }) => {
         pageCount={data?.totalPages ?? 0}
         filterColumnId="permission_name"
         filterPlaceholder="Search by Permission Name"
-        tableActionsButton={<CreateDialog />}
+        tableActionsButton={<CreatePermissionDialog />}
       />
       <EditPermissionDialog
         isOpen={editDialog.isOpen}
