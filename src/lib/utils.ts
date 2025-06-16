@@ -22,3 +22,18 @@ export function createQueryParams(
 export interface SearchParams {
   searchParams: Promise<Record<string, string | undefined>>;
 }
+
+export interface Permission {
+  route: string;
+  method: string[];
+}
+
+export function checkPermission(
+  userPermissions: Permission[],
+  route: string,
+  method: string
+): boolean {
+  return userPermissions.some((p) => {
+    return p.route === route && p.method.includes(method);
+  });
+}

@@ -33,6 +33,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Permission } from "./page";
+import { Switch } from "@/components/ui/switch";
 
 interface EditDialogProps {
   isOpen: boolean;
@@ -49,6 +50,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
       permission_name: "",
       route: "/",
       method: [],
+      is_menu: data?.is_menu,
     },
   });
 
@@ -58,6 +60,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
         permission_name: data.permission_name,
         route: data.route,
         method: data.method,
+        is_menu: data.is_menu,
       });
     }
   }, [data, form]);
@@ -83,7 +86,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="font-bold">Edit Route</DialogTitle>
           <DialogDescription>
@@ -91,7 +94,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-6">
+          <form className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="permission_name"
@@ -121,41 +124,71 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
 
             <FormField
               control={form.control}
-              name="method"
-              render={() => (
+              name="is_menu"
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Method</FormLabel>
+                  <FormLabel>Route</FormLabel>
                   <FormControl>
-                    <MultiSelectForm
-                      placeholder="Select Method"
-                      control={form.control}
-                      formName="method"
-                      valueKey="value"
-                      labelKey="name"
-                      options={[
-                        {
-                          name: "GET",
-                          value: "GET",
-                        },
-                        {
-                          name: "POST",
-                          value: "POST",
-                        },
-                        {
-                          name: "PUT",
-                          value: "PUT",
-                        },
-                        {
-                          name: "DELETE",
-                          value: "DELETE",
-                        },
-                      ]}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+
+                          if (checked) {
+                            form.setValue("method", []);
+                          }
+                        }}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {field.value ? "Is Menu" : "Is Not Menu"}
+                      </span>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {!form.watch("is_menu") && (
+              <FormField
+                control={form.control}
+                name="method"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Method</FormLabel>
+                    <FormControl>
+                      <MultiSelectForm
+                        placeholder="Select Method"
+                        control={form.control}
+                        formName="method"
+                        valueKey="value"
+                        labelKey="name"
+                        options={[
+                          {
+                            name: "GET",
+                            value: "GET",
+                          },
+                          {
+                            name: "POST",
+                            value: "POST",
+                          },
+                          {
+                            name: "PUT",
+                            value: "PUT",
+                          },
+                          {
+                            name: "DELETE",
+                            value: "DELETE",
+                          },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </form>
         </Form>
 

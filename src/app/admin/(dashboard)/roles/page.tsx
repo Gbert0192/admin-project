@@ -1,6 +1,7 @@
+import { auth } from "@/auth";
+import serverApi from "@/lib/api/serverApi";
 import { createQueryParams, SearchParams } from "@/lib/utils";
 import RoleTable from "./RoleTable";
-import serverApi from "@/lib/api/serverApi";
 
 export interface Permission {
   uuid: string;
@@ -44,11 +45,18 @@ const getRoles = async ({
 };
 const RolesPage = async ({ searchParams }: SearchParams) => {
   const params = await searchParams;
+  const session = await auth();
+  const accessPermission = session?.user.permission ?? [];
 
   const { data } = await getRoles({ searchParams: params });
+
   return (
     <>
-      <RoleTable searchParams={params} data={data} />
+      <RoleTable
+        searchParams={params}
+        data={data}
+        accessPermission={accessPermission}
+      />
     </>
   );
 };

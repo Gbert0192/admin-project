@@ -14,12 +14,15 @@ import { toast } from "sonner";
 import { errorHandler } from "@/lib/handler/errorHandler";
 import { useRouter } from "next/navigation";
 import DetailDialog from "./DetailRoleDialog";
+import { checkPermission } from "@/lib/utils";
+import { ISessionPermission } from "@/app/types/next.auth";
 interface RolesProps {
   searchParams: Record<string, string | undefined>;
   data: RoleData;
+  accessPermission: ISessionPermission[];
 }
 
-const RoleTable: React.FC<RolesProps> = ({ data }) => {
+const RoleTable: React.FC<RolesProps> = ({ data, accessPermission }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [editDialog, setEditDialog] = useState<{
@@ -118,7 +121,9 @@ const RoleTable: React.FC<RolesProps> = ({ data }) => {
         pageCount={data?.totalPages ?? 0}
         filterColumnId="role_name"
         filterPlaceholder="Role Name"
-        tableActionsButton={<CreateDialog />}
+        tableActionsButton={
+          checkPermission(accessPermission, "/role", "POST") && <CreateDialog />
+        }
       />
       <EditDialog
         isOpen={editDialog.isOpen}

@@ -1,8 +1,8 @@
+import { ISessionPermission } from "@/app/types/next.auth";
 import NextAuth, { NextAuthConfig, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import { InvalidCredentialsError, InvalidUserError } from "./error";
-import { ISessionMenu, ISessionPermission } from "@/app/types/next.auth";
 
 export const BASE_PATH = "/api/auth";
 
@@ -70,7 +70,7 @@ const authOptions: NextAuthConfig = {
             };
             token: string;
             permission: ISessionPermission[];
-            menus: ISessionMenu[];
+            menus: string[];
           };
         };
 

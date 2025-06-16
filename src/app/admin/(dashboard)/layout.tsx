@@ -1,4 +1,8 @@
+"use client";
+import { signOut } from "@/auth";
+import { AlertWrapper } from "@/components/alert-wrapper.tsx/alert-wrapper";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -20,6 +24,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center space-x-2">
                 <SidebarTrigger />
                 <Separator orientation="vertical" className="mr-2 h-4" />
+              </div>
+              <div className="min-w-10">
+                <AlertWrapper
+                  onAction={() => signOut()}
+                  title="Are You Sure to Log Out?"
+                  description="You will be logged out from the system after Click Log out Button"
+                  actionText="Log Out"
+                  cancelText="Cancel"
+                  actionClassName="bg-red-500"
+                >
+                  <Button
+                    variant={"destructive"}
+                    size={"icon"}
+                    className="p-4 w-full"
+                  >
+                    Log Out
+                  </Button>
+                </AlertWrapper>
               </div>
             </div>
           </header>

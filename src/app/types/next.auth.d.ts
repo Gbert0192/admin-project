@@ -1,14 +1,8 @@
 import { DefaultSession } from "next-auth";
 import { JWT as DefaultJWT } from "next-auth/jwt";
 
-interface ISessionMenu {
-  route: string;
-  permission_name: string;
-}
-
 interface ISessionPermission {
   route: string;
-  permission_name: string;
   method: string[];
 }
 
@@ -20,7 +14,7 @@ declare module "next-auth/jwt" {
     student_id: string;
     token: string;
     permission: ISessionPermission[];
-    menus: ISessionMenu[];
+    menus: string[];
   }
 }
 
@@ -33,7 +27,7 @@ declare module "next-auth" {
       student_id: string;
       token: string;
       permission: ISessionPermission[];
-      menus: ISessionMenu[];
+      menus: string[];
     } & DefaultSession["user"];
   }
 
@@ -44,6 +38,6 @@ declare module "next-auth" {
     student_id: string;
     token: string;
     permission: ISessionPermission[];
-    menus: ISessionMenu[];
+    menus: string[];
   }
 }

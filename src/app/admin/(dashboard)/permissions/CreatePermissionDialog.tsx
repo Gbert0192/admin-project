@@ -136,7 +136,13 @@ const CreatePermissionDialog = () => {
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+
+                          if (checked) {
+                            form.setValue("method", []);
+                          }
+                        }}
                       />
                       <span className="text-sm text-muted-foreground">
                         {field.value ? "Is Menu" : "Is Not Menu"}

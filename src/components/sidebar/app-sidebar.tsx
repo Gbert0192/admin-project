@@ -30,11 +30,6 @@ interface Item {
   description?: string;
 }
 
-interface SessionMenu {
-  route: string;
-  permission_name: string;
-}
-
 const operations: Item[] = [
   {
     title: "Dashboard",
@@ -76,13 +71,14 @@ const superAdmin: Item[] = [
 export function AppSidebar() {
   const session = useSession();
   const allowedRoutes = React.useMemo(() => {
-    if (session?.data?.user?.menus) {
-      return session.data.user.menus.map((menu: SessionMenu) => menu.route);
-    }
-    return [];
+    return session?.data?.user?.menus ?? [];
   }, [session]);
 
   const filteredSuperAdminMenu = superAdmin.filter((item) =>
+    allowedRoutes.includes(item.url)
+  );
+
+  const filteredFeatureMenu = feature.filter((item) =>
     allowedRoutes.includes(item.url)
   );
 
@@ -129,10 +125,12 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
 
-              <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
-                Feature
-              </h1>
-              {feature.map((item) => (
+              {filteredFeatureMenu.length > 0 && (
+                <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
+                  Feature
+                </h1>
+              )}
+              {filteredFeatureMenu.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
                     <Link
@@ -157,9 +155,11 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
 
-              <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
-                Super Admin
-              </h1>
+              {filteredSuperAdminMenu.length > 0 && (
+                <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
+                  Super Admin
+                </h1>
+              )}
               {filteredSuperAdminMenu.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="p-0 max-h-10">
