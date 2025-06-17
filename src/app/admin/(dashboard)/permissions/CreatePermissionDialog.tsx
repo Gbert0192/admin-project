@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { CreatePermissionSchema } from "@/lib/schema/PermissionSchema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import api from "@/lib/api";
 import { errorHandler } from "@/lib/handler/errorHandler";
@@ -45,6 +45,7 @@ type CreatePermissionPayload = z.infer<typeof CreatePermissionSchema>;
 const CreatePermissionDialog = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm({
     resolver: zodResolver(CreatePermissionSchema),
@@ -68,9 +69,11 @@ const CreatePermissionDialog = () => {
     onError: (err) => {
       errorHandler(err);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       setOpen(false);
       form.reset();
+      await queryClient.invalidateQueries({ queryKey: ["permissions"] });
+      await queryClient.invalidateQueries({ queryKey: ["permissionsMenu"] });
       router.refresh();
       toast.success("Add Permission Successfully!");
     },

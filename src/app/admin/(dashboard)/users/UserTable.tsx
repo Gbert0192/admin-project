@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import CreateDialog from "./CreateDialog";
 import { User, UserData } from "./page";
 import DetailDialog from "./DetailDialog";
 
@@ -83,7 +82,6 @@ const UserTable: React.FC<UserProps> = ({ data }) => {
         pageCount={data?.totalPages ?? 0}
         filterColumnId="student_id"
         filterPlaceholder="Search by Student ID..."
-        tableActionsButton={<CreateDialog />}
       />
       <DetailDialog
         isOpen={detailDialog.isOpen}
