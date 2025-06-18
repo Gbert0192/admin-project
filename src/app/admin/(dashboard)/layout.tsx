@@ -1,4 +1,5 @@
 "use client";
+
 import { AlertWrapper } from "@/components/alert-wrapper.tsx/alert-wrapper";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Button } from "@/components/ui/button";
