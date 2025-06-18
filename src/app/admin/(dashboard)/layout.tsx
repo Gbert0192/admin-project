@@ -1,5 +1,4 @@
 "use client";
-import { signOut } from "@/auth";
 import { AlertWrapper } from "@/components/alert-wrapper.tsx/alert-wrapper";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

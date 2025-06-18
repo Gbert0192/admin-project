@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  const isAdmin = session?.user?.role_name === "Admin";
+  const isAdmin = session?.user?.role_name === "User";
   const isAccessingAdminPages = pathname.startsWith("/admin");
 
   if (!isAdmin && !isAccessingAdminPages) {
