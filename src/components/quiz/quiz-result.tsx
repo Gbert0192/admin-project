@@ -47,13 +47,8 @@ export const QuizResult: React.FC<QuizResultProps> = ({
             variant="secondary"
             className="text-2xl px-6 py-2 bg-[var(--custom-gray-light)] text-[var(--custom-gray-text)]"
           >
-            Your Score: {score} / {totalQuestions}
+            Your Score: {score}
           </Badge>
-          {/* Progress bar for score percentage */}
-          <Progress
-            value={(score / totalQuestions) * 100}
-            className="w-full max-w-sm mt-4 h-3 [&>*]:bg-[var(--primary)]"
-          />
         </div>
 
         {/* Section to review answers */}

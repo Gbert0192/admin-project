@@ -65,7 +65,7 @@ export default function QuizzesPage() {
   };
 
   return (
-    <main className="flex items-center justify-center bg-[var(--custom-page-bg)] w-full h-full font-inter">
+    <main className="flex items-center justify-center w-full h-full font-inter">
       {quizState === "info" && <QuizInfo onStartQuiz={handleStartQuiz} />}
 
       {quizState === "playing" && (

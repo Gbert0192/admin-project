@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,58 +38,29 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
 
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground border-t pt-6">
-          {/* Displaying number of questions and types */}
+          {/* Displaying number of questions and indicating they are all flash cards */}
           <div className="flex items-center gap-3">
             <HelpCircle className="w-5 h-5 flex-shrink-0 text-[var(--primary)]" />{" "}
-            {/* Icon with primary color */}
             <span className="font-medium">
-              {quizData.length} Questions (
-              {
-                quizData.filter(
-                  (q: { type: string }) => q.type === "multiple-choice"
-                ).length
-              }{" "}
-              MC,{" "}
-              {
-                quizData.filter(
-                  (q: { type: string }) => q.type === "multiple-answers"
-                ).length
-              }{" "}
-              MA,{" "}
-              {
-                quizData.filter((q: { type: string }) => q.type === "essay")
-                  .length
-              }{" "}
-              Essay)
+              {quizData.length} Questions (Flash Card)
             </span>
           </div>
           {/* Displaying time limit */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 flex-shrink-0 text-[var(--custom-orange)]" />{" "}
-            {/* Icon with custom orange color */}
             <span className="font-medium">
               Time Limit: {TIME_LIMIT_MINUTES} Minutes
             </span>
-          </div>
+          </div> */}
         </div>
         <div>
           {/* Quiz Instructions section */}
           <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-[var(--secondary)]" />{" "}
-            {/* Icon with secondary color */}
             Instructions
           </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-2">
-            <li>
-              Choose the one answer you believe is the most correct for
-              multiple-choice.
-            </li>
-            <li>Select all correct answers for multiple-answer questions.</li>
-            <li>Provide exact answers for essay questions.</li>
-            <li>
-              The timer will start when you press the &quot;Start Quiz&quot;
-              button.
-            </li>
+            <li>Review each flash card to reinforce your knowledge.</li>{" "}
             <li>Ensure a stable internet connection during the quiz.</li>
             <li>
               Do not refresh the page, as it will restart the quiz from the
