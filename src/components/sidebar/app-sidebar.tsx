@@ -88,8 +88,8 @@ const superAdmin: Item[] = [
 
 const form: Item[] = [
   {
-    title: "Form",
-    url: "/forms",
+    title: "Huawei Form",
+    url: "/forms/huawei",
     icon: FileText,
   },
 ];
