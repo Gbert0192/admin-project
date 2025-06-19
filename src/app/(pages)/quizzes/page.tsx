@@ -1,113 +1,163 @@
-"use client";
+"use client"; // This directive indicates that this is a Client Component
 
 import React, { useState } from "react";
-import { QuizInfo } from "../../../components/quiz/quiz-info";
-import { QuizGame } from "../../../components/quiz/quiz-game";
-import { QuizResult } from "../../../components/quiz/quiz-result";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../../components/ui/alert-dialog";
-import { quizData, TIME_LIMIT_MINUTES } from "../../lib/quiz-data";
-import type { UserAnswers } from "../../lib/quiz-data";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-export default function QuizzesPage() {
-  const [quizState, setQuizState] = useState<"info" | "playing" | "results">(
-    "info"
+// Define the type for a form
+interface Form {
+  id: string;
+  name: string;
+  type: "huawei" | "flash_card";
+  link: string; // This link will now include the type parameter
+}
+
+// Sample data for forms
+const forms: Form[] = [
+  {
+    id: "1",
+    name: "Huawei HCIA Routing & Switching Basics",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=hcia-r-s", // Updated link with type and quizId
+  },
+  {
+    id: "2",
+    name: "Huawei 5G Introduction Quiz",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=5g-intro", // Updated link
+  },
+  {
+    id: "3",
+    name: "Huawei Cloud Computing Fundamentals",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=cloud-fundamentals", // Updated link
+  },
+  {
+    id: "4",
+    name: "Flash Card: Network Protocols",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=network-protocols", // Updated link
+  },
+  {
+    id: "5",
+    name: "Flash Card: Cybersecurity Terms",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=cybersecurity-terms", // Updated link
+  },
+  {
+    id: "6",
+    name: "Flash Card: Data Structures & Algorithms",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=data-structures", // Updated link
+  },
+];
+
+export default function FormsPage() {
+  const [activeCategory, setActiveCategory] = useState<"huawei" | "flash_card">(
+    "huawei"
   );
-  const [finalScore, setFinalScore] = useState(0);
-  const [finalUserAnswers, setFinalUserAnswers] = useState<UserAnswers>({});
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState("");
-  const [alertDescription, setAlertDescription] = useState("");
 
-  const handleStartQuiz = () => {
-    setQuizState("playing");
-  };
-
-  const handleQuizComplete = (score: number, userAnswers: UserAnswers) => {
-    setFinalScore(score);
-    setFinalUserAnswers(userAnswers);
-    setQuizState("results");
-    setAlertTitle("Quiz Selesai!");
-    setAlertDescription("Anda telah menyelesaikan kuis.");
-    setShowAlert(true);
-  };
-
-  const handleTimeUp = () => {
-    setFinalScore(0);
-    setFinalUserAnswers({});
-    setQuizState("results");
-    setAlertTitle("Waktu Habis!");
-    setAlertDescription(
-      "Waktu Anda telah habis. Kuis telah selesai secara otomatis."
-    );
-    setShowAlert(true);
-  };
-
-  const handleUnansweredQuestionsAttempt = (unansweredCount: number) => {
-    setAlertTitle("Soal Belum Terjawab!");
-    setAlertDescription(
-      `Anda memiliki ${unansweredCount} soal yang belum dijawab. Harap jawab semua soal sebelum menyelesaikan kuis.`
-    );
-    setShowAlert(true);
-  };
-
-  const handleRetakeQuiz = () => {
-    setQuizState("info");
-    setFinalScore(0);
-    setFinalUserAnswers({});
-  };
+  // Filter forms based on the active category
+  const filteredForms = forms.filter((form) => form.type === activeCategory);
 
   return (
-    <main className="flex items-center justify-center w-full h-full font-inter">
-      {quizState === "info" && <QuizInfo onStartQuiz={handleStartQuiz} />}
+    <div className="min-h-screen bg-custom-page-bg py-8">
+      <div className="container mx-auto px-4 md:px-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-blue-dark mb-8 text-center">
+          Daftar Kuis & Assignment
+        </h1>
 
-      {quizState === "playing" && (
-        <QuizGame
-          quizData={quizData}
-          onQuizComplete={handleQuizComplete}
-          onTimeUp={handleTimeUp}
-          timeLimitSeconds={TIME_LIMIT_MINUTES * 60}
-          onUnansweredQuestionsAttempt={handleUnansweredQuestionsAttempt}
-        />
-      )}
+        {/* Category selection buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10 px-4">
+          {" "}
+          {/* Added flex-col sm:flex-row and px-4 */}
+          <Button
+            onClick={() => setActiveCategory("huawei")}
+            className={`
+              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
+              ${
+                activeCategory === "huawei"
+                  ? "bg-primary text-white shadow-custom-form hover:bg-primary-blue-light"
+                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
+              }
+            `}
+          >
+            Huawei Forms
+          </Button>
+          <Button
+            onClick={() => setActiveCategory("flash_card")}
+            className={`
+              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
+              ${
+                activeCategory === "flash_card"
+                  ? "bg-custom-orange text-white shadow-custom-form hover:bg-custom-pink" // Using custom-orange and custom-pink for flashcard accent
+                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
+              }
+            `}
+          >
+            Flash Card Forms
+          </Button>
+        </div>
 
-      {quizState === "results" && (
-        <QuizResult
-          score={finalScore}
-          totalQuestions={quizData.length}
-          quizData={quizData}
-          userAnswers={finalUserAnswers}
-          onRetakeQuiz={handleRetakeQuiz}
-        />
-      )}
-
-      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--primary)]">
-              {alertTitle}
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogDescription className="text-muted-foreground">
-            {alertDescription}
-          </AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={() => setShowAlert(false)}
-              className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)]"
-            >
-              OK
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </main>
+        {/* Display forms in a responsive grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredForms.length > 0 ? (
+            filteredForms.map((form) => (
+              <Card
+                key={form.id}
+                className="
+                  bg-card rounded-lg shadow-md hover:shadow-custom-form transition-shadow duration-300
+                  flex flex-col justify-between
+                "
+              >
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-primary-blue-dark">
+                    {form.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="text-custom-gray-text text-sm leading-relaxed">
+                    {form.type === "huawei"
+                      ? "Huawei Assignment"
+                      : "Flash Card Collection"}
+                  </p>
+                </CardContent>
+                <CardFooter className="pt-4">
+                  <a
+                    href={form.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full"
+                  >
+                    <Button
+                      className={`
+                        w-full rounded-md py-2 text-white font-medium transition-colors duration-200
+                        ${
+                          form.type === "huawei"
+                            ? "bg-primary hover:bg-primary-blue-light"
+                            : "bg-custom-orange hover:bg-custom-pink"
+                        }
+                      `}
+                    >
+                      Mulai {form.type === "huawei" ? "Assignment" : "Belajar"}
+                    </Button>
+                  </a>
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-lg text-custom-gray-text">
+              Tidak ada form yang tersedia untuk kategori ini.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

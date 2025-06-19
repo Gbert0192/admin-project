@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, ListTodo } from "lucide-react";
-import { Question, UserAnswers } from "../../app/lib/quiz-data";
+import { Question, UserAnswers } from "../../../app/lib/quiz-data";
 
 interface QuizResultProps {
   score: number;

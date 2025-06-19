@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Clock,
   ArrowRight,
@@ -16,17 +15,14 @@ import {
   ListTodo,
   CheckCircle2,
   XCircle,
-} from "lucide-react"; // Added CheckCircle2, XCircle for feedback icons
-import { Question, UserAnswers } from "../../app/lib/quiz-data"; // Ensure these types are correctly defined
-import { QuestionNavigator } from "./question-navigator"; // Assuming this component exists and its styling is compatible
+} from "lucide-react";
+import { Question, UserAnswers } from "../../../app/lib/quiz-data";
 
-// Define neutral colors for answer options
-// Background utama akan putih, highlight dengan border/ring
 const optionColors = [
-  "border-red-500", // Red border
-  "border-blue-500", // Blue border
-  "border-yellow-500", // Yellow border
-  "border-green-500", // Green border
+  "border-red-500",
+  "border-blue-500",
+  "border-yellow-500",
+  "border-green-500",
 ];
 
 interface OptionProps {
@@ -34,16 +30,11 @@ interface OptionProps {
   index: number;
   isSelected: boolean;
   onSelect: (option: string) => void;
-  // New props for displaying correct/incorrect state after answer submission
+
   isAnswered: boolean;
-  isCorrectOption?: boolean; // For showing correct answer after submission
+  isCorrectOption?: boolean;
 }
 
-/**
- * Renders a single Kahoot-style option button for a question.
- * It applies distinct background colors and a selected state visual.
- * Now also handles displaying correct/incorrect state.
- */
 const OptionButton: React.FC<OptionProps> = ({
   option,
   index,
@@ -52,39 +43,31 @@ const OptionButton: React.FC<OptionProps> = ({
   isAnswered,
   isCorrectOption,
 }) => {
-  // Cycle through the predefined option colors for border (instead of background)
   const borderColorClass = optionColors[index % optionColors.length];
-  // Apply a ring for the selected state and stronger visual feedback
-  // MENGHAPUS 'transform scale-105 brightness-125'
+
   const selectedClass = isSelected
-    ? `ring-4 ring-offset-2 ring-offset-gray-800 ${borderColorClass.replace("border", "ring")} bg-opacity-20` // Menggunakan warna border sebagai warna ring
+    ? `ring-4 ring-offset-2 ring-offset-gray-800 ${borderColorClass.replace("border", "ring")} bg-opacity-20`
     : "";
 
   let feedbackClass = "";
   if (isAnswered) {
     if (isCorrectOption) {
-      // Mengubah background saat benar menjadi hijau terang dengan border kuat
       feedbackClass =
         "bg-green-500 text-white border-4 border-green-700 shadow-lg";
     } else if (isSelected && !isCorrectOption) {
-      // Mengubah background saat salah menjadi merah terang dengan border kuat
       feedbackClass = "bg-red-500 text-white border-4 border-red-700 shadow-lg";
     } else {
-      // Dim unchosen incorrect answers, tapi tetap dengan border warnanya
       feedbackClass = "opacity-50";
     }
   }
 
   return (
     <Button
-      // Mengubah background default menjadi putih, dan teks menjadi hitam
-      // Tambahkan `border` default agar border berwarna muncul
-      // Hapus `text-white` dari sini agar bisa diatur `text-gray-800`
       className={`relative w-full h-20 sm:h-24 font-bold text-sm sm:text-lg rounded-xl shadow-lg transition-all duration-200 ease-in-out flex items-center justify-center p-2 sm:p-3 border-2 ${borderColorClass} bg-white text-gray-800 hover:bg-gray-100
-      ${isSelected && !isAnswered ? "bg-gray-200" : ""} // Highlight sederhana saat dipilih sebelum dijawab
+      ${isSelected && !isAnswered ? "bg-gray-200" : ""} 
       ${selectedClass} ${feedbackClass}`}
       onClick={() => onSelect(option)}
-      disabled={isAnswered} // Disable button after an answer is submitted
+      disabled={isAnswered}
     >
       {/* Display letter (A, B, C, D...) for option identification */}
       {/* Warna teks huruf A,B,C,D juga diubah menjadi hitam */}
@@ -102,8 +85,8 @@ interface MultipleChoiceQuestionProps {
   options: string[];
   selectedAnswer: string | undefined;
   onAnswerChange: (answer: string) => void;
-  isAnswered: boolean; // Indicates if feedback is being shown
-  correctAnswer: string; // For displaying correct answer in feedback
+  isAnswered: boolean;
+  correctAnswer: string;
 }
 
 /**
@@ -145,9 +128,9 @@ interface MultipleAnswersQuestionProps {
   question: string;
   options: string[];
   selectedAnswers: string[];
-  onOptionToggle: (option: string, isChecked: boolean) => void; // Changed prop name
-  isAnswered: boolean; // Indicates if feedback is being shown
-  correctAnswers: string[]; // For displaying correct answers in feedback
+  onOptionToggle: (option: string, isChecked: boolean) => void;
+  isAnswered: boolean;
+  correctAnswers: string[];
 }
 
 /**
@@ -158,15 +141,13 @@ const MultipleAnswersQuestion: React.FC<MultipleAnswersQuestionProps> = ({
   question,
   options,
   selectedAnswers,
-  onOptionToggle, // Changed prop name
+  onOptionToggle,
   isAnswered,
   correctAnswers,
 }) => {
-  // Handles selection/deselection of multiple answers
   const handleSelect = (option: string) => {
-    // This function will now only toggle selection locally
     const isChecked = selectedAnswers.includes(option);
-    onOptionToggle(option, !isChecked); // Pass the new checked state
+    onOptionToggle(option, !isChecked);
   };
 
   return (
@@ -183,7 +164,7 @@ const MultipleAnswersQuestion: React.FC<MultipleAnswersQuestionProps> = ({
             option={option}
             index={index}
             isSelected={selectedAnswers.includes(option)}
-            onSelect={handleSelect} // Now calls local handleSelect
+            onSelect={handleSelect}
             isAnswered={isAnswered}
             isCorrectOption={isAnswered && correctAnswers.includes(option)}
           />
@@ -197,13 +178,12 @@ interface QuizGameProps {
   quizData: Question[];
   onQuizComplete: (score: number, userAnswers: UserAnswers) => void;
   onTimeUp: () => void;
-  timeLimitSeconds: number; // Overall quiz time limit
+  timeLimitSeconds: number;
   onUnansweredQuestionsAttempt: (unansweredCount: number) => void;
 }
 
-// Constant for per-question time limit
 const PER_QUESTION_TIME_SECONDS = 20;
-// Max points for answering a question quickly
+
 const MAX_QUESTION_POINTS = 1000;
 
 /**
@@ -215,33 +195,31 @@ export const QuizGame: React.FC<QuizGameProps> = ({
   quizData,
   onQuizComplete,
   onTimeUp,
-  timeLimitSeconds: overallTimeLimitSeconds, // Renamed for clarity
+  timeLimitSeconds: overallTimeLimitSeconds,
   onUnansweredQuestionsAttempt,
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
   const [overallTimeLeft, setOverallTimeLeft] = useState(
     overallTimeLimitSeconds
-  ); // Overall quiz timer
+  );
   const [questionTimeLeft, setQuestionTimeLeft] = useState(
     PER_QUESTION_TIME_SECONDS
-  ); // Per-question timer
+  );
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCurrentAnswerCorrect, setIsCurrentAnswerCorrect] = useState(false);
   const [pointsGained, setPointsGained] = useState(0);
-  const [currentTotalScore, setCurrentTotalScore] = useState(0); // Accumulated score
+  const [currentTotalScore, setCurrentTotalScore] = useState(0);
 
-  // Ref untuk menyimpan userAnswers terbaru tanpa memicu re-render useEffect timer
-  const userAnswersRef = useRef<UserAnswers>({}); 
+  const userAnswersRef = useRef<UserAnswers>({});
   const overallTimerRef = useRef<NodeJS.Timeout | null>(null);
   const questionTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const questionStartTimestampRef = useRef<number>(Date.now()); // To calculate time taken per question
+  const questionStartTimestampRef = useRef<number>(Date.now());
 
   const currentQuestion = quizData[currentQuestionIndex];
   const totalQuestions = quizData.length;
   const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
-  // Effect untuk selalu update userAnswersRef setiap kali userAnswers berubah
   useEffect(() => {
     userAnswersRef.current = userAnswers;
   }, [userAnswers]);
@@ -251,14 +229,13 @@ export const QuizGame: React.FC<QuizGameProps> = ({
    * Faster answers get more points.
    */
   const calculatePoints = useCallback((timeTaken: number): number => {
-    // If answered instantly (timeTaken very low), give max points
-    if (timeTaken <= 0.5) return MAX_QUESTION_POINTS; // Almost instant
-    // Linear decay: 0 points if time taken is 20s or more, max points if time taken is 0s
+    if (timeTaken <= 0.5) return MAX_QUESTION_POINTS;
+
     const points = Math.max(
       0,
       MAX_QUESTION_POINTS * (1 - timeTaken / PER_QUESTION_TIME_SECONDS)
     );
-    return Math.floor(points); // Ensure integer points
+    return Math.floor(points);
   }, []);
 
   /**
@@ -267,20 +244,15 @@ export const QuizGame: React.FC<QuizGameProps> = ({
    */
   const submitCurrentAnswer = useCallback(
     (answer: string | string[]) => {
-      // Prevent multiple submissions for the same question
       if (showFeedback) return;
 
-      // Stop the current question timer
       if (questionTimerRef.current) {
         clearInterval(questionTimerRef.current);
-        questionTimerRef.current = null; // Clear ref
+        questionTimerRef.current = null;
       }
 
-      const timeTaken = (Date.now() - questionStartTimestampRef.current) / 1000; // Time in seconds
+      const timeTaken = (Date.now() - questionStartTimestampRef.current) / 1000;
 
-      // Update user's answer for this question
-      // Ini penting agar submitCurrentAnswer yang dipanggil dari "Konfirmasi Jawaban" (multiple-answers)
-      // atau pilihan langsung (multiple-choice) tetap menyimpan jawaban ke state `userAnswers`.
       setUserAnswers((prevAnswers: any) => ({
         ...prevAnswers,
         [currentQuestion.id]: answer,
@@ -289,7 +261,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
       let correct = false;
       let calculatedPoints = 0;
 
-      // Evaluate answer and calculate points
       if (
         currentQuestion.type === "multiple-choice" &&
         typeof answer === "string"
@@ -321,11 +292,8 @@ export const QuizGame: React.FC<QuizGameProps> = ({
       setCurrentTotalScore((prevScore) => prevScore + calculatedPoints);
       setShowFeedback(true);
     },
-    // Dependencies untuk submitCurrentAnswer
-    // currentQuestion diperlukan untuk mengakses id dan tipe pertanyaan
-    // calculatePoints diperlukan untuk menghitung skor
-    // showFeedback diperlukan agar submitCurrentAnswer tidak dipanggil berulang kali saat feedback sudah tampil
-    [currentQuestion, calculatePoints, showFeedback] 
+
+    [currentQuestion, calculatePoints, showFeedback]
   );
 
   /**
@@ -395,13 +363,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
    * This is called from the feedback modal's "Next" button.
    */
   const handleAdvanceQuestion = useCallback(() => {
-    setShowFeedback(false); // Hide feedback
+    setShowFeedback(false);
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setQuestionTimeLeft(PER_QUESTION_TIME_SECONDS); // Reset per-question timer for next question
-      questionStartTimestampRef.current = Date.now(); // Reset timestamp for new question
+      setQuestionTimeLeft(PER_QUESTION_TIME_SECONDS);
+      questionStartTimestampRef.current = Date.now();
     } else {
-      // All questions answered
       handleSubmitQuiz();
     }
   }, [currentQuestionIndex, totalQuestions, handleSubmitQuiz]);
@@ -414,7 +381,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
       setOverallTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(overallTimerRef.current!);
-          clearInterval(questionTimerRef.current!); // Stop question timer too
+          clearInterval(questionTimerRef.current!);
           onTimeUp();
           return 0;
         }
@@ -434,32 +401,29 @@ export const QuizGame: React.FC<QuizGameProps> = ({
    * Pauses when feedback is shown.
    */
   useEffect(() => {
-    // Clear any existing timer when question or feedback state changes
     if (questionTimerRef.current) {
       clearInterval(questionTimerRef.current);
       questionTimerRef.current = null;
     }
 
     if (showFeedback) {
-      // If feedback is showing, keep the timer paused
       return;
     }
 
-    // Start or restart question timer for the new question
-    setQuestionTimeLeft(PER_QUESTION_TIME_SECONDS); // Ensure it resets
-    questionStartTimestampRef.current = Date.now(); // Reset timestamp for new question
+    setQuestionTimeLeft(PER_QUESTION_TIME_SECONDS);
+    questionStartTimestampRef.current = Date.now();
 
     questionTimerRef.current = setInterval(() => {
       setQuestionTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(questionTimerRef.current!);
-          // Ambil nilai userAnswers terbaru dari ref saat waktu habis
-          // Pastikan currentQuestion tidak undefined sebelum mengakses propertinya
+
           if (currentQuestion && currentQuestion.type === "multiple-answers") {
-            const latestSelectedAnswers = userAnswersRef.current[currentQuestion.id] as string[] || [];
+            const latestSelectedAnswers =
+              (userAnswersRef.current[currentQuestion.id] as string[]) || [];
             submitCurrentAnswer(latestSelectedAnswers);
-          } else { // Default untuk multiple-choice atau jika currentQuestion undefined
-            submitCurrentAnswer(""); // Submit jawaban kosong untuk multiple-choice
+          } else {
+            submitCurrentAnswer("");
           }
           return 0;
         }
@@ -472,9 +436,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
         clearInterval(questionTimerRef.current);
       }
     };
-    // Hapus userAnswers dari dependencies timer karena kita akan menggunakan ref.
-    // currentQuestionIndex, showFeedback, submitCurrentAnswer, dan currentQuestion tetap diperlukan.
-  }, [currentQuestionIndex, showFeedback, submitCurrentAnswer, currentQuestion]);
+  }, [
+    currentQuestionIndex,
+    showFeedback,
+    submitCurrentAnswer,
+    currentQuestion,
+  ]);
 
   /**
    * Formats remaining time into MM:SS string.
@@ -491,9 +458,9 @@ export const QuizGame: React.FC<QuizGameProps> = ({
   const getQuestionTypeIcon = (type: Question["type"]) => {
     switch (type) {
       case "multiple-choice":
-        return <Info className="w-4 h-4 text-[var(--custom-link-blue)]" />; // Using custom color
+        return <Info className="w-4 h-4 text-[var(--custom-link-blue)]" />;
       case "multiple-answers":
-        return <ListTodo className="w-4 h-4 text-[var(--custom-orange)]" />; // Using custom color
+        return <ListTodo className="w-4 h-4 text-[var(--custom-orange)]" />;
       default:
         return null;
     }
@@ -536,9 +503,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 selectedAnswer={
                   userAnswers[currentQuestion.id] as string | undefined
                 }
-                onAnswerChange={
-                  (answer) => submitCurrentAnswer(answer) // Directly submit for single-choice
-                }
+                onAnswerChange={(answer) => submitCurrentAnswer(answer)}
                 isAnswered={showFeedback}
                 correctAnswer={currentQuestion.correctAnswer as string}
               />
@@ -550,7 +515,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 selectedAnswers={
                   (userAnswers[currentQuestion.id] as string[]) || []
                 }
-                onOptionToggle={handleMultipleAnswerToggle} // Now toggles locally
+                onOptionToggle={handleMultipleAnswerToggle}
                 isAnswered={showFeedback}
                 correctAnswers={currentQuestion.correctAnswer as string[]}
               />
@@ -571,7 +536,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 )
               }
               className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] shadow-lg transition-colors duration-200 flex items-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm"
-              disabled={showFeedback} // Disable if feedback is already showing
+              disabled={showFeedback}
             >
               Konfirmasi Jawaban
               <ArrowRight className="w-4 h-4 ml-1" />
@@ -596,7 +561,9 @@ export const QuizGame: React.FC<QuizGameProps> = ({
 
       {/* Feedback Overlay (Modal) */}
       {showFeedback && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 z-50 p-3">
+        <div className="absolute inset-0 flex items-center justify-center z-50 p-3">
+          {" "}
+          {/* Removed bg-gray-900 bg-opacity-90 */}
           <Card
             className={`w-full max-w-sm text-center p-6 rounded-xl shadow-xl border-4 ${isCurrentAnswerCorrect ? "border-green-500 bg-green-900 text-white" : "border-red-500 bg-red-900 text-white"}`}
           >
