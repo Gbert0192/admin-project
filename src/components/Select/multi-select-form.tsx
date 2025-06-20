@@ -14,12 +14,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useId } from "react";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import { ScrollArea } from "@/components/ui/scroll-area"; // You can remove this import if not used elsewhere in this file
 
 type Primitive = string | number;
 
@@ -79,7 +79,7 @@ export const MultiSelectForm = <
         );
 
         return (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 ">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -94,33 +94,34 @@ export const MultiSelectForm = <
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+              <PopoverContent
+                className="w-[var(--radix-popover-trigger-width)] p-0 "
+                sideOffset={4}
+              >
                 <Command>
                   <CommandInput placeholder="Cari..." />
-                  <CommandList>
-                    <CommandEmpty>Tidak ada hasil.</CommandEmpty>
-                    <CommandGroup>
-                      <ScrollArea className="h-48">
-                        {options.map((option) => (
-                          <CommandItem
-                            key={`${componentId}-${option[valueKey]}`}
-                            value={String(option[labelKey])}
-                            onSelect={() => toggleSelection(option[valueKey])}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedValues.includes(option[valueKey])
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {String(option[labelKey])}
-                          </CommandItem>
-                        ))}
-                      </ScrollArea>
-                    </CommandGroup>
-                  </CommandList>
+                  <CommandEmpty>No Data.</CommandEmpty>
+                  <CommandGroup>
+                    <ScrollArea className="h-40 overflow-auto" type="always">
+                      {options.map((option) => (
+                        <CommandItem
+                          key={`${componentId}-${option[valueKey]}`}
+                          value={String(option[labelKey])}
+                          onSelect={() => toggleSelection(option[valueKey])}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedValues.includes(option[valueKey])
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {String(option[labelKey])}
+                        </CommandItem>
+                      ))}
+                    </ScrollArea>
+                  </CommandGroup>
                 </Command>
               </PopoverContent>
             </Popover>

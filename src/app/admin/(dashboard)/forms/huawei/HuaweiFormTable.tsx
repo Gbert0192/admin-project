@@ -1,18 +1,23 @@
 "use client";
+
+import { ISessionPermission } from "@/app/types/next.auth";
 import { DataTable } from "@/components/data-table/data-table";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { errorHandler } from "@/lib/handler/errorHandler";
-import { checkPermission } from "@/lib/utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pen, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { BookA, Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import CreateDialog from "./CreateFormHuaweiDialog";
 import { FormHuawei, FormHuaweiData } from "./page";
-import { ISessionPermission } from "@/app/types/next.auth";
+import EditDialog from "./EditFormHuaweiDialog";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
@@ -20,25 +25,25 @@ interface FormsHuaweiProps {
   accessPermission: ISessionPermission[];
 }
 
-const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({
-  data,
-  accessPermission,
-}) => {
+const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  const { mutate: deleteRole, isPending } = useMutation({
+  const [editDialog, setEditDialog] = useState<{
+    data: FormHuawei | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
+
+  const { mutate: deleteForm, isPending } = useMutation({
     mutationFn: async (uuid: string) => {
-      await api.delete(`/role/${uuid}`);
+      await api.delete(`/form-huawei/${uuid}`);
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["permissions"] });
-      toast.success("Role deleted successfully.");
+    onSuccess: () => {
+      toast.success("Form deleted successfully.");
       router.refresh();
     },
     onError: (error) => {
       errorHandler(error);
-      toast.error("Failed to delete role.");
+      toast.error("Failed to delete Form.");
     },
   });
   const columns = useMemo<ColumnDef<FormHuawei>[]>(
@@ -59,6 +64,29 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({
         header: "Form Description",
       },
       {
+        accessorKey: "created_at",
+        header: "Created At",
+        cell: ({ row }) => {
+          const date = new Date(row.getValue("created_at"));
+          return format(date, "dd/MM/yyyy, HH:mm:ss", { locale: id });
+        },
+      },
+      {
+        accessorKey: "is_published",
+        header: "Published",
+        cell: ({ row }) => {
+          return (
+            <div>
+              {row.original.is_published ? (
+                <Badge variant={"success"}>True</Badge>
+              ) : (
+                <Badge variant={"destructive"}>False</Badge>
+              )}
+            </div>
+          );
+        },
+      },
+      {
         header: "Actions",
         cell: ({ row }) => {
           return (
@@ -67,7 +95,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({
                 variant={"default"}
                 size={"icon"}
                 onClick={() => {
-                  //   setEditDialog({ data: row.original, isOpen: true });
+                  setEditDialog({ data: row.original, isOpen: true });
                 }}
               >
                 <Pen className="h-4 w-4 text-white" />
@@ -81,8 +109,17 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({
               >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
+              <Button
+                variant={"florest"}
+                size={"icon"}
+                onClick={() => {
+                  // setDetailDialog({ data: row.original, isOpen: true });
+                }}
+              >
+                <BookA className="h-4 w-4 text-white" />
+              </Button>
               <DeleteWrapper
-                onConfirm={() => deleteRole(row.original.uuid)}
+                onConfirm={() => deleteForm(row.original.uuid)}
                 isPending={isPending}
               >
                 <Button variant={"destructive"} size={"icon"}>
@@ -103,11 +140,14 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({
         columns={columns}
         data={data.data ?? []}
         pageCount={data?.totalPages ?? 0}
-        filterColumnId="role_name"
-        filterPlaceholder="Role Name"
-        tableActionsButton={
-          checkPermission(accessPermission, "/role", "POST") && <CreateDialog />
-        }
+        filterColumnId="form_title"
+        filterPlaceholder="Form Title"
+        tableActionsButton={<CreateDialog />}
+      />
+      <EditDialog
+        isOpen={editDialog.isOpen}
+        setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
+        data={editDialog.data}
       />
     </>
   );

@@ -75,7 +75,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
     }
   }, [data, form]);
 
-  const { data: permissions, isLoading: isLoadingPermissions } = useQuery({
+  const { data: permissions } = useQuery({
     queryKey: ["permissions"],
     queryFn: async () => {
       const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
@@ -85,16 +85,15 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
     },
   });
 
-  const { data: permissionsMenu, isLoading: isLoadingPermissionsMenu } =
-    useQuery({
-      queryKey: ["permissionsMenu"],
-      queryFn: async () => {
-        const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
-          "/permission/menu"
-        );
-        return res.data;
-      },
-    });
+  const { data: permissionsMenu } = useQuery({
+    queryKey: ["permissionsMenu"],
+    queryFn: async () => {
+      const { data: res } = await api.get<{ data: GetPermissionsResponse[] }>(
+        "/permission/menu"
+      );
+      return res.data;
+    },
+  });
 
   const { mutate: updateRole, isPending } = useMutation({
     mutationFn: async (payload: UpdateRolePermissionPayload) => {
@@ -151,58 +150,22 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
                 )}
               />
 
-              <FormField
+              <MultiSelectForm
+                placeholder="Select permissions"
                 control={form.control}
-                name="permissions"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Permissions</FormLabel>
-                    <FormControl>
-                      <MultiSelectForm
-                        placeholder="Select permissions"
-                        control={form.control}
-                        formName="permissions"
-                        valueKey="uuid"
-                        labelKey="permission_name"
-                        options={permissions ?? []}
-                      />
-                    </FormControl>
-                    {isLoadingPermissions && (
-                      <p className="text-sm text-muted-foreground flex items-center">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Loading permissions...
-                      </p>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
+                formName="permissions"
+                valueKey="uuid"
+                labelKey="permission_name"
+                options={permissions ?? []}
               />
 
-              <FormField
+              <MultiSelectForm
+                placeholder="Select permissions"
                 control={form.control}
-                name="menus"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Menus</FormLabel>
-                    <FormControl>
-                      <MultiSelectForm
-                        placeholder="Select permissions"
-                        control={form.control}
-                        formName="menus"
-                        valueKey="uuid"
-                        labelKey="permission_name"
-                        options={permissionsMenu ?? []}
-                      />
-                    </FormControl>
-                    {isLoadingPermissionsMenu && (
-                      <p className="text-sm text-muted-foreground flex items-center">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Loading permissions...
-                      </p>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
+                formName="menus"
+                valueKey="uuid"
+                labelKey="permission_name"
+                options={permissionsMenu ?? []}
               />
             </div>
 

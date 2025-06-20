@@ -15,6 +15,7 @@ import {
   ChevronRight,
   FileText,
   LayoutDashboard,
+  Loader2,
   Lock,
   Shield,
   SquareChevronLeft,
@@ -25,7 +26,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { SidebarLinkItem } from "./sidebar-link-item";
@@ -56,11 +57,7 @@ const feature: Item[] = [
     url: "/ranking",
     icon: Target,
   },
-  {
-    title: "Form",
-    url: "/form",
-    icon: Target,
-  },
+
   {
     title: "Recent Activity",
     url: "/recent-activity",
@@ -102,6 +99,10 @@ export function AppSidebar() {
     return session?.data?.user?.menus ?? [];
   }, [session]);
 
+  const filteredOperationMenu = operations.filter((item) =>
+    allowedRoutes.includes(item.url)
+  );
+
   const filteredFeatureMenu = feature.filter((item) =>
     allowedRoutes.includes(item.url)
   );
@@ -129,10 +130,18 @@ export function AppSidebar() {
 
           <SidebarGroupContent className="px-3 py-4 min-h-[75dvh]">
             <SidebarMenu className="gap-2">
+              {filteredOperationMenu.length === 0 &&
+              filteredFormMenu.length === 0 &&
+              filteredFeatureMenu.length === 0 &&
+              filteredSuperAdminMenu.length === 0 ? (
+                <div className="flex w-full justify-center py-8">
+                  <Loader2 className="h-7 w-7 animate-spin text-blue-500" />
+                </div>
+              ) : null}
               <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
                 Operation
               </h1>
-              {operations.map((item) => (
+              {filteredOperationMenu.map((item) => (
                 <SidebarLinkItem
                   key={item.title}
                   item={item}
@@ -163,12 +172,12 @@ export function AppSidebar() {
                   isActive={pathname === `/admin${item.url}`}
                 />
               ))}{" "}
-              {form.length > 0 && (
+              {filteredFormMenu.length > 0 && (
                 <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
                   Form
                 </h1>
               )}
-              {form.map((item) => (
+              {filteredFormMenu.map((item) => (
                 <SidebarLinkItem
                   key={item.title}
                   item={item}
