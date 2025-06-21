@@ -3,7 +3,6 @@
 import { ISessionPermission } from "@/app/types/next.auth";
 import { DataTable } from "@/components/data-table/data-table";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { errorHandler } from "@/lib/handler/errorHandler";
@@ -13,25 +12,19 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { BookA, Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
-import CreateDialog from "./CreateFormHuaweiDialog";
-import { FormHuawei, FormHuaweiData } from "./page";
-import EditDialog from "./EditFormHuaweiDialog";
+import { QuestionHuawei, QuestionHuaweiData } from "./page";
+import CreateDialog from "./CreateQuestionHuawei";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
-  data: FormHuaweiData;
+  data: QuestionHuaweiData;
   accessPermission: ISessionPermission[];
 }
 
-const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
+const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({ data }) => {
   const router = useRouter();
-
-  const [editDialog, setEditDialog] = useState<{
-    data: FormHuawei | null;
-    isOpen: boolean;
-  }>({ data: null, isOpen: false });
 
   const { mutate: deleteForm, isPending } = useMutation({
     mutationFn: async (uuid: string) => {
@@ -46,7 +39,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
       toast.error("Failed to delete Form.");
     },
   });
-  const columns = useMemo<ColumnDef<FormHuawei>[]>(
+  const columns = useMemo<ColumnDef<QuestionHuawei>[]>(
     () => [
       {
         accessorKey: "index",
@@ -56,12 +49,20 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         },
       },
       {
-        accessorKey: "form_title",
-        header: "Form Title",
+        accessorKey: "question",
+        header: "Questions",
       },
       {
-        accessorKey: "form_description",
-        header: "Form Description",
+        accessorKey: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "difficulty",
+        header: "Difficulty",
+      },
+      {
+        accessorKey: "point",
+        header: "Point",
       },
       {
         accessorKey: "created_at",
@@ -69,21 +70,6 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         cell: ({ row }) => {
           const date = new Date(row.getValue("created_at"));
           return format(date, "dd/MM/yyyy, HH:mm:ss", { locale: id });
-        },
-      },
-      {
-        accessorKey: "is_published",
-        header: "Published",
-        cell: ({ row }) => {
-          return (
-            <div>
-              {row.original.is_published ? (
-                <Badge variant={"success"}>True</Badge>
-              ) : (
-                <Badge variant={"destructive"}>False</Badge>
-              )}
-            </div>
-          );
         },
       },
       {
@@ -95,7 +81,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
                 variant={"default"}
                 size={"icon"}
                 onClick={() => {
-                  setEditDialog({ data: row.original, isOpen: true });
+                  //   setEditDialog({ data: row.original, isOpen: true });
                 }}
               >
                 <Pen className="h-4 w-4 text-white" />
@@ -144,12 +130,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         filterPlaceholder="Form Title"
         tableActionsButton={<CreateDialog />}
       />
-      <EditDialog
-        isOpen={editDialog.isOpen}
-        setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
-        data={editDialog.data}
-      />
     </>
   );
 };
-export default FormHuaweiTable;
+export default HuaweiFormQuestionTable;
