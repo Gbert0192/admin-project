@@ -1,11 +1,7 @@
 import { auth } from "@/auth";
 import serverApi from "@/lib/api/serverApi";
-import { createQueryParams } from "@/lib/utils";
+import { createQueryParams, SearchParams } from "@/lib/utils";
 import FormHuaweiTable from "./HuaweiFormTable";
-
-interface FormHuaweiPageProps {
-  searchParams: Promise<Record<string, string | undefined>>;
-}
 
 export interface FormHuawei {
   uuid: string;
@@ -42,7 +38,7 @@ const getFormsHuawei = async ({
   return { data };
 };
 
-const FormHuaweiPage = async ({ searchParams }: FormHuaweiPageProps) => {
+const FormHuaweiPage = async ({ searchParams }: SearchParams) => {
   const params = await searchParams;
   const session = await auth();
   const accessPermission = session?.user.permission ?? [];

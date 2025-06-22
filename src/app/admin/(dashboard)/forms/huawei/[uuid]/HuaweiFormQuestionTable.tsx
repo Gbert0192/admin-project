@@ -3,6 +3,7 @@
 import { ISessionPermission } from "@/app/types/next.auth";
 import { DataTable } from "@/components/data-table/data-table";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { errorHandler } from "@/lib/handler/errorHandler";
@@ -10,20 +11,24 @@ import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { BookA, Eye, Pen, Trash2 } from "lucide-react";
+import { Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { toast } from "sonner";
-import { QuestionHuawei, QuestionHuaweiData } from "./page";
 import CreateDialog from "./CreateQuestionHuawei";
+import { QuestionHuawei, QuestionHuaweiData } from "./page";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
   data: QuestionHuaweiData;
   accessPermission: ISessionPermission[];
+  formUuid: string;
 }
 
-const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({ data }) => {
+const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
+  data,
+  formUuid,
+}) => {
   const router = useRouter();
 
   const { mutate: deleteForm, isPending } = useMutation({
@@ -55,10 +60,70 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({ data }) => {
       {
         accessorKey: "type",
         header: "Type",
+        cell: ({ row }) => {
+          const type = row.original.type;
+
+          const typeMap: Record<
+            string,
+            {
+              label: string;
+              color:
+                | "default"
+                | "secondary"
+                | "destructive"
+                | "outline"
+                | "success";
+            }
+          > = {
+            SINGLE_CHOICE: { label: "Single Choice", color: "default" },
+            MULTIPLE_CHOICE: { label: "Multiple Choice", color: "secondary" },
+            TRUE_FALSE: { label: "True / False", color: "success" },
+            ESSAY: { label: "Essay", color: "destructive" },
+          };
+
+          const badge = typeMap[type] || { label: type, color: "outline" };
+
+          return (
+            <Badge variant={badge.color} className="text-white">
+              {badge.label}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "difficulty",
         header: "Difficulty",
+        cell: ({ row }) => {
+          const difficulty = row.original.difficulty as string;
+
+          const difficultyMap: Record<
+            string,
+            {
+              label: string;
+              color:
+                | "default"
+                | "secondary"
+                | "destructive"
+                | "outline"
+                | "success";
+            }
+          > = {
+            EASY: { label: "Easy", color: "secondary" },
+            MEDIUM: { label: "Medium", color: "success" },
+            HOT: { label: "Hot", color: "destructive" },
+          };
+
+          const badge = difficultyMap[difficulty] || {
+            label: difficulty,
+            color: "outline",
+          };
+
+          return (
+            <Badge variant={badge.color} className="text-white">
+              {badge.label}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "point",
@@ -95,15 +160,6 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({ data }) => {
               >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
-              <Button
-                variant={"florest"}
-                size={"icon"}
-                onClick={() => {
-                  router.push(`/admin/forms/huawei/${row.original.uuid}`);
-                }}
-              >
-                <BookA className="h-4 w-4 text-white" />
-              </Button>
               <DeleteWrapper
                 onConfirm={() => deleteForm(row.original.uuid)}
                 isPending={isPending}
@@ -126,9 +182,9 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         columns={columns}
         data={data.data ?? []}
         pageCount={data?.totalPages ?? 0}
-        filterColumnId="form_title"
-        filterPlaceholder="Form Title"
-        tableActionsButton={<CreateDialog />}
+        filterColumnId="question"
+        filterPlaceholder="Form Questions"
+        tableActionsButton={<CreateDialog uuid={formUuid} />}
       />
     </>
   );

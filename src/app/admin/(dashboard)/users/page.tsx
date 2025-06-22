@@ -1,10 +1,6 @@
 import serverApi from "@/lib/api/serverApi";
-import { createQueryParams } from "@/lib/utils";
+import { createQueryParams, SearchParams } from "@/lib/utils";
 import UserTable from "./UserTable";
-
-interface UsersPageProps {
-  searchParams: Promise<Record<string, string | undefined>>;
-}
 
 export interface User {
   uuid: string;
@@ -33,10 +29,9 @@ const getUser = async ({
   return data;
 };
 
-const UsersPage = async ({ searchParams }: UsersPageProps) => {
+const UsersPage = async ({ searchParams }: SearchParams) => {
   const params = await searchParams;
-  // const limit = Number(searchParams.limit) || 10;
-  // const page = Number(searchParams.page) || 1;
+
   const { data } = await getUser({ searchParams: params });
 
   return (

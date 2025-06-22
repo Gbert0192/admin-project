@@ -11,13 +11,12 @@ import {
 } from "@/components/ui/sidebar";
 import {
   ChevronRight,
+  CircleHelp,
+  FileClock,
   LayoutDashboard,
   Settings,
-  User,
-  FileClock,
-  Trophy,
   SquarePen,
-  CircleHelp,
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
 

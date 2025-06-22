@@ -62,7 +62,7 @@ const authOptions: NextAuthConfig = {
         const data = (await res.json()) as {
           data: {
             user: {
-              id: string;
+              uuid: string;
               student_id: string;
               name: string;
               role_name: string;
@@ -79,7 +79,7 @@ const authOptions: NextAuthConfig = {
         }
 
         return {
-          id: data.data.user.id,
+          uuid: data.data.user.uuid,
           student_id: data.data.user.student_id,
           name: data.data.user.name,
           token: data.data.token,
@@ -98,7 +98,7 @@ const authOptions: NextAuthConfig = {
     },
     jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
-        token.id = user.id;
+        token.uuid = user.uuid;
         token.role_id = user.role_id;
         token.role_name = user.role_name;
         token.student_id = user.student_id;
@@ -110,7 +110,7 @@ const authOptions: NextAuthConfig = {
     },
     session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
-        session.user.id = token.id;
+        session.user.uuid = token.uuid;
         session.user.role_id = token.role_id;
         session.user.role_name = token.role_name;
         session.user.student_id = token.student_id;

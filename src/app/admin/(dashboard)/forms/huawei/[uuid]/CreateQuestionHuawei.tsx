@@ -40,7 +40,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { QuestionHuawei } from "./page";
 
-const CreateDialog = () => {
+const CreateDialog = ({ uuid }: { uuid: string }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -67,13 +67,13 @@ const CreateDialog = () => {
 
   const questionType = form.watch("type");
 
-  const { mutate: createFormHuawei, isPending } = useMutation<
+  const { mutate: createFormQuestionHuawei, isPending } = useMutation<
     QuestionHuawei,
     Error,
     CreateHuaweiQuestionPayload
   >({
     mutationFn: async (data: CreateHuaweiQuestionPayload) => {
-      const res = await api.post("/form-huawei", data);
+      const res = await api.post(`/form-huawei/question/${uuid}`, data);
       return res.data as QuestionHuawei;
     },
     onError: (err) => {
@@ -122,10 +122,7 @@ const CreateDialog = () => {
             { text: "False", is_correct: false },
           ]);
         } else if (currentType === "ESSAY") {
-          form.setValue("options", {
-            option_text: "",
-            is_correct: [],
-          });
+          form.setValue("options", [{ option_text: "", is_correct: true }]);
         }
       }
     });
@@ -214,7 +211,6 @@ const CreateDialog = () => {
             type="button"
             variant="outline"
             className="mt-4"
-            // @ts-expect-error - useFieldArray doesn't handle discriminated unions well
             onClick={() => appendOption({ option_text: "", is_correct: false })}
           >
             <Plus className="mr-2 h-4 w-4" /> Add Option
@@ -299,10 +295,10 @@ const CreateDialog = () => {
 
     if (questionType === "ESSAY") {
       return (
-        <div>
+        <>
           <FormField
             control={form.control}
-            name="options.option_text"
+            name="options.0.option_text"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Expected Answer</FormLabel>
@@ -316,7 +312,7 @@ const CreateDialog = () => {
               </FormItem>
             )}
           />
-        </div>
+        </>
       );
     }
 
@@ -358,7 +354,9 @@ const CreateDialog = () => {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => createFormHuawei(data))}
+            onSubmit={form.handleSubmit((data) =>
+              createFormQuestionHuawei(data)
+            )}
             className="space-y-6"
           >
             <div className="space-y-4">
@@ -453,7 +451,7 @@ const CreateDialog = () => {
                 disabled={isPending}
               >
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isPending ? "Creating..." : "Create Form"}
+                {isPending ? "Creating..." : "Create Question"}
               </Button>
             </DialogFooter>
           </form>

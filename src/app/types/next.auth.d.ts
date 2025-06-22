@@ -8,7 +8,7 @@ interface ISessionPermission {
 
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
-    id: string;
+    uuid: string;
     role_id: string;
     role_name: string;
     student_id: string;
@@ -21,7 +21,7 @@ declare module "next-auth/jwt" {
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string;
+      uuid: string;
       role_id: string;
       role_name: string;
       student_id: string;
@@ -32,7 +32,7 @@ declare module "next-auth" {
   }
 
   interface User {
-    id: string;
+    uuid: string;
     role_id: string;
     role_name: string;
     student_id: string;

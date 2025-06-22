@@ -129,14 +129,8 @@ export default function FormsPage() {
                   </p>
                 </CardContent>
                 <CardFooter className="pt-4">
-                  <a
-                    href={form.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full"
-                  >
-                    <Button
-                      className={`
+                  <Button
+                    className={`
                         w-full rounded-md py-2 text-white font-medium transition-colors duration-200
                         ${
                           form.type === "huawei"
@@ -144,10 +138,9 @@ export default function FormsPage() {
                             : "bg-custom-orange hover:bg-custom-pink"
                         }
                       `}
-                    >
-                      Mulai {form.type === "huawei" ? "Assignment" : "Belajar"}
-                    </Button>
-                  </a>
+                  >
+                    Mulai {form.type === "huawei" ? "Assignment" : "Belajar"}
+                  </Button>
                 </CardFooter>
               </Card>
             ))

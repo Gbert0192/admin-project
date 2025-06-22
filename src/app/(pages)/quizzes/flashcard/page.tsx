@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
-import { QuizInfo } from "../../../components/quiz/flashcard/quiz-info";
-import { QuizGame } from "../../../components/quiz/flashcard/quiz-game";
-import { QuizResult } from "../../../components/quiz/flashcard/quiz-result";
+import { quizData, TIME_LIMIT_MINUTES, UserAnswers } from "@/app/lib/quiz-data";
+import { QuizGame } from "@/components/quiz/flashcard/quiz-game";
+import { QuizInfo } from "@/components/quiz/flashcard/quiz-info";
+import { QuizResult } from "@/components/quiz/flashcard/quiz-result";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogTitle,
-} from "../../../components/ui/alert-dialog";
-import { quizData, TIME_LIMIT_MINUTES } from "../../lib/quiz-data";
-import type { UserAnswers } from "../../lib/quiz-data";
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import React, { useState } from "react";
 
 export default function QuizzesPage() {
   const [quizState, setQuizState] = useState<"info" | "playing" | "results">(

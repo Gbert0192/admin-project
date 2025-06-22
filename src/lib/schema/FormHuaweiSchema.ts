@@ -106,15 +106,21 @@ export const createHuaweiQuestionPayload = z.discriminatedUnion("type", [
     point: z.number().int().positive().min(1, "Point must be greater than 0"),
     difficulty: z.enum(["EASY", "MEDIUM", "HOT"]),
     question: z.string().min(1, { message: "Question is required." }),
-    options: z.object({
-      option_text: z.string().min(1, { message: "Answer is required." }),
-      is_correct: z.array(
-        z.object({
-          text: z.string(),
-          is_correct: z.boolean(),
-        })
-      ),
-    }),
+    options: z
+      .array(optionSchema)
+      .length(1, "ESSAY questions must have exactly one option.")
+      .superRefine((options, ctx) => {
+        const correctOptionsCount = options.filter(
+          (opt) => opt.is_correct
+        ).length;
+        if (correctOptionsCount !== 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "ESSAY must have exactly one correct option.",
+            path: ["options"],
+          });
+        }
+      }),
   }),
 ]);
 export type CreateFormHuaweiPayload = z.infer<typeof createFormHuaweiPayload>;

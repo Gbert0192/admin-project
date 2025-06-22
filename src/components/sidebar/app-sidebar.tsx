@@ -7,28 +7,20 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  BadgePercent,
-  ChevronRight,
   FileText,
   LayoutDashboard,
   Loader2,
-  Lock,
   Shield,
-  SquareChevronLeft,
   Target,
   TrendingUp,
   UserLock,
   Users,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
+import React from "react";
 import { SidebarLinkItem } from "./sidebar-link-item";
 
 interface Item {
@@ -77,8 +69,8 @@ const superAdmin: Item[] = [
     icon: Shield,
   },
   {
-    title: "Admins",
-    url: "/admins",
+    title: "User Admin",
+    url: "/user-admins",
     icon: UserLock,
   },
 ];

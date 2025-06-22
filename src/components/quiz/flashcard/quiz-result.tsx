@@ -29,7 +29,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
   onRetakeQuiz,
 }) => {
   return (
-    <Card className="w-full max-w-3xl shadow-lg rounded-xl">
+    <Card className="w-full shadow-lg rounded-xl m-3">
       <CardHeader className="text-center">
         {/* Quiz completion message and title */}
         <CardTitle className="text-4xl font-bold text-[var(--primary)]">

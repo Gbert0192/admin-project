@@ -1,6 +1,6 @@
 import serverApi from "@/lib/api/serverApi";
 import { createQueryParams } from "@/lib/utils";
-import HuaweiFormQuestionTable from "./HuaweiFormQuestion";
+import HuaweiFormQuestionTable from "./HuaweiFormQuestionTable";
 import { auth } from "@/auth";
 
 interface FormHuaweiQuestionPageProps {
@@ -57,6 +57,7 @@ const FormHuaweiQuestionPage = async ({
         data={data}
         searchParams={sParams}
         accessPermission={accessPermission}
+        formUuid={uuid}
       />
     </>
   );
