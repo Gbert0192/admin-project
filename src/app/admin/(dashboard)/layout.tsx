@@ -46,7 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </header>
-          <main className="max-w-full w-full h-full max-h-full">
+          <main className="max-w-full w-full h-full max-h-full overflow-auto">
             {children}
           </main>
         </SidebarInset>

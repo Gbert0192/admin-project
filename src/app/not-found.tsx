@@ -1,13 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 text-center">
-      <motion.div
+      {/* <motion.div
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -20,7 +19,7 @@ export default function NotFoundPage() {
           className="max-w-full h-auto"
           priority
         />
-      </motion.div>
+      </motion.div> */}
 
       <motion.h1
         className="text-5xl md:text-6xl font-extrabold text-blue-600 mt-6"

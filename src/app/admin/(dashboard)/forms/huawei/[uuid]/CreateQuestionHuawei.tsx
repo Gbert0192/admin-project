@@ -338,7 +338,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:min-w-[65rem] sm:min-h-[50dvh] rounded-xl overflow-auto">
+      <DialogContent className="sm:max-w-[70dvw] flex flex-col max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Create New Form Questions
@@ -347,111 +347,118 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
             Fill in the details below to create a new form questions.
           </DialogDescription>
         </DialogHeader>
+        <div className="flex-1 overflow-y-auto p-4 -mx-4 -mt-4">
+          {" "}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit((data) =>
+                createFormQuestionHuawei(data)
+              )}
+              className="space-y-6"
+            >
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Questions Type</FormLabel>
+                      <FormControl>
+                        <RadioCardsDemo
+                          options={questionTypes}
+                          defaultValue="SINGLE_CHOICE"
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="difficulty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Difficulty</FormLabel>
+                      <FormControl>
+                        <RadioCardsDemo
+                          options={difficultyLevels}
+                          defaultValue="EASY"
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="point"
+                  render={({ field: { value, onChange, ...restField } }) => (
+                    <FormItem>
+                      <FormLabel>Point: {value}</FormLabel>
+                      <FormControl>
+                        <Slider
+                          className="max-w-[60%] bg-gray-200 rounded-xl"
+                          min={1}
+                          max={100}
+                          step={1}
+                          value={[value]}
+                          onValueChange={(val) => onChange(val[0])}
+                          {...restField}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="question"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Question</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter your question"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit((data) =>
-              createFormQuestionHuawei(data)
-            )}
-            className="space-y-6"
-          >
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Questions Type</FormLabel>
-                    <FormControl>
-                      <RadioCardsDemo
-                        options={questionTypes}
-                        defaultValue="SINGLE_CHOICE"
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="difficulty"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Difficulty</FormLabel>
-                    <FormControl>
-                      <RadioCardsDemo
-                        options={difficultyLevels}
-                        defaultValue="EASY"
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="point"
-                render={({ field: { value, onChange, ...restField } }) => (
-                  <FormItem>
-                    <FormLabel>Point: {value}</FormLabel>
-                    <FormControl>
-                      <Slider
-                        className="max-w-[60%] bg-gray-200 rounded-xl"
-                        min={1}
-                        max={100}
-                        step={1}
-                        value={[value]}
-                        onValueChange={(val) => onChange(val[0])}
-                        {...restField}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="question"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Question</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter your question" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                {renderOptionsField()}
+              </div>
 
-              {renderOptionsField()}
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-                className="m-2"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="text-white m-2"
-                disabled={isPending}
-              >
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isPending ? "Creating..." : "Create Question"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <DialogFooter className="pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                  className="m-2"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="text-white m-2"
+                  disabled={isPending}
+                >
+                  {isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {isPending ? "Creating..." : "Create Question"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );

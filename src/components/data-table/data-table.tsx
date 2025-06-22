@@ -246,12 +246,13 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4">
-        <div className="text-sm text-muted-foreground text-center sm:text-left">
+      <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+        <div className="text-sm text-muted-foreground text-left">
           Total {table.getFilteredRowModel().rows.length} row(s).
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 lg:gap-8">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 ml-auto">
+          {" "}
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium whitespace-nowrap">
               Rows per page
@@ -274,12 +275,10 @@ export function DataTable<TData, TValue>({
               </SelectContent>
             </Select>
           </div>
-
           <div className="text-sm font-medium whitespace-nowrap">
-            Page {table.getState().pagination.pageIndex + 1} of
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </div>
-
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
