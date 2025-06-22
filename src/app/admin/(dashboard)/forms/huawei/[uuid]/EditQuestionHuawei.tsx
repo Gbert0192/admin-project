@@ -2,10 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useFieldArray } from "react-hook-form";
+import { Loader2, Pen, XCircle } from "lucide-react";
+import { useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import RadioCardsDemo from "@/components/radio-button-comp/radio-button-modified";
 import { Button } from "@/components/ui/button";
@@ -40,8 +39,17 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { QuestionHuawei } from "./page";
 
-const CreateDialog = ({ uuid }: { uuid: string }) => {
-  const [open, setOpen] = useState(false);
+interface EditFormHuaweiQuestionDialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  data: QuestionHuawei | null;
+}
+
+const EditDialog = ({
+  data,
+  setIsOpen,
+  isOpen,
+}: EditFormHuaweiQuestionDialogProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -50,9 +58,9 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
     defaultValues: {
       question: "",
       type: "SINGLE_CHOICE",
-      point: 1,
+      point: 0,
       difficulty: "EASY",
-      options: [{ option_text: "", is_correct: false }],
+      options: [],
     },
   });
 
@@ -67,30 +75,27 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
 
   const questionType = form.watch("type");
 
-  const { mutate: createFormQuestionHuawei, isPending } = useMutation<
+  const { mutate: updateFormQuestionHuawei, isPending } = useMutation<
     QuestionHuawei,
     Error,
     CreateHuaweiQuestionPayload
   >({
-    mutationFn: async (data: CreateHuaweiQuestionPayload) => {
-      const res = await api.post(`/form-huawei/question/${uuid}`, data);
+    mutationFn: async (payload: CreateHuaweiQuestionPayload) => {
+      const filterPayload = {
+        ...payload,
+        uuid: data?.uuid,
+      };
+      const res = await api.put(`/form-huawei/question`, filterPayload);
       return res.data as QuestionHuawei;
     },
     onError: (err) => {
       errorHandler(err);
     },
     onSuccess: async () => {
-      setOpen(false);
-      form.reset({
-        question: "",
-        type: "SINGLE_CHOICE",
-        point: 1,
-        difficulty: "EASY",
-        options: [{ option_text: "", is_correct: false }],
-      });
+      setIsOpen(false);
       await queryClient.invalidateQueries({ queryKey: ["formHuawei"] });
       router.refresh();
-      toast.success("Add Form Successfully!");
+      toast.success("Question updated successfully!");
     },
   });
 
@@ -129,6 +134,21 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
     return () => subscription.unsubscribe();
   }, [form]);
 
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        difficulty: data.difficulty,
+        point: data.point,
+        question: data.question,
+        type: data.type,
+        options: data.options.map((option) => ({
+          option_text: option.option_text ?? "",
+          is_correct: option.is_correct ?? false,
+        })),
+      });
+    }
+  }, [data, form]);
+
   const renderOptionsField = () => {
     if (
       questionType === "SINGLE_CHOICE" ||
@@ -138,7 +158,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
         <div>
           <FormLabel>Options</FormLabel>
           <div className="space-y-4 mt-2">
-            {optionFields.map((item: { id: string }, index) => (
+            {optionFields.map((item, index) => (
               <div key={item.id} className="flex items-center space-x-3">
                 <FormField
                   control={form.control}
@@ -163,7 +183,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                             type="radio"
                             checked={field.value}
                             onChange={() => {
-                              optionFields.forEach((_, i) => {
+                              optionFields.forEach((_, i: number) => {
                                 if (i === index) {
                                   form.setValue(
                                     `options.${i}.is_correct`,
@@ -182,6 +202,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                           />
                         ) : (
                           <Checkbox
+                            className="text-white font-semibold"
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
@@ -213,11 +234,13 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
             className="mt-4"
             onClick={() => appendOption({ option_text: "", is_correct: false })}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add Option
+            <Pen className="mr-2 h-4 w-4" /> Add Option
           </Button>
-          {form.formState.errors.options?.root?.message && (
+          {form.formState.errors.options && (
             <p className="text-sm font-medium text-destructive mt-2">
-              {form.formState.errors.options.root.message}
+              {typeof form.formState.errors.options.message === "string"
+                ? form.formState.errors.options.message
+                : "Invalid options"}
             </p>
           )}
         </div>
@@ -280,11 +303,9 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
               )}
             />
           </div>
-          {form.formState.errors.options && (
+          {form.formState.errors.options?.root?.message && (
             <p className="text-sm font-medium text-destructive mt-2">
-              {typeof form.formState.errors.options.message === "string"
-                ? form.formState.errors.options.message
-                : "Invalid options"}
+              {form.formState.errors.options.root.message}
             </p>
           )}
         </div>
@@ -318,42 +339,27 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(newOpenState) => {
-        setOpen(newOpenState);
-        if (!newOpenState) {
-          form.reset({
-            question: "",
-            type: "SINGLE_CHOICE",
-            point: 1,
-            difficulty: "EASY",
-            options: [{ option_text: "", is_correct: false }],
-          } as CreateHuaweiQuestionPayload);
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="text-white">
-          <Plus className="mr-2 h-4 w-4" />
-          Create New Questions
+        <Button variant="default" size="icon">
+          <Pen className="h-4 w-4 text-white" />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:min-w-[65rem] sm:min-h-[50dvh] rounded-xl overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Create New Form Questions
+            Edit Form Question
           </DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new form questions.
+            Update the details below to modify the form question.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) =>
-              createFormQuestionHuawei(data)
+            onSubmit={form.handleSubmit((payload) =>
+              updateFormQuestionHuawei(payload)
             )}
             className="space-y-6"
           >
@@ -367,7 +373,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                     <FormControl>
                       <RadioCardsDemo
                         options={questionTypes}
-                        defaultValue="SINGLE_CHOICE"
+                        defaultValue={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
                         }}
@@ -386,7 +392,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                     <FormControl>
                       <RadioCardsDemo
                         options={difficultyLevels}
-                        defaultValue="EASY"
+                        defaultValue={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
                         }}
@@ -399,18 +405,17 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
               <FormField
                 control={form.control}
                 name="point"
-                render={({ field: { value, onChange, ...restField } }) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Point: {value}</FormLabel>
+                    <FormLabel>Point: {field.value}</FormLabel>
                     <FormControl>
                       <Slider
                         className="max-w-[60%] bg-gray-200 rounded-xl"
                         min={1}
                         max={100}
                         step={1}
-                        value={[value]}
-                        onValueChange={(val) => onChange(val[0])}
-                        {...restField}
+                        value={[field.value]}
+                        onValueChange={(val) => field.onChange(val[0])}
                       />
                     </FormControl>
                     <FormMessage />
@@ -438,7 +443,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => setIsOpen(false)}
                 className="m-2"
               >
                 Cancel
@@ -449,7 +454,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                 disabled={isPending}
               >
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isPending ? "Creating..." : "Create Question"}
+                {isPending ? "Updating..." : "Update Question"}
               </Button>
             </DialogFooter>
           </form>
@@ -459,4 +464,4 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
   );
 };
 
-export default CreateDialog;
+export default EditDialog;

@@ -93,7 +93,7 @@ const CreatePermissionDialog = () => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-bold">Create New Route</DialogTitle>
           <DialogDescription>

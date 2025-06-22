@@ -86,7 +86,7 @@ const EditPermissionDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-bold">Edit Route</DialogTitle>
           <DialogDescription>

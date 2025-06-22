@@ -15,6 +15,10 @@ export interface QuestionHuawei {
   point: number;
   difficulty: "EASY" | "MEDIUM" | "HOT";
   question: string;
+  options: Array<{
+    option_text?: string;
+    is_correct: boolean;
+  }>;
   created_at: Date;
   updated_at: Date | null;
 }
@@ -33,7 +37,9 @@ const getFormsQuestionHuawei = async ({
   searchParams: Record<string, string | undefined>;
 }) => {
   const params = createQueryParams(searchParams);
-  const { data } = await serverApi.get(`form-huawei/${uuid}?${params}`);
+  const { data } = await serverApi.get(
+    `form-huawei/question/${uuid}?${params}`
+  );
   return { data };
 };
 

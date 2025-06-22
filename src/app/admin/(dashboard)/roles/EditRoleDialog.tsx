@@ -122,7 +122,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] ">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Edit Role</DialogTitle>
           <DialogDescription>

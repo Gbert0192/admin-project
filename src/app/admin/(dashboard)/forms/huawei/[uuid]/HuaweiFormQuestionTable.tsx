@@ -13,9 +13,10 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import CreateDialog from "./CreateQuestionHuawei";
+import EditDialog from "./EditQuestionHuawei";
 import { QuestionHuawei, QuestionHuaweiData } from "./page";
 
 interface FormsHuaweiProps {
@@ -30,6 +31,11 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
   formUuid,
 }) => {
   const router = useRouter();
+
+  const [editDialog, setEditDialog] = useState<{
+    data: QuestionHuawei | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
 
   const { mutate: deleteForm, isPending } = useMutation({
     mutationFn: async (uuid: string) => {
@@ -146,7 +152,7 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
                 variant={"default"}
                 size={"icon"}
                 onClick={() => {
-                  //   setEditDialog({ data: row.original, isOpen: true });
+                  setEditDialog({ data: row.original, isOpen: true });
                 }}
               >
                 <Pen className="h-4 w-4 text-white" />
@@ -185,6 +191,12 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
         filterColumnId="question"
         filterPlaceholder="Form Questions"
         tableActionsButton={<CreateDialog uuid={formUuid} />}
+      />
+
+      <EditDialog
+        isOpen={editDialog.isOpen}
+        setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
+        data={editDialog.data}
       />
     </>
   );

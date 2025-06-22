@@ -18,6 +18,7 @@ import {
   SquarePen,
   Trophy,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface MenuItem {
@@ -63,6 +64,8 @@ const accountMenu: MenuItem[] = [
 ];
 
 export function UserSidebar() {
+  const session = useSession();
+
   return (
     <Sidebar className="border-r-0 max-w-[250px]">
       <SidebarContent className="p-0">
@@ -131,16 +134,18 @@ export function UserSidebar() {
           </SidebarGroupContent>
 
           <div className="mt-auto p-4 border-t dark:border-slate-700/50">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800/30">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">UP</span>
+                <span className="text-white text-xs font-bold">
+                  {session.data?.user?.name?.[0]?.toUpperCase() ?? "A"}
+                </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                  User Profile
+                <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
+                  {session.data?.user?.name ?? "Admin User"}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  user@example.com
+                  {session.data?.user?.email ?? "user@example.com"}
                 </p>
               </div>
             </div>
