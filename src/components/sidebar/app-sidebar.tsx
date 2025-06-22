@@ -130,9 +130,11 @@ export function AppSidebar() {
                   <Loader2 className="h-7 w-7 animate-spin text-blue-500" />
                 </div>
               ) : null}
-              <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
-                Operation
-              </h1>
+              {filteredOperationMenu.length > 0 && (
+                <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
+                  Operation
+                </h1>
+              )}
               {filteredOperationMenu.map((item) => (
                 <SidebarLinkItem
                   key={item.title}
@@ -163,7 +165,7 @@ export function AppSidebar() {
                   item={item}
                   isActive={pathname === `/admin${item.url}`}
                 />
-              ))}{" "}
+              ))}
               {filteredFormMenu.length > 0 && (
                 <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto">
                   Form

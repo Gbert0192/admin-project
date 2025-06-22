@@ -133,7 +133,7 @@ const SignInForm = ({ onSwitchToSignUp }: SignInFormProps) => {
 
           {onSwitchToSignUp && (
             <p className="mt-4 text-xs text-gray-600 md:hidden">
-              Don&apos;t have an account?{" "}
+              Don&apos;t have an account?
               <button
                 type="button"
                 onClick={onSwitchToSignUp}

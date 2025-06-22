@@ -162,7 +162,7 @@ export default function ErrorPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            Need help? Contact our{" "}
+            Need help? Contact our
             <Link
               href="/support"
               className="text-purple-400 hover:text-purple-300 underline transition-colors"

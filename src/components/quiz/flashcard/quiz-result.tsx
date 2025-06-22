@@ -34,7 +34,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
         {/* Quiz completion message and title */}
         <CardTitle className="text-4xl font-bold text-[var(--primary)]">
           Quiz Completed!
-        </CardTitle>{" "}
+        </CardTitle>
         {/* Title with primary color */}
         <CardDescription className="text-lg">
           Lihat hasil Anda di bawah ini.
@@ -53,7 +53,6 @@ export const QuizResult: React.FC<QuizResultProps> = ({
 
         {/* Section to review answers */}
         <h3 className="font-semibold text-xl mb-4 flex items-center gap-2 border-t pt-6 text-[var(--secondary)]">
-          {" "}
           {/* Heading with secondary color */}
           <ListTodo className="w-6 h-6" />
           Review Answers
@@ -124,7 +123,6 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   {/* Only show correct answer if user's answer was incorrect */}
                   {!isCorrect && (
                     <p className="text-[var(--custom-link-blue)] font-semibold">
-                      {" "}
                       {/* Correct answer with custom link blue color */}
                       {displayCorrectAnswer}
                     </p>

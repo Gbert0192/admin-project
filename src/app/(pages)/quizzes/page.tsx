@@ -75,7 +75,6 @@ export default function FormsPage() {
 
         {/* Category selection buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10 px-4">
-          {" "}
           {/* Added flex-col sm:flex-row and px-4 */}
           <Button
             onClick={() => setActiveCategory("huawei")}

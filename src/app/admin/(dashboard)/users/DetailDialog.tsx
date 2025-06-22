@@ -27,7 +27,7 @@ const DetailDialog = ({ isOpen, setIsOpen, data }: DetailRoleDialogProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[520px] bg-white border border-gray-200 shadow-lg">
+      <DialogContent className="sm:max-w-[520px]  bg-white border border-gray-200 shadow-lg">
         <DialogHeader className="border-b border-gray-100 pb-4">
           <DialogTitle className="text-2xl text-gray-900 tracking-tight font-bold">
             {data?.name}&apos;s Details

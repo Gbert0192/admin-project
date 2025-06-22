@@ -562,7 +562,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
       {/* Feedback Overlay (Modal) */}
       {showFeedback && (
         <div className="absolute inset-0 flex items-center justify-center z-50 p-3">
-          {" "}
           {/* Removed bg-gray-900 bg-opacity-90 */}
           <Card
             className={`w-full max-w-sm text-center p-6 rounded-xl shadow-xl border-4 ${isCurrentAnswerCorrect ? "border-green-500 bg-green-900 text-white" : "border-red-500 bg-red-900 text-white"}`}
@@ -579,12 +578,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-lg font-semibold">
-                Anda mendapatkan:{" "}
+                Anda mendapatkan:
                 <span className="text-yellow-300">{pointsGained}</span> Poin
               </p>
               <p className="text-base font-medium">
-                Total Skor Anda:{" "}
-                <span className="text-yellow-300">{currentTotalScore}</span>{" "}
+                Total Skor Anda:
+                <span className="text-yellow-300">{currentTotalScore}</span>
                 Poin
               </p>
               <p className="text-xs text-gray-200">

@@ -35,9 +35,18 @@ export const createHuaweiQuestionPayload = z
     path: ["options"],
   })
   .refine((data) => data.type !== "ESSAY" || data.options.length === 1, {
-    message: "Essay must only have 1  option.",
+    message: "Essay must only have 1 option.",
     path: ["options"],
-  });
+  })
+  .refine(
+    (data) =>
+      data.type === "ESSAY" ||
+      data.options.some((opt) => opt.is_correct === true),
+    {
+      message: "At least one option must be marked as correct.",
+      path: ["options"],
+    }
+  );
 
 export type CreateFormHuaweiPayload = z.infer<typeof createFormHuaweiPayload>;
 export type CreateHuaweiQuestionPayload = z.infer<

@@ -132,7 +132,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
           </Button>
           {onSwitchToSignIn && (
             <p className="mt-4 text-xs text-gray-600 md:hidden">
-              Already have an account?{" "}
+              Already have an account?
               <button
                 type="button"
                 onClick={onSwitchToSignIn}

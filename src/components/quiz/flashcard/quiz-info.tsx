@@ -39,13 +39,13 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground border-t pt-6">
           <div className="flex items-center gap-3">
-            <HelpCircle className="w-5 h-5 flex-shrink-0 text-[var(--primary)]" />{" "}
+            <HelpCircle className="w-5 h-5 flex-shrink-0 text-[var(--primary)]" />
             <span className="font-medium">
               {quizData.length} Questions (Flash Card)
             </span>
           </div>
           {/* <div className="flex items-center gap-3">
-             <Clock className="w-5 h-5 flex-shrink-0 text-[var(--custom-orange)]" />{" "}
+             <Clock className="w-5 h-5 flex-shrink-0 text-[var(--custom-orange)]" />
              <span className="font-medium">
                Time Limit: {TIME_LIMIT_MINUTES} Minutes
              </span>
@@ -53,11 +53,11 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
         </div>
         <div>
           <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-[var(--secondary)]" />{" "}
+            <BookOpen className="w-5 h-5 text-[var(--secondary)]" />
             Instructions
           </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-2">
-            <li>Review each flash card to reinforce your knowledge.</li>{" "}
+            <li>Review each flash card to reinforce your knowledge.</li>
             <li>Ensure a stable internet connection during the quiz.</li>
             <li>
               Do not refresh the page, as it will restart the quiz from the

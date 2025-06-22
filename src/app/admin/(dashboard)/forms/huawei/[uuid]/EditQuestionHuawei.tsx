@@ -16,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -340,12 +339,6 @@ const EditDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default" size="icon">
-          <Pen className="h-4 w-4 text-white" />
-        </Button>
-      </DialogTrigger>
-
       <DialogContent className="sm:min-w-[65rem] sm:min-h-[50dvh] rounded-xl overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">

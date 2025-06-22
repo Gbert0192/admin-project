@@ -280,11 +280,9 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
               )}
             />
           </div>
-          {form.formState.errors.options && (
+          {form.formState.errors.options?.root?.message && (
             <p className="text-sm font-medium text-destructive mt-2">
-              {typeof form.formState.errors.options.message === "string"
-                ? form.formState.errors.options.message
-                : "Invalid options"}
+              {form.formState.errors.options.root.message}
             </p>
           )}
         </div>

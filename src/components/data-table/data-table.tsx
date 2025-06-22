@@ -276,7 +276,7 @@ export function DataTable<TData, TValue>({
           </div>
 
           <div className="text-sm font-medium whitespace-nowrap">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            Page {table.getState().pagination.pageIndex + 1} of
             {table.getPageCount()}
           </div>
 
