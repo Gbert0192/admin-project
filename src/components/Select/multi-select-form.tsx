@@ -80,7 +80,7 @@ export const MultiSelectForm = <
 
         return (
           <div className="flex flex-col gap-2 ">
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover open={open} onOpenChange={setOpen} modal={true}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -95,32 +95,33 @@ export const MultiSelectForm = <
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-[var(--radix-popover-trigger-width)] p-0 "
+                className="w-[var(--radix-popover-trigger-width)] p-0 overflow-auto"
                 sideOffset={4}
               >
                 <Command>
-                  <CommandInput placeholder="Cari..." />
+                  <CommandInput
+                    placeholder="Cari..."
+                    className="sticky top-0"
+                  />
                   <CommandEmpty>No Data.</CommandEmpty>
-                  <CommandGroup>
-                    <ScrollArea className="h-40 overflow-auto" type="always">
-                      {options.map((option) => (
-                        <CommandItem
-                          key={`${componentId}-${option[valueKey]}`}
-                          value={String(option[labelKey])}
-                          onSelect={() => toggleSelection(option[valueKey])}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedValues.includes(option[valueKey])
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {String(option[labelKey])}
-                        </CommandItem>
-                      ))}
-                    </ScrollArea>
+                  <CommandGroup className="max-h-40">
+                    {options.map((option) => (
+                      <CommandItem
+                        key={`${componentId}-${option[valueKey]}`}
+                        value={String(option[labelKey])}
+                        onSelect={() => toggleSelection(option[valueKey])}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedValues.includes(option[valueKey])
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {String(option[labelKey])}
+                      </CommandItem>
+                    ))}
                   </CommandGroup>
                 </Command>
               </PopoverContent>

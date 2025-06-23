@@ -37,10 +37,10 @@ const getFormsQuestionHuawei = async ({
   searchParams: Record<string, string | undefined>;
 }) => {
   const params = createQueryParams(searchParams);
-  const { data } = await serverApi.get(
+  const { data } = await serverApi.get<QuestionHuaweiData>(
     `form-huawei/question/${uuid}?${params}`
   );
-  return { data };
+  return data;
 };
 
 const FormHuaweiQuestionPage = async ({
@@ -52,7 +52,7 @@ const FormHuaweiQuestionPage = async ({
   const accessPermission = session?.user.permission ?? [];
   const sParams = await searchParams;
 
-  const { data } = await getFormsQuestionHuawei({
+  const data = await getFormsQuestionHuawei({
     uuid,
     searchParams: sParams,
   });
@@ -61,7 +61,6 @@ const FormHuaweiQuestionPage = async ({
     <>
       <HuaweiFormQuestionTable
         data={data}
-        searchParams={sParams}
         accessPermission={accessPermission}
         formUuid={uuid}
       />

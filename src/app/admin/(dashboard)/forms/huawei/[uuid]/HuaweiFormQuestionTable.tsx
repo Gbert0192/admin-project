@@ -20,7 +20,6 @@ import EditDialog from "./EditQuestionHuawei";
 import { QuestionHuawei, QuestionHuaweiData } from "./page";
 
 interface FormsHuaweiProps {
-  searchParams: Record<string, string | undefined>;
   data: QuestionHuaweiData;
   accessPermission: ISessionPermission[];
   formUuid: string;

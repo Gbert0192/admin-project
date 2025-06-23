@@ -91,10 +91,10 @@ const EditDialog: React.FC<EditFormHuaweiDialogProps> = ({
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Create New Form
+            Edit New Form
           </DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new user Form.
+            Fill in the details below to Edit a user Form.
           </DialogDescription>
         </DialogHeader>
 
