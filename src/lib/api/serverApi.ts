@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import axios, { AxiosError, isAxiosError } from "axios";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 const serverApi = axios.create({
