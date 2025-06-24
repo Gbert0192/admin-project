@@ -26,7 +26,6 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
               Indonesian Independence History Quiz
             </CardTitle>
           </div>
-          {/* Perubahan di sini: Tambahkan whitespace-nowrap */}
           <Badge
             variant="outline"
             className="mt-1 sm:mt-0 text-md py-1 px-3 whitespace-nowrap"
@@ -44,12 +43,6 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
               {quizData.length} Questions (Flash Card)
             </span>
           </div>
-          {/* <div className="flex items-center gap-3">
-             <Clock className="w-5 h-5 flex-shrink-0 text-[var(--custom-orange)]" />
-             <span className="font-medium">
-               Time Limit: {TIME_LIMIT_MINUTES} Minutes
-             </span>
-           </div> */}
         </div>
         <div>
           <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">

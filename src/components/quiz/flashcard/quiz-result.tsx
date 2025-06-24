@@ -31,18 +31,15 @@ export const QuizResult: React.FC<QuizResultProps> = ({
   return (
     <Card className="w-full shadow-lg rounded-xl m-3">
       <CardHeader className="text-center">
-        {/* Quiz completion message and title */}
         <CardTitle className="text-4xl font-bold text-[var(--primary)]">
           Quiz Completed!
         </CardTitle>
-        {/* Title with primary color */}
         <CardDescription className="text-lg">
-          Lihat hasil Anda di bawah ini.
+          See your results below.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-col items-center justify-center gap-2">
-          {/* Display user's score */}
           <Badge
             variant="secondary"
             className="text-2xl px-6 py-2 bg-[var(--custom-gray-light)] text-[var(--custom-gray-text)]"
@@ -51,9 +48,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
           </Badge>
         </div>
 
-        {/* Section to review answers */}
         <h3 className="font-semibold text-xl mb-4 flex items-center gap-2 border-t pt-6 text-[var(--secondary)]">
-          {/* Heading with secondary color */}
           <ListTodo className="w-6 h-6" />
           Review Answers
         </h3>
@@ -99,7 +94,6 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                 className="p-4 border rounded-lg shadow-sm"
               >
                 <div className="flex items-start gap-3 mb-2">
-                  {/* Display check or cross icon based on correctness */}
                   {isCorrect ? (
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
                   ) : (
@@ -110,7 +104,6 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   </p>
                 </div>
                 <div className="ml-8 text-sm space-y-1">
-                  {/* Display user's answer with appropriate color */}
                   <p
                     className={
                       isCorrect
@@ -120,10 +113,8 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   >
                     {displayUserAnswer}
                   </p>
-                  {/* Only show correct answer if user's answer was incorrect */}
                   {!isCorrect && (
                     <p className="text-[var(--custom-link-blue)] font-semibold">
-                      {/* Correct answer with custom link blue color */}
                       {displayCorrectAnswer}
                     </p>
                   )}
@@ -134,7 +125,6 @@ export const QuizResult: React.FC<QuizResultProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex justify-center bg-muted/50 p-6 rounded-b-xl">
-        {/* Button to retake the quiz */}
         <Button
           size="lg"
           onClick={onRetakeQuiz}

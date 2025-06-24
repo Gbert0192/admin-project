@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -7,7 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
+
 import {
   Clock,
   ArrowRight,
@@ -16,6 +20,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+
 import { Question, UserAnswers } from "../../../app/lib/quiz-data";
 
 const optionColors = [
@@ -94,7 +99,6 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   correctAnswer,
 }) => {
   return (
-    // Kembali menggunakan py-4 atau py-6 untuk padding yang seimbang
     <CardContent className="flex flex-col items-center p-4 gap-4 py-6">
       <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner flex-shrink-0 w-full max-w-2xl">
         {question}
@@ -139,7 +143,6 @@ const MultipleAnswersQuestion: React.FC<MultipleAnswersQuestionProps> = ({
   };
 
   return (
-    // Kembali menggunakan py-4 atau py-6 untuk padding yang seimbang
     <CardContent className="flex flex-col items-center p-4 gap-4 py-6">
       <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner flex-shrink-0 w-full max-w-2xl">
         {question}
@@ -416,13 +419,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
   }
 
   return (
-    // Mengurangi min-h lagi. Coba 55vh atau 50vh.
     <div className="w-full max-w-4xl mx-auto space-y-2 p-2 sm:p-3 rounded-lg min-h-[calc(55vh-30px)] flex flex-col justify-between font-inter relative">
       <Card className="w-full shadow-2xl rounded-2xl overflow-hidden flex-grow flex flex-col">
         <CardHeader className="bg-white/10 p-3 sm:p-4 flex flex-col items-center justify-center border-b border-white/20">
           <div className="flex justify-between items-center w-full px-2 mb-3">
             <div className="text-black text-base font-semibold">
-              Skor Total: {currentTotalScore}
+              Total Score: {currentTotalScore}
             </div>
             <Badge
               variant="outline"
@@ -434,7 +436,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
           </div>
         </CardHeader>
 
-        {/* Perubahan di sini: Mengembalikan justify-center */}
         <div className="flex-grow flex flex-col items-center justify-center p-4">
           {currentQuestion && (
             <>
@@ -466,7 +467,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
           )}
         </div>
 
-        <CardFooter className="mt-auto flex justify-center items-center bg-[var(--custom-footer-bg)] p-3 sm:p-4 rounded-b-2xl border-t border-[var(--custom-gray-border)]">
+        <CardFooter className="mt-auto flex justify-center items-center bg-gradient-to-br from-blue-400 to-blue-600 p-3 sm:p-4 rounded-b-2xl border-t border-[var(--custom-gray-border)]">
           {currentQuestion.type === "multiple-answers" && !showFeedback && (
             <Button
               size="lg"
@@ -475,10 +476,10 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                   (userAnswers[currentQuestion.id] as string[]) || []
                 )
               }
-              className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] shadow-lg transition-colors duration-200 flex items-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm"
+              className="bg-white text-gray-800 hover:bg-gray-100 shadow-lg transition-colors duration-200 flex items-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm"
               disabled={showFeedback}
             >
-              Konfirmasi Jawaban
+              Confirm Answer
               <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           )}
@@ -491,7 +492,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 onClick={handleSubmitQuiz}
                 className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] shadow-lg transition-colors duration-200 flex items-center gap-2 px-5 py-2 rounded-lg text-xs sm:text-sm"
               >
-                Selesai Kuis
+                Finish Quiz
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             )}
@@ -500,7 +501,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
 
       {showFeedback && (
         <div className="absolute inset-0 flex items-center justify-center z-50 p-3">
-          {/* Removed bg-gray-900 bg-opacity-90 */}
           <Card
             className={`w-full max-w-sm text-center p-6 rounded-xl shadow-xl border-4 ${isCurrentAnswerCorrect ? "border-green-500 bg-green-900 text-white" : "border-red-500 bg-red-900 text-white"}`}
           >
@@ -511,18 +511,18 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 <XCircle className="w-16 h-16 text-red-400 drop-shadow-lg" />
               )}
               <CardTitle className="text-2xl font-extrabold">
-                {isCurrentAnswerCorrect ? "BENAR!" : "SALAH!"}
+                {isCurrentAnswerCorrect ? "CORRECT!" : "INCORRECT!"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-lg font-semibold">
-                Anda mendapatkan:
-                <span className="text-yellow-300">{pointsGained}</span> Poin
+                You earned: 
+                <span className="text-yellow-300"> {pointsGained}</span> Points
               </p>
               <p className="text-base font-medium">
-                Total Skor Anda:
-                <span className="text-yellow-300">{currentTotalScore}</span>
-                Poin
+                Your Total Score: 
+                <span className="text-yellow-300"> {currentTotalScore} </span>
+                Points
               </p>
             </CardContent>
             <CardFooter className="flex justify-center pt-4">
@@ -532,8 +532,8 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 className="bg-white text-gray-900 hover:bg-gray-200 font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm"
               >
                 {currentQuestionIndex === totalQuestions - 1
-                  ? "Lihat Hasil Akhir"
-                  : "Lanjut"}
+                  ? "View Final Result"
+                  : "Next"}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </CardFooter>
