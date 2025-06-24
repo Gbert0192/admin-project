@@ -30,7 +30,6 @@ interface OptionProps {
   index: number;
   isSelected: boolean;
   onSelect: (option: string) => void;
-
   isAnswered: boolean;
   isCorrectOption?: boolean;
 }
@@ -64,17 +63,14 @@ const OptionButton: React.FC<OptionProps> = ({
   return (
     <Button
       className={`relative w-full h-20 sm:h-24 font-bold text-sm sm:text-lg rounded-xl shadow-lg transition-all duration-200 ease-in-out flex items-center justify-center p-2 sm:p-3 border-2 ${borderColorClass} bg-white text-gray-800 hover:bg-gray-100
-      ${isSelected && !isAnswered ? "bg-gray-200" : ""} 
+      ${isSelected && !isAnswered ? "bg-gray-200" : ""}
       ${selectedClass} ${feedbackClass}`}
       onClick={() => onSelect(option)}
       disabled={isAnswered}
     >
-      {/* Display letter (A, B, C, D...) for option identification */}
-      {/* Warna teks huruf A,B,C,D juga diubah menjadi hitam */}
       <span className="absolute top-1 left-1 text-gray-600 text-xs sm:text-sm font-mono opacity-75">
         {String.fromCharCode(65 + index)}
       </span>
-      {/* Option text, centered and allows wrapping */}
       <span className="text-center break-words px-2">{option}</span>
     </Button>
   );
@@ -89,9 +85,6 @@ interface MultipleChoiceQuestionProps {
   correctAnswer: string;
 }
 
-/**
- * Renders a single-choice question with Kahoot-style options.
- */
 const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   question,
   options,
@@ -101,13 +94,12 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   correctAnswer,
 }) => {
   return (
-    <CardContent className="space-y-2 flex-grow flex flex-col justify-between p-4 min-h-0">
-      {/* Question display area */}
-      <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner mb-4 flex-shrink-0">
+    // Kembali menggunakan py-4 atau py-6 untuk padding yang seimbang
+    <CardContent className="flex flex-col items-center p-4 gap-4 py-6">
+      <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner flex-shrink-0 w-full max-w-2xl">
         {question}
       </h3>
-      {/* Grid for answer options */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 flex-grow">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
         {options.map((option, index) => (
           <OptionButton
             key={index}
@@ -133,10 +125,6 @@ interface MultipleAnswersQuestionProps {
   correctAnswers: string[];
 }
 
-/**
- * Renders a multiple-answers question with Kahoot-style options.
- * Allows selecting multiple options.
- */
 const MultipleAnswersQuestion: React.FC<MultipleAnswersQuestionProps> = ({
   question,
   options,
@@ -151,13 +139,12 @@ const MultipleAnswersQuestion: React.FC<MultipleAnswersQuestionProps> = ({
   };
 
   return (
-    <CardContent className="space-y-4 flex-grow flex flex-col justify-between p-4 min-h-0">
-      {/* Question display area */}
-      <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner mb-4 flex-shrink-0">
+    // Kembali menggunakan py-4 atau py-6 untuk padding yang seimbang
+    <CardContent className="flex flex-col items-center p-4 gap-4 py-6">
+      <h3 className="text-lg sm:text-xl font-bold text-center text-gray-800 bg-white p-4 rounded-lg shadow-inner flex-shrink-0 w-full max-w-2xl">
         {question}
       </h3>
-      {/* Grid for answer options */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-grow">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
         {options.map((option, index) => (
           <OptionButton
             key={index}
@@ -186,11 +173,6 @@ const PER_QUESTION_TIME_SECONDS = 20;
 
 const MAX_QUESTION_POINTS = 1000;
 
-/**
- * Main Quiz Game component, now with a Kahoot-like aesthetic.
- * Manages question flow, user answers, and a prominent timer.
- * Includes instant feedback and speed-based scoring.
- */
 export const QuizGame: React.FC<QuizGameProps> = ({
   quizData,
   onQuizComplete,
@@ -224,10 +206,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     userAnswersRef.current = userAnswers;
   }, [userAnswers]);
 
-  /**
-   * Calculates points based on time taken to answer.
-   * Faster answers get more points.
-   */
   const calculatePoints = useCallback((timeTaken: number): number => {
     if (timeTaken <= 0.5) return MAX_QUESTION_POINTS;
 
@@ -238,10 +216,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     return Math.floor(points);
   }, []);
 
-  /**
-   * Handles submitting the user's answer for the current question and triggers feedback.
-   * This is called by OptionButton for multiple-choice, or by the "Konfirmasi Jawaban" button for multiple-answers.
-   */
   const submitCurrentAnswer = useCallback(
     (answer: string | string[]) => {
       if (showFeedback) return;
@@ -296,10 +270,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     [currentQuestion, calculatePoints, showFeedback]
   );
 
-  /**
-   * Handles individual option toggles for MultipleAnswersQuestion.
-   * Does NOT trigger submission immediately.
-   */
   const handleMultipleAnswerToggle = useCallback(
     (option: string, isChecked: boolean) => {
       setUserAnswers((prevAnswers: any) => {
@@ -320,10 +290,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     [currentQuestion]
   );
 
-  /**
-   * Checks if a specific question has been answered by the user.
-   * Only considers multiple-choice and multiple-answers types.
-   */
   const isQuestionAnswered = useCallback(
     (question: Question): boolean => {
       const userAnswer = userAnswers[question.id];
@@ -338,16 +304,10 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     [userAnswers]
   );
 
-  /**
-   * Calculates the number of unanswered questions.
-   */
   const getUnansweredQuestionsCount = useCallback((): number => {
     return quizData.filter((q) => !isQuestionAnswered(q)).length;
   }, [quizData, isQuestionAnswered]);
 
-  /**
-   * Handles final quiz submission.
-   */
   const handleSubmitQuiz = useCallback(() => {
     if (overallTimerRef.current) {
       clearInterval(overallTimerRef.current);
@@ -358,10 +318,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     onQuizComplete(currentTotalScore, userAnswers);
   }, [onQuizComplete, currentTotalScore, userAnswers]);
 
-  /**
-   * Advances to the next question or finishes the quiz.
-   * This is called from the feedback modal's "Next" button.
-   */
   const handleAdvanceQuestion = useCallback(() => {
     setShowFeedback(false);
     if (currentQuestionIndex < totalQuestions - 1) {
@@ -373,9 +329,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     }
   }, [currentQuestionIndex, totalQuestions, handleSubmitQuiz]);
 
-  /**
-   * Overall quiz timer effect.
-   */
   useEffect(() => {
     overallTimerRef.current = setInterval(() => {
       setOverallTimeLeft((prevTime) => {
@@ -396,10 +349,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     };
   }, [overallTimeLimitSeconds, onTimeUp]);
 
-  /**
-   * Per-question timer effect. Resets on question change.
-   * Pauses when feedback is shown.
-   */
   useEffect(() => {
     if (questionTimerRef.current) {
       clearInterval(questionTimerRef.current);
@@ -443,18 +392,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     currentQuestion,
   ]);
 
-  /**
-   * Formats remaining time into MM:SS string.
-   */
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  /**
-   * Returns an icon based on the question type.
-   */
   const getQuestionTypeIcon = (type: Question["type"]) => {
     switch (type) {
       case "multiple-choice":
@@ -473,13 +416,11 @@ export const QuizGame: React.FC<QuizGameProps> = ({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-2 p-2 sm:p-3 rounded-lg min-h-[calc(70vh-30px)] flex flex-col justify-between font-inter relative">
-      {/* Main Quiz Card - designed to look like Kahoot's question screen */}
+    // Mengurangi min-h lagi. Coba 55vh atau 50vh.
+    <div className="w-full max-w-4xl mx-auto space-y-2 p-2 sm:p-3 rounded-lg min-h-[calc(55vh-30px)] flex flex-col justify-between font-inter relative">
       <Card className="w-full shadow-2xl rounded-2xl overflow-hidden flex-grow flex flex-col">
         <CardHeader className="bg-white/10 p-3 sm:p-4 flex flex-col items-center justify-center border-b border-white/20">
-          {/* Top section with score, question number, and per-question timer */}
           <div className="flex justify-between items-center w-full px-2 mb-3">
-            {/* Total Score on the left */}
             <div className="text-black text-base font-semibold">
               Skor Total: {currentTotalScore}
             </div>
@@ -493,40 +434,39 @@ export const QuizGame: React.FC<QuizGameProps> = ({
           </div>
         </CardHeader>
 
-        {/* Render current question based on its type */}
-        {currentQuestion && (
-          <>
-            {currentQuestion.type === "multiple-choice" && (
-              <MultipleChoiceQuestion
-                question={currentQuestion.question}
-                options={currentQuestion.options!}
-                selectedAnswer={
-                  userAnswers[currentQuestion.id] as string | undefined
-                }
-                onAnswerChange={(answer) => submitCurrentAnswer(answer)}
-                isAnswered={showFeedback}
-                correctAnswer={currentQuestion.correctAnswer as string}
-              />
-            )}
-            {currentQuestion.type === "multiple-answers" && (
-              <MultipleAnswersQuestion
-                question={currentQuestion.question}
-                options={currentQuestion.options!}
-                selectedAnswers={
-                  (userAnswers[currentQuestion.id] as string[]) || []
-                }
-                onOptionToggle={handleMultipleAnswerToggle}
-                isAnswered={showFeedback}
-                correctAnswers={currentQuestion.correctAnswer as string[]}
-              />
-            )}
-          </>
-        )}
+        {/* Perubahan di sini: Mengembalikan justify-center */}
+        <div className="flex-grow flex flex-col items-center justify-center p-4">
+          {currentQuestion && (
+            <>
+              {currentQuestion.type === "multiple-choice" && (
+                <MultipleChoiceQuestion
+                  question={currentQuestion.question}
+                  options={currentQuestion.options!}
+                  selectedAnswer={
+                    userAnswers[currentQuestion.id] as string | undefined
+                  }
+                  onAnswerChange={(answer) => submitCurrentAnswer(answer)}
+                  isAnswered={showFeedback}
+                  correctAnswer={currentQuestion.correctAnswer as string}
+                />
+              )}
+              {currentQuestion.type === "multiple-answers" && (
+                <MultipleAnswersQuestion
+                  question={currentQuestion.question}
+                  options={currentQuestion.options!}
+                  selectedAnswers={
+                    (userAnswers[currentQuestion.id] as string[]) || []
+                  }
+                  onOptionToggle={handleMultipleAnswerToggle}
+                  isAnswered={showFeedback}
+                  correctAnswers={currentQuestion.correctAnswer as string[]}
+                />
+              )}
+            </>
+          )}
+        </div>
 
-        {/* Navigation buttons are now simplified or removed from main card footer */}
-        {/* The 'Next Question' logic is now handled by the feedback modal's button */}
         <CardFooter className="mt-auto flex justify-center items-center bg-[var(--custom-footer-bg)] p-3 sm:p-4 rounded-b-2xl border-t border-[var(--custom-gray-border)]">
-          {/* "Konfirmasi Jawaban" button for multiple-answers questions */}
           {currentQuestion.type === "multiple-answers" && !showFeedback && (
             <Button
               size="lg"
@@ -543,7 +483,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
             </Button>
           )}
 
-          {/* Submit Quiz button on the very last question, if not showing feedback yet and it's single choice */}
           {currentQuestionIndex === totalQuestions - 1 &&
             !showFeedback &&
             currentQuestion.type === "multiple-choice" && (
@@ -559,10 +498,12 @@ export const QuizGame: React.FC<QuizGameProps> = ({
         </CardFooter>
       </Card>
 
-      {/* Feedback Overlay (Modal) */}
       {showFeedback && (
         <div className="absolute inset-0 flex items-center justify-center z-50 p-3">
+<<<<<<< HEAD
           {/* Removed bg-gray-900 bg-opacity-90 */}
+=======
+>>>>>>> 51c2ff776566b94e14eace53c1b055bd1f87f7b3
           <Card
             className={`w-full max-w-sm text-center p-6 rounded-xl shadow-xl border-4 ${isCurrentAnswerCorrect ? "border-green-500 bg-green-900 text-white" : "border-red-500 bg-red-900 text-white"}`}
           >
@@ -585,11 +526,6 @@ export const QuizGame: React.FC<QuizGameProps> = ({
                 Total Skor Anda:
                 <span className="text-yellow-300">{currentTotalScore}</span>
                 Poin
-              </p>
-              <p className="text-xs text-gray-200">
-                {isCurrentAnswerCorrect
-                  ? "Hebat! Jawaban Anda tepat."
-                  : "Sayang sekali, coba lagi di pertanyaan berikutnya!"}
               </p>
             </CardContent>
             <CardFooter className="flex justify-center pt-4">
