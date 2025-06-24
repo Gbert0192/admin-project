@@ -103,3 +103,43 @@
 .rdp-caption_label {
   display: none;
 }
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: rgba(241, 241, 241, 0.1);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    135deg,
+    rgba(93, 156, 236, 0.5) 40%,
+    rgba(32, 87, 129, 0.5) 60%
+  );
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(32, 87, 129, 0.05);
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(32, 87, 129, 0.6) 40%,
+    rgba(93, 156, 236, 0.6) 100%
+  );
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(230, 234, 241, 0.15);
+  border-radius: 8px;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5d9cec #e6eaf1;
+}

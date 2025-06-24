@@ -1,6 +1,7 @@
-"use client"; // This directive indicates that this is a Client Component
+"use client";
 
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -10,144 +11,151 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Define the type for a form
 interface Form {
   id: string;
   name: string;
   type: "huawei" | "flash_card";
-  link: string; // This link will now include the type parameter
+  link: string;
 }
 
-// Sample data for forms
 const forms: Form[] = [
   {
     id: "1",
     name: "Huawei HCIA Routing & Switching Basics",
     type: "huawei",
-    link: "/quizzes?type=huawei&quizId=hcia-r-s", // Updated link with type and quizId
+    link: "/quizzes?type=huawei&quizId=hcia-r-s",
   },
   {
     id: "2",
     name: "Huawei 5G Introduction Quiz",
     type: "huawei",
-    link: "/quizzes?type=huawei&quizId=5g-intro", // Updated link
+    link: "/quizzes?type=huawei&quizId=5g-intro",
   },
   {
     id: "3",
     name: "Huawei Cloud Computing Fundamentals",
     type: "huawei",
-    link: "/quizzes?type=huawei&quizId=cloud-fundamentals", // Updated link
+    link: "/quizzes?type=huawei&quizId=cloud-fundamentals",
   },
   {
     id: "4",
     name: "Flash Card: Network Protocols",
     type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=network-protocols", // Updated link
+    link: "/quizzes?type=flash_card&quizId=network-protocols",
   },
   {
     id: "5",
     name: "Flash Card: Cybersecurity Terms",
     type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=cybersecurity-terms", // Updated link
+    link: "/quizzes?type=flash_card&quizId=cybersecurity-terms",
   },
   {
     id: "6",
     name: "Flash Card: Data Structures & Algorithms",
     type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=data-structures", // Updated link
+    link: "/quizzes?type=flash_card&quizId=data-structures",
   },
 ];
 
 export default function FormsPage() {
-  const [activeCategory, setActiveCategory] = useState<"huawei" | "flash_card">(
-    "huawei"
-  );
-
-  // Filter forms based on the active category
-  const filteredForms = forms.filter((form) => form.type === activeCategory);
+  const huaweiForms = forms.filter((form) => form.type === "huawei");
+  const flashCardForms = forms.filter((form) => form.type === "flash_card");
 
   return (
-    <div className="min-h-screen bg-custom-page-bg py-8">
+    <div className="min-h-screen bg-custom-page-bg py-4 md:py-8">
       <div className="container mx-auto px-4 md:px-8">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-blue-dark mb-8 text-center">
-          Daftar Kuis & Assignment
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-blue-dark mb-10 text-center">
+          Quizzes & Assignments List
         </h1>
 
-        {/* Category selection buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10 px-4">
-          {/* Added flex-col sm:flex-row and px-4 */}
-          <Button
-            onClick={() => setActiveCategory("huawei")}
-            className={`
-              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
-              ${
-                activeCategory === "huawei"
-                  ? "bg-primary text-white shadow-custom-form hover:bg-primary-blue-light"
-                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
-              }
-            `}
-          >
-            Huawei Forms
-          </Button>
-          <Button
-            onClick={() => setActiveCategory("flash_card")}
-            className={`
-              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
-              ${
-                activeCategory === "flash_card"
-                  ? "bg-custom-orange text-white shadow-custom-form hover:bg-custom-pink" // Using custom-orange and custom-pink for flashcard accent
-                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
-              }
-            `}
-          >
-            Flash Card Forms
-          </Button>
+        <div className="mb-12">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-blue-dark mb-6 border-l-4 border-primary pl-4">
+            Huawei Quizzes
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {huaweiForms.length > 0 ? (
+              huaweiForms.map((form) => (
+                <Card
+                  key={form.id}
+                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between transform hover:scale-105"
+                >
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-primary-blue-dark">
+                      {form.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      Huawei Assignment
+                    </p>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Link href={form.link} passHref legacyBehavior>
+                      <Button className="w-full rounded-md py-2 text-white font-semibold transition-colors duration-200 bg-primary hover:bg-primary-blue-light">
+                        Start Assignment
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              <p className="col-span-full text-center text-lg text-gray-500">
+                No Huawei quizzes available.
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end mt-6">
+            <Link href="/quizzes?type=huawei" passHref legacyBehavior>
+              <Button className="bg-primary hover:bg-primary-blue-light text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md">
+                See All Huawei Quizzes
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        {/* Display forms in a responsive grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredForms.length > 0 ? (
-            filteredForms.map((form) => (
-              <Card
-                key={form.id}
-                className="
-                  bg-card rounded-lg shadow-md hover:shadow-custom-form transition-shadow duration-300
-                  flex flex-col justify-between
-                "
-              >
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-primary-blue-dark">
-                    {form.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-custom-gray-text text-sm leading-relaxed">
-                    {form.type === "huawei"
-                      ? "Huawei Assignment"
-                      : "Flash Card Collection"}
-                  </p>
-                </CardContent>
-                <CardFooter className="pt-4">
-                  <Button
-                    className={`
-                        w-full rounded-md py-2 text-white font-medium transition-colors duration-200
-                        ${
-                          form.type === "huawei"
-                            ? "bg-primary hover:bg-primary-blue-light"
-                            : "bg-custom-orange hover:bg-custom-pink"
-                        }
-                      `}
-                  >
-                    Mulai {form.type === "huawei" ? "Assignment" : "Belajar"}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
-          ) : (
-            <p className="col-span-full text-center text-lg text-custom-gray-text">
-              Tidak ada form yang tersedia untuk kategori ini.
-            </p>
-          )}
+        <div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-custom-orange mb-6 border-l-4 border-custom-orange pl-4">
+            Flash Card Forms
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {flashCardForms.length > 0 ? (
+              flashCardForms.map((form) => (
+                <Card
+                  key={form.id}
+                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between transform hover:scale-105"
+                >
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-primary-blue-dark">
+                      {form.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      Flash Card Collection
+                    </p>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Link href={form.link} passHref legacyBehavior>
+                      <Button className="w-full rounded-md py-2 text-white font-semibold transition-colors duration-200 bg-custom-orange hover:bg-custom-pink">
+                        Start Assignment
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              <p className="col-span-full text-center text-lg text-gray-500">
+                No flash card collections available.
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end mt-6">
+            <Link href="/quizzes?type=flash_card" passHref legacyBehavior>
+              <Button className="bg-custom-orange hover:bg-custom-pink text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md">
+                See All Flash Cards
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
