@@ -9,6 +9,7 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import {
+  FileClock,
   FileText,
   LayoutDashboard,
   Loader2,
@@ -80,6 +81,11 @@ const form: Item[] = [
     title: "Huawei Form",
     url: "/forms/huawei",
     icon: FileText,
+  },
+  {
+    title: "Kahoot",
+    url: "/forms/kahoot",
+    icon: FileClock,
   },
 ];
 
