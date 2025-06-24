@@ -500,10 +500,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({
 
       {showFeedback && (
         <div className="absolute inset-0 flex items-center justify-center z-50 p-3">
-<<<<<<< HEAD
           {/* Removed bg-gray-900 bg-opacity-90 */}
-=======
->>>>>>> 51c2ff776566b94e14eace53c1b055bd1f87f7b3
           <Card
             className={`w-full max-w-sm text-center p-6 rounded-xl shadow-xl border-4 ${isCurrentAnswerCorrect ? "border-green-500 bg-green-900 text-white" : "border-red-500 bg-red-900 text-white"}`}
           >

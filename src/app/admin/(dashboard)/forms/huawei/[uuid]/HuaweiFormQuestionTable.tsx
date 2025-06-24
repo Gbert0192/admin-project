@@ -38,15 +38,15 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
 
   const { mutate: deleteForm, isPending } = useMutation({
     mutationFn: async (uuid: string) => {
-      await api.delete(`/form-huawei/${uuid}`);
+      await api.delete(`/form-huawei/question/${uuid}`);
     },
     onSuccess: () => {
-      toast.success("Form deleted successfully.");
+      toast.success("Form Question deleted successfully.");
       router.refresh();
     },
     onError: (error) => {
       errorHandler(error);
-      toast.error("Failed to delete Form.");
+      toast.error("Failed to delete Form Question.");
     },
   });
   const columns = useMemo<ColumnDef<QuestionHuawei>[]>(

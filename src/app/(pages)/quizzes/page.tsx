@@ -1,264 +1,154 @@
-"use client";
+"use client"; // This directive indicates that this is a Client Component
 
-import React, { useState, useEffect } from "react";
-import { quizData, QuizItem } from "@/app/lib/quiz-data-huawei";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { QuizResultHuawei } from "@/components/quiz/huawei-style/quiz-result-huawei";
 
-type AnswerState = Record<number, string[]>;
-type ReviewState = Record<number, boolean>;
+// Define the type for a form
+interface Form {
+  id: string;
+  name: string;
+  type: "huawei" | "flash_card";
+  link: string; // This link will now include the type parameter
+}
 
-export default function QuizHuaweiPage() {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [answers, setAnswers] = useState<AnswerState>({});
-  const [uncertain, setUncertain] = useState<number[]>([]);
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const [review, setReview] = useState<ReviewState>({});
-  const [showResultPage, setShowResultPage] = useState<boolean>(false);
-  const [totalScore, setTotalScore] = useState<number>(0);
-  const [showUncertainWarning, setShowUncertainWarning] =
-    useState<boolean>(false);
+// Sample data for forms
+const forms: Form[] = [
+  {
+    id: "1",
+    name: "Huawei HCIA Routing & Switching Basics",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=hcia-r-s", // Updated link with type and quizId
+  },
+  {
+    id: "2",
+    name: "Huawei 5G Introduction Quiz",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=5g-intro", // Updated link
+  },
+  {
+    id: "3",
+    name: "Huawei Cloud Computing Fundamentals",
+    type: "huawei",
+    link: "/quizzes?type=huawei&quizId=cloud-fundamentals", // Updated link
+  },
+  {
+    id: "4",
+    name: "Flash Card: Network Protocols",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=network-protocols", // Updated link
+  },
+  {
+    id: "5",
+    name: "Flash Card: Cybersecurity Terms",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=cybersecurity-terms", // Updated link
+  },
+  {
+    id: "6",
+    name: "Flash Card: Data Structures & Algorithms",
+    type: "flash_card",
+    link: "/quizzes?type=flash_card&quizId=data-structures", // Updated link
+  },
+];
 
-  const [startTime, setStartTime] = useState<number>(Date.now());
-  const [duration, setDuration] = useState<number>(0);
+export default function FormsPage() {
+  const [activeCategory, setActiveCategory] = useState<"huawei" | "flash_card">(
+    "huawei"
+  );
 
-  const currentQuestion: QuizItem = quizData[currentIndex];
-  const total: number = quizData.length;
-  const optionLabels: string[] = ["A", "B", "C", "D"];
-
-  useEffect(() => {
-    if (submitted) return;
-
-    const updateDuration = () => {
-      setDuration(Math.floor((Date.now() - startTime) / 1000));
-    };
-
-    updateDuration();
-    const timer = setInterval(updateDuration, 1000);
-    return () => clearInterval(timer);
-  }, [submitted, startTime]);
-
-  const handleAnswer = (option: string): void => {
-    const currentAnswers = answers[currentIndex] || [];
-    if (currentQuestion.type === "multiple") {
-      const updatedAnswers = currentAnswers.includes(option)
-        ? currentAnswers.filter((ans: string) => ans !== option)
-        : [...currentAnswers, option];
-      setAnswers((prev) => ({ ...prev, [currentIndex]: updatedAnswers }));
-    } else {
-      setAnswers((prev) => ({ ...prev, [currentIndex]: [option] }));
-    }
-  };
-
-  const handleEssayChange = (value: string): void => {
-    setAnswers((prev) => ({ ...prev, [currentIndex]: [value] }));
-  };
-
-  const toggleUncertain = (): void => {
-    setUncertain((prev) =>
-      prev.includes(currentIndex)
-        ? prev.filter((i: number) => i !== currentIndex)
-        : [...prev, currentIndex]
-    );
-  };
-
-  const handleSubmit = (): void => {
-    if (uncertain.length > 0) {
-      setShowUncertainWarning(true);
-      setCurrentIndex(uncertain[0]);
-      return;
-    }
-
-    const reviewResult: ReviewState = {};
-    let score = 0;
-    quizData.forEach((q: QuizItem, i: number) => {
-      const userAnswer = answers[i] || [];
-      let isCorrect = false;
-
-      if (q.type === "multiple") {
-        isCorrect =
-          JSON.stringify([...userAnswer].sort()) ===
-          JSON.stringify([...q.correctAnswer].sort());
-      } else if (q.type === "essay") {
-        isCorrect =
-          userAnswer[0]?.trim().toLowerCase() ===
-          String(q.correctAnswer).trim().toLowerCase();
-      } else {
-        isCorrect = userAnswer[0] === q.correctAnswer[0];
-      }
-
-      reviewResult[i] = isCorrect;
-      if (isCorrect) score += q.points || 0;
-    });
-
-    setReview(reviewResult);
-    setTotalScore(score);
-    setShowResultPage(true);
-    setSubmitted(true);
-  };
-
-  const handleRetake = (): void => {
-    setAnswers({});
-    setReview({});
-    setTotalScore(0);
-    setSubmitted(false);
-    setShowResultPage(false);
-    setCurrentIndex(0);
-    setUncertain([]);
-    setShowUncertainWarning(false);
-    setDuration(0);
-    setStartTime(Date.now()); // reset timer
-  };
-
-  if (showResultPage) {
-    return (
-      <QuizResultHuawei
-        score={totalScore}
-        review={review}
-        answers={answers}
-        quizData={quizData}
-        duration={duration}
-        onRetake={handleRetake}
-      />
-    );
-  }
+  // Filter forms based on the active category
+  const filteredForms = forms.filter((form) => form.type === activeCategory);
 
   return (
-    <div className="flex h-screen">
-      <aside className="w-1/5 bg-slate-100 dark:bg-slate-900 border-r overflow-y-auto p-4 space-y-2">
-        <h2 className="font-bold text-lg mb-2">Questions</h2>
-        <div className="grid grid-cols-4 gap-2">
-          {quizData.map((_: QuizItem, idx: number) => (
-            <button
-              key={idx}
-              className={cn(
-                "text-sm font-medium px-2 py-1 rounded border",
-                currentIndex === idx && "bg-blue-600 text-white",
-                uncertain.includes(idx) && "border-yellow-500",
-                review[idx] === false &&
-                  submitted &&
-                  "border-red-500 bg-red-100",
-                review[idx] === true &&
-                  submitted &&
-                  "border-green-500 bg-green-100"
-              )}
-              onClick={() => setCurrentIndex(idx)}
-            >
-              {idx + 1}
-            </button>
-          ))}
-        </div>
-        {!submitted && (
-          <Button onClick={handleSubmit} className="w-full mt-4">
-            Submit Quiz
+    <div className="min-h-screen bg-custom-page-bg py-8">
+      <div className="container mx-auto px-4 md:px-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-blue-dark mb-8 text-center">
+          Daftar Kuis & Assignment
+        </h1>
+
+        {/* Category selection buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10 px-4">
+          {/* Added flex-col sm:flex-row and px-4 */}
+          <Button
+            onClick={() => setActiveCategory("huawei")}
+            className={`
+              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
+              ${
+                activeCategory === "huawei"
+                  ? "bg-primary text-white shadow-custom-form hover:bg-primary-blue-light"
+                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
+              }
+            `}
+          >
+            Huawei Forms
           </Button>
-        )}
-      </aside>
-
-      <main className="flex-1 p-6 overflow-y-auto pb-24">
-        {showUncertainWarning && (
-          <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded">
-            You have marked some questions as uncertain. Please review them
-            before submitting.
-          </div>
-        )}
-
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-xl font-semibold">
-            Question {currentIndex + 1} of {total}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            Duration: {Math.floor(duration / 60)}m {duration % 60}s
-          </div>
+          <Button
+            onClick={() => setActiveCategory("flash_card")}
+            className={`
+              w-full sm:w-auto px-6 py-3 rounded-template-md text-lg font-semibold transition-all duration-300
+              ${
+                activeCategory === "flash_card"
+                  ? "bg-custom-orange text-white shadow-custom-form hover:bg-custom-pink" // Using custom-orange and custom-pink for flashcard accent
+                  : "bg-custom-gray-light text-custom-gray-text border border-custom-gray-border hover:bg-custom-gray-border"
+              }
+            `}
+          >
+            Flash Card Forms
+          </Button>
         </div>
 
-        <p className="mb-4 text-lg font-medium">{currentQuestion.question}</p>
-
-        {currentQuestion.type === "essay" ? (
-          <textarea
-            rows={4}
-            className="w-full border p-2 rounded"
-            value={answers[currentIndex]?.[0] ?? ""}
-            onChange={(e) => handleEssayChange(e.target.value)}
-            disabled={submitted}
-          />
-        ) : (
-          <div className="space-y-3">
-            {currentQuestion.options.map((option: string, idx: number) => {
-              const selected = !!answers[currentIndex]?.includes(option);
-              const correct = currentQuestion.correctAnswer.includes(option);
-              const isWrong = submitted && selected && !correct;
-              const showCorrect = submitted && correct;
-
-              return (
-                <label
-                  key={option}
-                  className={cn(
-                    "flex items-center gap-3 border p-3 rounded cursor-pointer",
-                    selected && !submitted && "border-blue-500 bg-blue-100",
-                    isWrong && "border-red-500 bg-red-100",
-                    showCorrect && "border-green-500 bg-green-100"
-                  )}
-                >
-                  {currentQuestion.type === "multiple" ? (
-                    <input
-                      type="checkbox"
-                      checked={selected}
-                      onChange={() => handleAnswer(option)}
-                      disabled={submitted}
-                    />
-                  ) : (
-                    <input
-                      type="radio"
-                      name={`question-${currentIndex}`}
-                      checked={selected}
-                      onChange={() => handleAnswer(option)}
-                      disabled={submitted}
-                    />
-                  )}
-                  <span className="font-bold">{optionLabels[idx]}.</span>
-                  <span>{option}</span>
-                </label>
-              );
-            })}
-          </div>
-        )}
-
-        {submitted && (
-          <div className="mt-6 text-sm">
-            <p className="font-medium">
-              Correct Answer: {currentQuestion.correctAnswer.join(", ")}
+        {/* Display forms in a responsive grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredForms.length > 0 ? (
+            filteredForms.map((form) => (
+              <Card
+                key={form.id}
+                className="
+                  bg-card rounded-lg shadow-md hover:shadow-custom-form transition-shadow duration-300
+                  flex flex-col justify-between
+                "
+              >
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-primary-blue-dark">
+                    {form.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="text-custom-gray-text text-sm leading-relaxed">
+                    {form.type === "huawei"
+                      ? "Huawei Assignment"
+                      : "Flash Card Collection"}
+                  </p>
+                </CardContent>
+                <CardFooter className="pt-4">
+                  <Button
+                    className={`
+                        w-full rounded-md py-2 text-white font-medium transition-colors duration-200
+                        ${
+                          form.type === "huawei"
+                            ? "bg-primary hover:bg-primary-blue-light"
+                            : "bg-custom-orange hover:bg-custom-pink"
+                        }
+                      `}
+                  >
+                    Mulai {form.type === "huawei" ? "Assignment" : "Belajar"}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-lg text-custom-gray-text">
+              Tidak ada form yang tersedia untuk kategori ini.
             </p>
-            <p>
-              Status: {review[currentIndex] ? "✅ Correct" : "❌ Incorrect"}
-            </p>
-          </div>
-        )}
-      </main>
-
-      <div className="fixed bottom-0 right-0 p-4 bg-white dark:bg-slate-900 border-t w-full flex justify-end items-center gap-4">
-        <Button
-          variant="secondary"
-          onClick={() => setCurrentIndex((i) => Math.max(i - 1, 0))}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={toggleUncertain}
-          variant="outline"
-          className="border-yellow-500 text-yellow-700"
-        >
-          {uncertain.includes(currentIndex)
-            ? "Remove Uncertain"
-            : "Mark Uncertain"}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setCurrentIndex((i) => Math.min(i + 1, total - 1))}
-        >
-          Next
-        </Button>
+          )}
+        </div>
       </div>
     </div>
   );
