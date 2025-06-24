@@ -57,12 +57,18 @@ api.interceptors.response.use(
         } else {
           redirect("/sign-in");
         }
-      }
-      if (error.response?.status === 403) {
+      } else if (error.response?.status === 403) {
         redirect("/error?code=403");
+      } else if (error.response?.status === 429) {
+        const retryAfter = error.response.headers["retry-after"];
+        let message = "Too Many Requests. ";
+        if (retryAfter) {
+          message += ` Coba lagi dalam ${retryAfter} detik.`;
+        }
+        toast.warning(message);
       }
     } else {
-      toast.error("Unexpected error occurred");
+      toast.error("Terjadi kesalahan tak terduga");
     }
 
     return Promise.reject(

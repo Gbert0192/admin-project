@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import CreateDialog from "./CreateFormHuaweiDialog";
 import { FormHuawei, FormHuaweiData } from "./page";
 import EditDialog from "./EditFormHuaweiDialog";
+import DetailDialog from "./DetailFormHuaweiDialog";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
@@ -29,6 +30,10 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
   const router = useRouter();
 
   const [editDialog, setEditDialog] = useState<{
+    data: FormHuawei | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
+  const [detailDialog, setDetailDialog] = useState<{
     data: FormHuawei | null;
     isOpen: boolean;
   }>({ data: null, isOpen: false });
@@ -68,7 +73,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         header: "Created At",
         cell: ({ row }) => {
           const date = new Date(row.getValue("created_at"));
-          return format(date, "dd/MM/yyyy, HH:mm:ss", { locale: id });
+          return format(date, "dd/MM/yyyy", { locale: id });
         },
       },
       {
@@ -104,7 +109,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
                 variant={"warning"}
                 size={"icon"}
                 onClick={() => {
-                  //   setDetailDialog({ data: row.original, isOpen: true });
+                  setDetailDialog({ data: row.original, isOpen: true });
                 }}
               >
                 <Eye className="h-4 w-4 text-white" />
@@ -148,6 +153,11 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         isOpen={editDialog.isOpen}
         setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
         data={editDialog.data}
+      />
+      <DetailDialog
+        isOpen={detailDialog.isOpen}
+        setIsOpen={() => setDetailDialog({ ...detailDialog, isOpen: false })}
+        data={detailDialog.data}
       />
     </>
   );

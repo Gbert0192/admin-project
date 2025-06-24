@@ -62,7 +62,7 @@ export default function FormsPage() {
   const flashCardForms = forms.filter((form) => form.type === "flash_card");
 
   return (
-    <div className="min-h-screen bg-custom-page-bg py-8">
+    <div className="min-h-screen bg-custom-page-bg py-4 md:py-8">
       <div className="container mx-auto px-4 md:px-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-blue-dark mb-10 text-center">
           Quizzes & Assignments List
@@ -77,10 +77,7 @@ export default function FormsPage() {
               huaweiForms.map((form) => (
                 <Card
                   key={form.id}
-                  className="
-                    bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300
-                    flex flex-col justify-between transform hover:scale-105
-                  "
+                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between transform hover:scale-105"
                 >
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary-blue-dark">
@@ -93,14 +90,11 @@ export default function FormsPage() {
                     </p>
                   </CardContent>
                   <CardFooter className="pt-4">
-                    <Button
-                      className="
-                        w-full rounded-md py-2 text-white font-semibold transition-colors duration-200
-                        bg-primary hover:bg-primary-blue-light
-                      "
-                    >
-                      Start Assignment
-                    </Button>
+                    <Link href={form.link} passHref legacyBehavior>
+                      <Button className="w-full rounded-md py-2 text-white font-semibold transition-colors duration-200 bg-primary hover:bg-primary-blue-light">
+                        Start Assignment
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               ))
@@ -111,13 +105,8 @@ export default function FormsPage() {
             )}
           </div>
           <div className="flex justify-end mt-6">
-            <Link href="/quizzes?type=huawei" passHref>
-              <Button
-                className="
-                  bg-primary hover:bg-primary-blue-light text-white font-semibold py-2 px-6 rounded-md
-                  transition-colors duration-200 shadow-md
-                "
-              >
+            <Link href="/quizzes?type=huawei" passHref legacyBehavior>
+              <Button className="bg-primary hover:bg-primary-blue-light text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md">
                 See All Huawei Quizzes
               </Button>
             </Link>
@@ -133,10 +122,7 @@ export default function FormsPage() {
               flashCardForms.map((form) => (
                 <Card
                   key={form.id}
-                  className="
-                    bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300
-                    flex flex-col justify-between transform hover:scale-105
-                  "
+                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between transform hover:scale-105"
                 >
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary-blue-dark">
@@ -149,14 +135,11 @@ export default function FormsPage() {
                     </p>
                   </CardContent>
                   <CardFooter className="pt-4">
-                    <Button
-                      className="
-                        w-full rounded-md py-2 text-white font-semibold transition-colors duration-200
-                        bg-custom-orange hover:bg-custom-pink
-                      "
-                    >
-                      Start Assignment
-                    </Button>
+                    <Link href={form.link} passHref legacyBehavior>
+                      <Button className="w-full rounded-md py-2 text-white font-semibold transition-colors duration-200 bg-custom-orange hover:bg-custom-pink">
+                        Start Assignment
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               ))
@@ -167,13 +150,8 @@ export default function FormsPage() {
             )}
           </div>
           <div className="flex justify-end mt-6">
-            <Link href="/quizzes?type=flash_card" passHref>
-              <Button
-                className="
-                  bg-custom-orange hover:bg-custom-pink text-white font-semibold py-2 px-6 rounded-md
-                  transition-colors duration-200 shadow-md
-                "
-              >
+            <Link href="/quizzes?type=flash_card" passHref legacyBehavior>
+              <Button className="bg-custom-orange hover:bg-custom-pink text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md">
                 See All Flash Cards
               </Button>
             </Link>

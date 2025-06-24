@@ -12,6 +12,10 @@ export interface FormHuawei {
   published_multiple_choice_count: number;
   published_single_choice_count: number;
   published_true_false_count: number;
+  essay_count: number;
+  single_choice_count: number;
+  multiple_choice_count: number;
+  true_false_count: number;
   created_at: string;
   updated_at?: string | null;
   deleted_at?: string | null;

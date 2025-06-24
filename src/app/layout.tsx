@@ -24,7 +24,6 @@ export default function RootLayout({
       <Providers>
         <body className={cn(montserrat.className)}>
           <Toaster richColors closeButton position="top-right" />
-
           {children}
         </body>
       </Providers>

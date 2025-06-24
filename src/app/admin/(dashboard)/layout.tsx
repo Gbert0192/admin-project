@@ -20,11 +20,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         <SidebarInset>
-          <header className="group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 z-30 flex h-16 shrink-0 items-center gap-2 space-y-4 border-b  px-4 transition-[width,height] ease-linear">
+          <header className="group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 z-30 flex h-16 shrink-0 items-center gap-2 space-y-4 border-b px-4 transition-[width,height] ease-linear sticky top-0 bg-background md:px-6">
             <div className="flex w-full items-center justify-between space-x-4">
               <div className="flex items-center space-x-2">
                 <SidebarTrigger />
                 <Separator orientation="vertical" className="mr-2 h-4" />
+                {/* <h1 className="text-xl font-semibold">{pageTitle}</h1>  <-- Removed as it was not in the provided snippet's div */}
               </div>
               <div className="min-w-10">
                 <AlertWrapper
