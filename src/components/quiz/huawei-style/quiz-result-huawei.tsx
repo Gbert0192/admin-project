@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import { QuizItem } from "@/app/lib/quiz-data-huawei";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -11,47 +9,59 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { CheckCircle, XCircle, ListTodo, Timer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, XCircle, ListTodo, Clock } from "lucide-react";
+import type { QuizItem } from "@/app/lib/quiz-data-huawei";
 
-interface AnswerState {
-  [questionIndex: number]: string[];
-}
-
-interface ReviewState {
-  [questionIndex: number]: boolean;
-}
-
-interface QuizResultProps {
+interface QuizResultHuaweiProps {
   score: number;
-  review: ReviewState;
-  answers: AnswerState;
+  totalQuestions: number;
   quizData: QuizItem[];
-  duration: number;
-  onRetake: () => void;
+  userAnswers: Record<string, string[]>; // ✅ fix
+  duration: string;
+  onRetakeQuiz: () => void;
 }
 
 export function QuizResultHuawei({
   score,
-  review,
-  answers,
+  totalQuestions,
   quizData,
+  userAnswers,
   duration,
-  onRetake,
-}: QuizResultProps) {
-  const correctCount = Object.values(review).filter(Boolean).length;
-  const incorrectCount = quizData.length - correctCount;
+  onRetakeQuiz,
+}: QuizResultHuaweiProps) {
+  const correctCount = quizData.filter((q) => {
+    const userAnswer = userAnswers[q.id.toString()] || []; // ✅ force string key
+
+    if (q.type === "multiple") {
+      return (
+        JSON.stringify([...userAnswer].sort()) ===
+        JSON.stringify([...q.correctAnswer].sort())
+      );
+    } else if (q.type === "essay") {
+      return (
+        userAnswer[0]?.trim().toLowerCase() ===
+        String(q.correctAnswer).trim().toLowerCase()
+      );
+    } else {
+      return userAnswer[0] === q.correctAnswer[0];
+    }
+  }).length;
+
+  const incorrectCount = totalQuestions - correctCount;
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      {/* SUMMARY */}
+    <div className="p-4 max-w-4xl mx-auto">
       <Card className="shadow-xl mb-6">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-blue-600">
+          <CardTitle className="text-3xl font-bold text-primary-blue-dark">
             Quiz Result
           </CardTitle>
-          <CardDescription>Summary of your performance</CardDescription>
+          <CardDescription className="text-md mt-1">
+            Summary of your performance
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center py-4">
+        <CardContent className="flex flex-col sm:flex-row justify-around text-center gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Total Score</p>
             <p className="text-2xl font-bold text-green-600">{score}</p>
@@ -66,35 +76,39 @@ export function QuizResultHuawei({
           </div>
           <div>
             <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-              <Timer className="w-4 h-4" /> Duration
+              <Clock className="w-4 h-4" /> Duration
             </p>
-            <p className="text-md font-bold">
-              {Math.floor(duration / 60)}m {duration % 60}s
-            </p>
+            <p className="text-lg font-medium">{duration}</p>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center gap-4">
-          <Button onClick={onRetake}>Retake Quiz</Button>
+        <CardFooter className="flex justify-center">
+          <Button onClick={onRetakeQuiz}>Retake Quiz</Button>
         </CardFooter>
       </Card>
 
-      {/* DETAILED REVIEW */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <ListTodo className="w-5 h-5 text-blue-500" />
+            <ListTodo className="w-5 h-5 text-primary-blue-dark" />
             Review Answers
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {quizData.map((question, index) => {
-            const userAnswer = answers[index] || [];
+            const userAnswer = userAnswers[question.id.toString()] || [];
             const correctAnswer = question.correctAnswer;
-            const isCorrect = review[index];
+            const isCorrect =
+              question.type === "multiple"
+                ? JSON.stringify([...userAnswer].sort()) ===
+                  JSON.stringify([...correctAnswer].sort())
+                : question.type === "essay"
+                  ? userAnswer[0]?.trim().toLowerCase() ===
+                    String(correctAnswer).trim().toLowerCase()
+                  : userAnswer[0] === correctAnswer[0];
 
             return (
               <div
-                key={index}
+                key={question.id}
                 className="p-4 border rounded-lg shadow-sm bg-white dark:bg-slate-800"
               >
                 <div className="flex items-start gap-3 mb-2">
