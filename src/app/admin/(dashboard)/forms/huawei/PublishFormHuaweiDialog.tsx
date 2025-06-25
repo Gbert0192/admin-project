@@ -91,7 +91,7 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => PublishForm(data))}
+            onSubmit={form.handleSubmit((p) => PublishForm(p))}
             className="space-y-6"
           >
             <div className="space-y-4">
