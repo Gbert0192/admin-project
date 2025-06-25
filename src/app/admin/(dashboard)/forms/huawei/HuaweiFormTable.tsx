@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { BookA, Eye, Pen, Trash2 } from "lucide-react";
+import { BookA, CircleArrowUp, Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ import CreateDialog from "./CreateFormHuaweiDialog";
 import { FormHuawei, FormHuaweiData } from "./page";
 import EditDialog from "./EditFormHuaweiDialog";
 import DetailDialog from "./DetailFormHuaweiDialog";
+import PublishFormHuaweiDialog from "./PublishFormHuaweiDialog";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
@@ -34,6 +35,10 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
     isOpen: boolean;
   }>({ data: null, isOpen: false });
   const [detailDialog, setDetailDialog] = useState<{
+    data: FormHuawei | null;
+    isOpen: boolean;
+  }>({ data: null, isOpen: false });
+  const [publishDialog, setPublishDialog] = useState<{
     data: FormHuawei | null;
     isOpen: boolean;
   }>({ data: null, isOpen: false });
@@ -123,6 +128,15 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
               >
                 <BookA className="h-4 w-4 text-white" />
               </Button>
+              <Button
+                variant={"third"}
+                size={"icon"}
+                onClick={() => {
+                  setPublishDialog({ data: row.original, isOpen: true });
+                }}
+              >
+                <CircleArrowUp className="h-4 w-4 text-white" />
+              </Button>
               <DeleteWrapper
                 onConfirm={() => deleteForm(row.original.uuid)}
                 isPending={isPending}
@@ -158,6 +172,11 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         isOpen={detailDialog.isOpen}
         setIsOpen={() => setDetailDialog({ ...detailDialog, isOpen: false })}
         data={detailDialog.data}
+      />
+      <PublishFormHuaweiDialog
+        isOpen={publishDialog.isOpen}
+        setIsOpen={() => setPublishDialog({ ...publishDialog, isOpen: false })}
+        data={publishDialog.data}
       />
     </>
   );
