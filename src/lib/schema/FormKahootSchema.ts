@@ -37,6 +37,22 @@ export const createKahootQuestionPayload = z
       message: "True/False must have exactly 2 options.",
       path: ["options"],
     }
+  )
+  .refine(
+    (data) => {
+      if (data.question_type === "multiple_choice") {
+        const correctOptions = data.options.filter(
+          (option) => option.is_correct
+        ).length;
+        return correctOptions >= 2;
+      }
+      return true;
+    },
+    {
+      message:
+        "Multiple Choice questions must have at least 2 correct answers.",
+      path: ["options"],
+    }
   );
 
 export type CreateFormKahootPayload = z.infer<typeof createFormKahootPayload>;

@@ -30,6 +30,22 @@ export const createHuaweiQuestionPayload = z
       path: ["options"],
     }
   )
+  .refine(
+    (data) => {
+      if (data.type === "MULTIPLE_CHOICE") {
+        const correctOptions = data.options.filter(
+          (option) => option.is_correct
+        ).length;
+        return correctOptions >= 2;
+      }
+      return true;
+    },
+    {
+      message:
+        "Multiple Choice questions must have at least 2 correct answers.",
+      path: ["options"],
+    }
+  )
   .refine((data) => data.type !== "TRUE_FALSE" || data.options.length === 2, {
     message: "True/False must have exactly 2 options.",
     path: ["options"],
