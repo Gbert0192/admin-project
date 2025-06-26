@@ -27,7 +27,7 @@ interface DetailFormHuaweiProps {
 
 const DetailDialog = ({ isOpen, setIsOpen, data }: DetailFormHuaweiProps) => {
   if (!data) return null;
-
+  console.log("Huawei Data:", data);
   const totalQuestions =
     Number(data.essay_count) +
     Number(data.single_choice_count) +

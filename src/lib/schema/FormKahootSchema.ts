@@ -55,9 +55,18 @@ export const createKahootQuestionPayload = z
     }
   );
 
+export const publishFormKahootPayload = z.object({
+  is_published: z.boolean().default(true).optional(),
+  multiple_choice_question: z.string(),
+  single_choice_question: z.string(),
+  true_false_question: z.string(),
+});
+
 export type CreateFormKahootPayload = z.infer<typeof createFormKahootPayload>;
 export type CreateKahootQuestionPayload = z.infer<
   typeof createKahootQuestionPayload
 >;
 
 export type QuestionKahootSchema = z.infer<typeof optionKahootSchema>;
+
+export type PublishFormKahootPayload = z.infer<typeof publishFormKahootPayload>;
