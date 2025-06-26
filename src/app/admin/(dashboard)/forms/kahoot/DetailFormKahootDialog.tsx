@@ -27,7 +27,6 @@ const DetailFormKahootDialog = ({
 }: DetailFormKahootProps) => {
   if (!data) return null;
 
-  console.log("Kahoot Data:", data);
   const totalQuestions =
     Number(data.single_choice_count) +
     Number(data.multiple_choice_count) +
