@@ -220,10 +220,6 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
             <DialogFooter>
               <AlertWrapper
                 onAction={() => {
-                  // This log confirms AlertWrapper's onAction fires
-                  console.log(
-                    "AlertWrapper confirmed. Attempting form submit."
-                  );
                   formRef.current?.requestSubmit();
                 }}
                 title="Publish?"
