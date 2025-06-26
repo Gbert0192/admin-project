@@ -32,6 +32,9 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FormHuawei } from "./page";
+import { cn } from "@/lib/utils";
+import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
+import { useRef } from "react";
 
 interface PublishFormHuaweiDialogProps {
   isOpen: boolean;
@@ -46,16 +49,22 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
 }) => {
   const router = useRouter();
 
+  const formRef = useRef<HTMLFormElement>(null);
+
   const form = useForm({
     resolver: zodResolver(publishFormPayload),
     defaultValues: {
-      essay_question: undefined,
+      essay_question: "",
       is_published: true,
-      multiple_choise_question: undefined,
-      single_choise_question: undefined,
-      true_false_question: undefined,
+      multiple_choice_question: "",
+      single_choice_question: "",
+      true_false_question: "",
     },
   });
+
+  const onSubmit = (payload: PublishFormBody) => {
+    PublishForm(payload);
+  };
 
   const { mutate: PublishForm, isPending } = useMutation<
     FormHuawei,
@@ -63,7 +72,11 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
     PublishFormBody
   >({
     mutationFn: async (payload: PublishFormBody) => {
-      const res = await api.post("/role", payload);
+      const filteredPayload = {
+        ...payload,
+        uuid: data?.uuid,
+      };
+      const res = await api.post("/form-huawei/publish", filteredPayload);
       return res.data as FormHuawei;
     },
     onError: (err) => {
@@ -77,21 +90,32 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
     },
   });
 
+  const onError = () => {
+    toast.error("Please fill in all required fields correctly.");
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setIsOpen(false);
+        form.reset();
+      }}
+    >
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Publish Form Huawei
           </DialogTitle>
           <DialogDescription>
-            This is for count the number of questions in the form.s
+            This is for count the number of questions in the form.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((p) => PublishForm(p))}
+            ref={formRef}
+            onSubmit={form.handleSubmit(onSubmit, onError)}
             className="space-y-6"
           >
             <div className="space-y-4">
@@ -102,10 +126,17 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
                   <FormItem>
                     <FormLabel>Essay Questions</FormLabel>
                     <FormControl>
-                      <Input placeholder="10" {...field} />
+                      <InputWithOutNumber field={field} placeholder="5" />
                     </FormControl>
-                    <span className="text-xs text-gray-300">
-                      Max Essay Questions are {data?.essay_count}
+                    <span
+                      className={cn(
+                        Number(form.watch("essay_question")) >
+                          (data?.essay_count ?? 0)
+                          ? "text-xs text-red-500"
+                          : "text-xs text-gray-300"
+                      )}
+                    >
+                      Max Essay Questions are {data?.essay_count ?? 0}
                     </span>
                     <FormMessage />
                   </FormItem>
@@ -114,15 +145,22 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
 
               <FormField
                 control={form.control}
-                name="single_choise_question"
+                name="single_choice_question"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Single Choice</FormLabel>
                     <FormControl>
-                      <Input placeholder="5" {...field} />
+                      <InputWithOutNumber field={field} placeholder="5" />
                     </FormControl>
                     <FormMessage />
-                    <span className="text-xs text-gray-300">
+                    <span
+                      className={cn(
+                        Number(form.watch("single_choice_question")) >
+                          (data?.single_choice_count ?? 0)
+                          ? "text-xs text-red-500"
+                          : "text-xs text-gray-300"
+                      )}
+                    >
                       Max Single Choice Questions are{" "}
                       {data?.single_choice_count}
                     </span>
@@ -131,14 +169,21 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
               />
               <FormField
                 control={form.control}
-                name="multiple_choise_question"
+                name="multiple_choice_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Menus</FormLabel>
+                    <FormLabel>Multiple Choice Question</FormLabel>
                     <FormControl>
-                      <Input placeholder="5" {...field} />
+                      <InputWithOutNumber field={field} placeholder="5" />
                     </FormControl>
-                    <span className="text-xs text-gray-300">
+                    <span
+                      className={cn(
+                        Number(form.watch("multiple_choice_question")) >
+                          (data?.multiple_choice_count ?? 0)
+                          ? "text-xs text-red-500"
+                          : "text-xs text-gray-300"
+                      )}
+                    >
                       Max Multiples Choice Questions are{" "}
                       {data?.multiple_choice_count}
                     </span>
@@ -152,12 +197,19 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
                 name="true_false_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Menus</FormLabel>
+                    <FormLabel>True False Questions</FormLabel>
                     <FormControl>
-                      <Input placeholder="5" {...field} />
+                      <InputWithOutNumber field={field} placeholder="5" />
                     </FormControl>
-                    <span className="text-xs text-gray-300">
-                      Max True False Questions are {data?.true_false_count}
+                    <span
+                      className={cn(
+                        Number(form.watch("true_false_question")) >
+                          (data?.true_false_count ?? 0)
+                          ? "text-xs text-red-500"
+                          : "text-xs text-gray-300"
+                      )}
+                    >
+                      Max True False Questions are {data?.true_false_count ?? 0}
                     </span>
                     <FormMessage />
                   </FormItem>
@@ -166,17 +218,33 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsOpen(false)}
+              <AlertWrapper
+                onAction={() => {
+                  // This log confirms AlertWrapper's onAction fires
+                  console.log(
+                    "AlertWrapper confirmed. Attempting form submit."
+                  );
+                  formRef.current?.requestSubmit();
+                }}
+                title="Publish?"
+                description="Setelah tindakan ini, form ini akan dipublikasikan dan Anda tidak dapat mengeditnya lagi."
+                actionText="Publish"
+                cancelText="Batal"
+                actionClassName="bg-orange-500"
               >
-                Cancel
-              </Button>
-              <Button type="submit" className="text-white">
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isPending ? "Creating..." : "Create Role"}
-              </Button>
+                <Button
+                  type="button"
+                  className="text-white"
+                  disabled={isPending}
+                >
+                  <span>
+                    {isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {isPending ? "Mempublikasikan..." : "Publikasikan?"}
+                  </span>
+                </Button>
+              </AlertWrapper>
             </DialogFooter>
           </form>
         </Form>
@@ -186,3 +254,30 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
 };
 
 export default PublishFormHuaweiDialog;
+
+interface InputWithOutNumberProps {
+  placeholder: string;
+  field: {
+    value: string;
+    onChange: (value: string) => void;
+    [key: string]: unknown;
+  };
+}
+
+const InputWithOutNumber = ({
+  placeholder,
+  field,
+}: InputWithOutNumberProps) => {
+  const { onChange, ...restField } = field;
+  return (
+    <Input
+      type="text"
+      placeholder={placeholder}
+      onChange={(e) => {
+        const onlyNums = e.target.value.replace(/\D/g, "");
+        onChange(onlyNums);
+      }}
+      {...restField}
+    />
+  );
+};

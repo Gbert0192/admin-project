@@ -65,12 +65,11 @@ export const createHuaweiQuestionPayload = z
   );
 
 export const publishFormPayload = z.object({
-  uuid: z.string().min(1, { message: "UUID is required." }),
   is_published: z.boolean().default(true).optional(),
-  essay_question: z.number().int().positive(),
-  multiple_choise_question: z.number().int().positive(),
-  single_choise_question: z.number().int().positive(),
-  true_false_question: z.number().int().positive(),
+  essay_question: z.string(),
+  multiple_choice_question: z.string(),
+  single_choice_question: z.string(),
+  true_false_question: z.string(),
 });
 
 export type PublishFormBody = z.infer<typeof publishFormPayload>;
