@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { quizData, QuizItem } from "@/app/lib/quiz-data-huawei";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { QuizResultHuawei } from "@/components/quiz/huawei-style/quiz-result-huawei";
+import { QuizResultHuawei } from "@/app/quiz/huawei/quiz-result-huawei";
 
 type AnswerState = Record<number, string[]>;
 type ReviewState = Record<number, boolean>;
@@ -41,7 +41,7 @@ export default function QuizHuaweiPage() {
 
   const handleAnswer = (option: string): void => {
     const currentAnswers = answers[currentIndex] || [];
-    if (currentQuestion.type === "multiple") {
+    if (currentQuestion.type === "MULTIPLE_CHOICE") {
       const updatedAnswers = currentAnswers.includes(option)
         ? currentAnswers.filter((ans: string) => ans !== option)
         : [...currentAnswers, option];
@@ -76,11 +76,11 @@ export default function QuizHuaweiPage() {
       const userAnswer = answers[i] || [];
       let isCorrect = false;
 
-      if (q.type === "multiple") {
+      if (q.type === "MULTIPLE_CHOICE") {
         isCorrect =
           JSON.stringify([...userAnswer].sort()) ===
           JSON.stringify([...q.correctAnswer].sort());
-      } else if (q.type === "essay") {
+      } else if (q.type === "ESSAY") {
         isCorrect =
           userAnswer[0]?.trim().toLowerCase() ===
           String(q.correctAnswer).trim().toLowerCase();
@@ -175,7 +175,7 @@ export default function QuizHuaweiPage() {
 
         <p className="mb-4 text-lg font-medium">{currentQuestion.question}</p>
 
-        {currentQuestion.type === "essay" ? (
+        {currentQuestion.type === "ESSAY" ? (
           <textarea
             rows={4}
             className="w-full border p-2 rounded"
@@ -201,7 +201,7 @@ export default function QuizHuaweiPage() {
                     showCorrect && "border-green-500 bg-green-100"
                   )}
                 >
-                  {currentQuestion.type === "multiple" ? (
+                  {currentQuestion.type === "MULTIPLE_CHOICE" ? (
                     <input
                       type="checkbox"
                       checked={selected}

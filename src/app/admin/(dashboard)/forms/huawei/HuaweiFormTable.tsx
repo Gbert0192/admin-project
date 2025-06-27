@@ -11,7 +11,14 @@ import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { BookA, CircleArrowUp, Eye, Pen, Trash2 } from "lucide-react";
+import {
+  BookA,
+  CircleArrowDown,
+  CircleArrowUp,
+  Eye,
+  Pen,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -20,6 +27,7 @@ import { FormHuawei, FormHuaweiData } from "./page";
 import EditDialog from "./EditFormHuaweiDialog";
 import DetailDialog from "./DetailFormHuaweiDialog";
 import PublishFormHuaweiDialog from "./PublishFormHuaweiDialog";
+import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
@@ -56,6 +64,21 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
       toast.error("Failed to delete Form.");
     },
   });
+
+  const { mutate: unPublishForm, isPending: unPublishFormIsPending } =
+    useMutation({
+      mutationFn: async (uuid: string) => {
+        await api.put(`/form-huawei/unpublish/${uuid}`);
+      },
+      onSuccess: () => {
+        toast.success("Form Unpublish successfully.");
+        router.refresh();
+      },
+      onError: (error) => {
+        errorHandler(error);
+        toast.error("Failed to Unpublish Form.");
+      },
+    });
   const columns = useMemo<ColumnDef<FormHuawei>[]>(
     () => [
       {
@@ -128,15 +151,40 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
               >
                 <BookA className="h-4 w-4 text-white" />
               </Button>
-              <Button
-                variant={"third"}
-                size={"icon"}
-                onClick={() => {
-                  setPublishDialog({ data: row.original, isOpen: true });
-                }}
-              >
-                <CircleArrowUp className="h-4 w-4 text-white" />
-              </Button>
+              {row.original.is_published ? (
+                <>
+                  <AlertWrapper
+                    title="Unpublish?"
+                    description="After This Action, This Form Will Be Unpublished"
+                    actionText="Unpublish"
+                    cancelText="Cancel"
+                    actionClassName="bg-red-500"
+                    onAction={() => unPublishForm(row.original.uuid)}
+                  >
+                    <Button variant={"destructive"} size={"icon"}>
+                      <CircleArrowDown className="h-4 w-4 text-white" />
+                    </Button>
+                  </AlertWrapper>
+                </>
+              ) : (
+                <>
+                  <AlertWrapper
+                    title="Publish?"
+                    description="After This Action, This Form Will Be Published"
+                    actionText="Publish"
+                    cancelText="Cancel"
+                    actionClassName="bg-red-500"
+                    onAction={() => {
+                      setPublishDialog({ data: row.original, isOpen: true });
+                    }}
+                    isPending={unPublishFormIsPending}
+                  >
+                    <Button variant={"destructive"} size={"icon"}>
+                      <CircleArrowUp className="h-4 w-4 text-white" />
+                    </Button>
+                  </AlertWrapper>
+                </>
+              )}
               <DeleteWrapper
                 onConfirm={() => deleteForm(row.original.uuid)}
                 isPending={isPending}
@@ -158,7 +206,7 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
       <DataTable
         columns={columns}
         data={data.data ?? []}
-        pageCount={data?.totalPages ?? 0}
+        pageCount={data?.totalPages ?? 1}
         filterColumnId="form_title"
         filterPlaceholder="Form Title"
         tableActionsButton={<CreateDialog />}

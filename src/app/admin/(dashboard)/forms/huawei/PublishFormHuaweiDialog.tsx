@@ -1,11 +1,11 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,22 +19,18 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import api from "@/lib/api";
 import { errorHandler } from "@/lib/handler/errorHandler";
 import {
   PublishFormBody,
   publishFormPayload,
 } from "@/lib/schema/FormHuaweiSchema";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { FormHuawei } from "./page";
 import { cn } from "@/lib/utils";
-import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
-import { useRef } from "react";
+import { FormHuawei } from "./page";
 
 interface PublishFormHuaweiDialogProps {
   isOpen: boolean;
@@ -49,9 +45,7 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
 }) => {
   const router = useRouter();
 
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const form = useForm({
+  const form = useForm<PublishFormBody>({
     resolver: zodResolver(publishFormPayload),
     defaultValues: {
       essay_question: "",
@@ -59,12 +53,10 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
       multiple_choice_question: "",
       single_choice_question: "",
       true_false_question: "",
+      durations: "",
     },
+    mode: "onChange",
   });
-
-  const onSubmit = (payload: PublishFormBody) => {
-    PublishForm(payload);
-  };
 
   const { mutate: PublishForm, isPending } = useMutation<
     FormHuawei,
@@ -72,11 +64,10 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
     PublishFormBody
   >({
     mutationFn: async (payload: PublishFormBody) => {
-      const filteredPayload = {
+      const res = await api.post("/form-huawei/publish", {
         ...payload,
         uuid: data?.uuid,
-      };
-      const res = await api.post("/form-huawei/publish", filteredPayload);
+      });
       return res.data as FormHuawei;
     },
     onError: (err) => {
@@ -90,9 +81,18 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
     },
   });
 
-  const onError = () => {
-    toast.error("Please fill in all required fields correctly.");
-  };
+  const { isValid } = form.formState;
+
+  const essayCount = Number(form.watch("essay_question"));
+  const singleChoiceCount = Number(form.watch("single_choice_question"));
+  const multipleChoiceCount = Number(form.watch("multiple_choice_question"));
+  const trueFalseCount = Number(form.watch("true_false_question"));
+
+  const isOverLimit =
+    essayCount > (data?.essay_count ?? 0) ||
+    singleChoiceCount > (data?.single_choice_count ?? 0) ||
+    multipleChoiceCount > (data?.multiple_choice_count ?? 0) ||
+    trueFalseCount > (data?.true_false_count ?? 0);
 
   return (
     <Dialog
@@ -102,43 +102,53 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
         form.reset();
       }}
     >
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Publish Form Huawei
           </DialogTitle>
           <DialogDescription>
-            This is for count the number of questions in the form.
+            Configure the test by selecting the number of questions.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            ref={formRef}
-            onSubmit={form.handleSubmit(onSubmit, onError)}
+            onSubmit={form.handleSubmit((payload) => PublishForm(payload))}
             className="space-y-6"
           >
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="essay_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Essay Questions</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
-                    </FormControl>
-                    <span
-                      className={cn(
-                        Number(form.watch("essay_question")) >
-                          (data?.essay_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max Essay Questions are {data?.essay_count ?? 0}
-                    </span>
-                    <FormMessage />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Essay</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (essayCount / (data?.essay_count ?? 1)) * 100,
+                              100
+                            )}
+                            className={cn(
+                              essayCount > (data?.essay_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {essayCount} / {data?.essay_count ?? 0} Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
                   </FormItem>
                 )}
               />
@@ -148,46 +158,77 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
                 name="single_choice_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Single Choice</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
-                    </FormControl>
-                    <FormMessage />
-                    <span
-                      className={cn(
-                        Number(form.watch("single_choice_question")) >
-                          (data?.single_choice_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max Single Choice Questions are{" "}
-                      {data?.single_choice_count}
-                    </span>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Single Choice</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (singleChoiceCount /
+                                (data?.single_choice_count ?? 1)) *
+                                100,
+                              100
+                            )}
+                            className={cn(
+                              singleChoiceCount >
+                                (data?.single_choice_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {singleChoiceCount} /{" "}
+                            {data?.single_choice_count ?? 0} Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="multiple_choice_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Multiple Choice Question</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
-                    </FormControl>
-                    <span
-                      className={cn(
-                        Number(form.watch("multiple_choice_question")) >
-                          (data?.multiple_choice_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max Multiples Choice Questions are{" "}
-                      {data?.multiple_choice_count}
-                    </span>
-                    <FormMessage />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          Multiple Choice
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (multipleChoiceCount /
+                                (data?.multiple_choice_count ?? 1)) *
+                                100,
+                              100
+                            )}
+                            className={cn(
+                              multipleChoiceCount >
+                                (data?.multiple_choice_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {multipleChoiceCount} /{" "}
+                            {data?.multiple_choice_count ?? 0} Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
                   </FormItem>
                 )}
               />
@@ -197,20 +238,52 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
                 name="true_false_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>True False Questions</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">True/False</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (trueFalseCount / (data?.true_false_count ?? 1)) *
+                                100,
+                              100
+                            )}
+                            className={cn(
+                              trueFalseCount > (data?.true_false_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {trueFalseCount} / {data?.true_false_count ?? 0}{" "}
+                            Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="pt-2">
+              <FormField
+                control={form.control}
+                name="durations"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className="font-medium">Durations (minute)</label>
+                    <FormControl className="mt-2">
+                      <InputWithOutNumber
+                        field={field}
+                        placeholder="e.g., 60"
+                      />
                     </FormControl>
-                    <span
-                      className={cn(
-                        Number(form.watch("true_false_question")) >
-                          (data?.true_false_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max True False Questions are {data?.true_false_count ?? 0}
-                    </span>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -218,29 +291,13 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
             </div>
 
             <DialogFooter>
-              <AlertWrapper
-                onAction={() => {
-                  formRef.current?.requestSubmit();
-                }}
-                title="Publish?"
-                description="Setelah tindakan ini, form ini akan dipublikasikan dan Anda tidak dapat mengeditnya lagi."
-                actionText="Publish"
-                cancelText="Batal"
-                actionClassName="bg-orange-500"
+              <Button
+                type="submit"
+                className="text-white"
+                disabled={!isValid || isPending || isOverLimit}
               >
-                <Button
-                  type="button"
-                  className="text-white"
-                  disabled={isPending}
-                >
-                  <span>
-                    {isPending && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    {isPending ? "Mempublikasikan..." : "Publikasikan?"}
-                  </span>
-                </Button>
-              </AlertWrapper>
+                <span>{isPending ? "Publishing..." : "Publish"}</span>
+              </Button>
             </DialogFooter>
           </form>
         </Form>

@@ -66,10 +66,17 @@ export const createHuaweiQuestionPayload = z
 
 export const publishFormPayload = z.object({
   is_published: z.boolean().default(true).optional(),
-  essay_question: z.string(),
-  multiple_choice_question: z.string(),
-  single_choice_question: z.string(),
-  true_false_question: z.string(),
+  essay_question: z.string().min(1, { message: "Essay Question is required." }),
+  multiple_choice_question: z
+    .string()
+    .min(1, { message: "Multiple Choice Question is required." }),
+  single_choice_question: z.string().min(1, {
+    message: "Single Choice Question is required.",
+  }),
+  true_false_question: z
+    .string()
+    .min(1, { message: "True/False Question is required." }),
+  durations: z.string(),
 });
 
 export type PublishFormBody = z.infer<typeof publishFormPayload>;

@@ -28,7 +28,7 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
           </div>
           <Badge
             variant="outline"
-            className="mt-1 sm:mt-0 text-md py-1 px-3 whitespace-nowrap"
+            className="mt-1 sm:mt-0 text-md py-1 px-3 whitespace-nowrap bg-blue-500"
           >
             Flash Card
           </Badge>
@@ -67,7 +67,7 @@ export const QuizInfo: React.FC<QuizInfoProps> = ({ onStartQuiz }) => {
       <CardFooter className="flex justify-end bg-muted/50 p-6 rounded-b-xl">
         <Button
           size="lg"
-          className="w-full sm:w-auto shadow-md bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)]"
+          className="w-full sm:w-auto shadow-md bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] text-white"
           onClick={onStartQuiz}
         >
           Start Quiz

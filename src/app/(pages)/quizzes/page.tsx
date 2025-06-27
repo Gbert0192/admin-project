@@ -10,98 +10,91 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-interface Form {
-  id: string;
-  name: string;
-  type: "huawei" | "flash_card";
-  link: string;
-}
-
-const forms: Form[] = [
-  {
-    id: "1",
-    name: "Huawei HCIA Routing & Switching Basics",
-    type: "huawei",
-    link: "/quizzes?type=huawei&quizId=hcia-r-s",
-  },
-  {
-    id: "2",
-    name: "Huawei 5G Introduction Quiz",
-    type: "huawei",
-    link: "/quizzes?type=huawei&quizId=5g-intro",
-  },
-  {
-    id: "3",
-    name: "Huawei Cloud Computing Fundamentals",
-    type: "huawei",
-    link: "/quizzes?type=huawei&quizId=cloud-fundamentals",
-  },
-  {
-    id: "4",
-    name: "Flash Card: Network Protocols",
-    type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=network-protocols",
-  },
-  {
-    id: "5",
-    name: "Flash Card: Cybersecurity Terms",
-    type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=cybersecurity-terms",
-  },
-  {
-    id: "6",
-    name: "Flash Card: Data Structures & Algorithms",
-    type: "flash_card",
-    link: "/quizzes?type=flash_card&quizId=data-structures",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { FormHuaweiData } from "@/app/admin/(dashboard)/forms/huawei/page";
+import api from "@/lib/api";
+import { ArrowRight, Clock, HelpCircle, Loader2 } from "lucide-react";
 
 export default function FormsPage() {
-  const huaweiForms = forms.filter((form) => form.type === "huawei");
-  const flashCardForms = forms.filter((form) => form.type === "flash_card");
+  const { data: huaweiForms, isPending: HuaweiFormsIsPending } = useQuery({
+    queryKey: ["huaweiForms"],
+    queryFn: async () => {
+      const res = await api.get<FormHuaweiData>("/form-huawei/published");
+      return res.data.data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-custom-page-bg py-4 md:py-8">
       <div className="container mx-auto px-4 md:px-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-blue-dark mb-10 text-center">
-          Quizzes & Assignments List
+          Quizzes For Huawei Or Kahoot List
         </h1>
 
         <div className="mb-12">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-blue-dark mb-6 border-l-4 border-primary pl-4">
             Huawei Quizzes
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {huaweiForms.length > 0 ? (
-              huaweiForms.map((form) => (
-                <Card
-                  key={form.id}
-                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between transform hover:scale-105"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-primary-blue-dark">
-                      {form.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      Huawei Assignment
-                    </p>
-                  </CardContent>
-                  <CardFooter className="pt-4">
-                    <Link href={form.link} passHref legacyBehavior>
-                      <Button className="w-full rounded-md py-2 text-white font-semibold transition-colors duration-200 bg-primary hover:bg-primary-blue-light">
-                        Start Assignment
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {HuaweiFormsIsPending ? (
+              <div className="col-span-full flex items-center justify-center h-64">
+                <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
+              </div>
+            ) : huaweiForms && huaweiForms.length > 0 ? (
+              huaweiForms.map((form) => {
+                const totalQuestions =
+                  Number(form.published_multiple_choice_count) +
+                  Number(form.published_single_choice_count) +
+                  Number(form.published_true_false_count) +
+                  Number(form.published_essay_count);
+
+                return (
+                  <Card
+                    key={form.uuid}
+                    className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col transform hover:-translate-y-1 border"
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-xl font-semibold text-gray-900 leading-snug">
+                        {form.form_title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {form.form_description.length > 150
+                          ? `${form.form_description.slice(0, 150)}...`
+                          : form.form_description}
+                      </p>
+                    </CardContent>
+                    <CardFooter className="flex-col items-start pt-4 border-t border-gray-100 bg-gray-50/50">
+                      <div className="w-full flex justify-between items-center text-sm text-gray-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{form.durations} min</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <HelpCircle className="w-4 h-4" />
+                          <span>{totalQuestions} questions</span>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/quiz?uuid=${form.uuid}`}
+                        className="w-full mt-4"
+                      >
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors duration-200 flex items-center gap-2">
+                          Start Assignment
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                );
+              })
             ) : (
-              <p className="col-span-full text-center text-lg text-gray-500">
-                No Huawei quizzes available.
-              </p>
+              <div className="col-span-full text-center py-16">
+                <p className="text-lg text-gray-500">
+                  No Huawei quizzes available at the moment.
+                </p>
+              </div>
             )}
           </div>
           <div className="flex justify-end mt-6">
@@ -113,7 +106,7 @@ export default function FormsPage() {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-custom-orange mb-6 border-l-4 border-custom-orange pl-4">
             Flash Card Forms
           </h2>
@@ -156,7 +149,7 @@ export default function FormsPage() {
               </Button>
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

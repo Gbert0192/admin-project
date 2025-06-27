@@ -184,6 +184,7 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
+                            className="text-white"
                           />
                         )}
                       </FormControl>

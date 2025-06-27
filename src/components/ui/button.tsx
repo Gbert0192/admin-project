@@ -13,7 +13,8 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        success: "bg-success text-success-foreground hover:bg-success/90",
+        success:
+          "bg-success text-success-foreground hover:bg-success/90 text-white",
         warning: "bg-amber-500 text-success-foreground hover:bg-amber-500/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
@@ -22,7 +23,8 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         florest: "bg-green-500 text-green-foreground hover:bg-green/90",
-        third: "bg-yellow-500 text-yellow-foreground hover:bg-yellow/90",
+        third:
+          "bg-yellow-500 text-yellow-foreground hover:bg-yellow/90 text-white",
       },
       size: {
         default: "h-10 px-4 py-2",

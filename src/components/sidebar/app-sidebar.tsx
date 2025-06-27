@@ -146,6 +146,7 @@ export function AppSidebar() {
                   key={item.title}
                   item={item}
                   isActive={pathname === `/admin${item.url}`}
+                  admin={true}
                 />
               ))}
               {filteredFeatureMenu.length > 0 && (
@@ -158,6 +159,7 @@ export function AppSidebar() {
                   key={item.title}
                   item={item}
                   isActive={pathname === `/admin${item.url}`}
+                  admin={true}
                 />
               ))}
               {filteredSuperAdminMenu.length > 0 && (
@@ -170,6 +172,7 @@ export function AppSidebar() {
                   key={item.title}
                   item={item}
                   isActive={pathname === `/admin${item.url}`}
+                  admin={true}
                 />
               ))}
               {filteredFormMenu.length > 0 && (
@@ -182,6 +185,7 @@ export function AppSidebar() {
                   key={item.title}
                   item={item}
                   isActive={pathname === `/admin${item.url}`}
+                  admin={true}
                 />
               ))}
             </SidebarMenu>
