@@ -1,5 +1,3 @@
-// src/components/ui/alert-wrapper.tsx
-
 "use client";
 
 import {
@@ -13,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils"; // Impor cn untuk menggabungkan class
+import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 interface AlertWrapperProps {

@@ -13,15 +13,17 @@ interface Item {
 export function SidebarLinkItem({
   item,
   isActive,
+  admin,
 }: {
   item: Item;
   isActive: boolean;
+  admin?: boolean;
 }) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild className="p-0 max-h-10">
         <Link
-          href={`/admin${item.url}`}
+          href={admin ? `/admin${item.url}` : `${item.url}`}
           className={clsx(
             "relative group/item flex items-center gap-3 px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800/50 border border-transparent h-full rounded-xl",
             { "bg-slate-200 dark:bg-slate-800/50": isActive }

@@ -1,5 +1,5 @@
 export interface QuizItem {
-  type: "single" | "multiple" | "truefalse" | "essay";
+  type: "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TRUE_FALSE" | "ESSAY";
   question: string;
   options: string[];
   correctAnswer: string[];
@@ -8,28 +8,28 @@ export interface QuizItem {
 
 export const quizData: QuizItem[] = [
   {
-    type: "truefalse",
+    type: "TRUE_FALSE",
     question: "AI can only be used for image recognition.",
     options: ["True", "False"],
     correctAnswer: ["False"],
     points: 10,
   },
   {
-    type: "single",
+    type: "SINGLE_CHOICE",
     question: "Which of the following is a supervised learning algorithm?",
     options: ["K-Means", "Linear Regression", "PCA", "Autoencoder"],
     correctAnswer: ["Linear Regression"],
     points: 20,
   },
   {
-    type: "multiple",
+    type: "MULTIPLE_CHOICE",
     question: "Which of the following are activation functions?",
     options: ["ReLU", "Sigmoid", "Dropout", "Tanh"],
     correctAnswer: ["ReLU", "Sigmoid", "Tanh"],
     points: 30,
   },
   {
-    type: "essay",
+    type: "ESSAY",
     question:
       "Explain the difference between overfitting and underfitting in machine learning.",
     options: [],
@@ -37,7 +37,7 @@ export const quizData: QuizItem[] = [
     points: 40,
   },
   {
-    type: "single",
+    type: "SINGLE_CHOICE",
     question:
       '"Batch inference is a batch job that performs inference on batch data. There is no need for model training before using batch inference." Which of the following is true about this statement?',
     options: [
