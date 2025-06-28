@@ -441,7 +441,10 @@ const CreateDialog = ({ uuid }: { uuid: string }) => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setOpen(false);
+                    form.reset();
+                  }}
                   className="m-2"
                 >
                   Cancel
