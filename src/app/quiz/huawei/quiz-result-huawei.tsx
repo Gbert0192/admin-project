@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { QuizItem } from "@/app/lib/quiz-data-huawei";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +12,9 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { CheckCircle, XCircle, ListTodo, Timer } from "lucide-react";
+import { CheckCircle, XCircle, ListTodo, Timer, ArrowLeft } from "lucide-react";
 
 type AnswerState = Record<number, string[]>;
-
 type ReviewState = Record<number, boolean>;
 
 interface QuizResultProps {
@@ -34,6 +34,7 @@ export function QuizResultHuawei({
   duration,
   onRetake,
 }: QuizResultProps) {
+  const router = useRouter();
   const correctCount = Object.values(review).filter(Boolean).length;
   const incorrectCount = quizData.length - correctCount;
 
@@ -69,13 +70,16 @@ export function QuizResultHuawei({
           </div>
         </CardContent>
         <CardFooter className="flex justify-center gap-4">
+          <Button variant="outline" onClick={() => router.push("/quizzes")}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to List
+          </Button>
           <Button onClick={onRetake} className="text-white">
             Retake Quiz
           </Button>
         </CardFooter>
       </Card>
 
-      {/* DETAILED REVIEW */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
