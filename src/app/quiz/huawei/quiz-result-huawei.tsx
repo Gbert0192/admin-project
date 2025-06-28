@@ -69,7 +69,9 @@ export function QuizResultHuawei({
           </div>
         </CardContent>
         <CardFooter className="flex justify-center gap-4">
-          <Button onClick={onRetake}>Retake Quiz</Button>
+          <Button onClick={onRetake} className="text-white">
+            Retake Quiz
+          </Button>
         </CardFooter>
       </Card>
 
