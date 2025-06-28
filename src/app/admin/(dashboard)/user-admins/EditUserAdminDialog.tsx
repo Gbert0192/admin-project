@@ -67,7 +67,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogUserProps) => {
         ...payload,
       };
 
-      const res = await api.put<UserAdmin>(`/user`, filteredPayload);
+      const res = await api.put<UserAdmin>(`/user/admin`, filteredPayload);
       return res.data;
     },
     onError: (err) => {
@@ -88,9 +88,11 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogUserProps) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Edit Role</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            Edit User Admin
+          </DialogTitle>
           <DialogDescription>
-            Update the details for the selected role below.
+            Update the details for the selected user admin.
           </DialogDescription>
         </DialogHeader>
 
@@ -105,7 +107,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogUserProps) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Student Name</FormLabel>
+                    <FormLabel>Student Admin Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Jessica" {...field} />
                     </FormControl>
@@ -118,7 +120,7 @@ const EditDialog = ({ isOpen, setIsOpen, data }: EditDialogUserProps) => {
                 name="student_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Student Name</FormLabel>
+                    <FormLabel>Student Admin ID</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., 231110xxxx" {...field} />
                     </FormControl>

@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import serverApi from "@/lib/api/serverApi";
 import { createQueryParams, SearchParams } from "@/lib/utils";
 import UserTable from "./UserTable";
@@ -33,10 +34,16 @@ const UsersPage = async ({ searchParams }: SearchParams) => {
   const params = await searchParams;
 
   const { data } = await getUser({ searchParams: params });
+  const session = await auth();
+  const accessPermission = session?.user.permission ?? [];
 
   return (
     <>
-      <UserTable searchParams={params} data={data} />
+      <UserTable
+        searchParams={params}
+        data={data}
+        accessPermission={accessPermission}
+      />
     </>
   );
 };

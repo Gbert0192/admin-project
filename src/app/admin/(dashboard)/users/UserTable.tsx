@@ -13,13 +13,16 @@ import { errorHandler } from "@/lib/handler/errorHandler";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import { ISessionPermission } from "@/app/types/next.auth";
+import { checkPermission } from "@/lib/utils";
 
 interface UserProps {
   searchParams: Record<string, string | undefined>;
   data: UserData;
+  accessPermission: ISessionPermission[];
 }
 
-const UserTable: React.FC<UserProps> = ({ data }) => {
+const UserTable: React.FC<UserProps> = ({ data, accessPermission }) => {
   const [detailDialog, setDetailDialog] = useState<{
     data: User | null;
     isOpen: boolean;
@@ -98,24 +101,26 @@ const UserTable: React.FC<UserProps> = ({ data }) => {
               >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
-              <AlertWrapper
-                onAction={() => {
-                  const promoteData = {
-                    uuid: row.original.uuid,
-                    role_name: "Admin",
-                  };
-                  promoteUser(promoteData);
-                }}
-                title="Confirm promoting this user to admin?"
-                description="After Click Ok, This User Will Be A Admin"
-                actionText="Ok"
-                cancelText="Cancel"
-                actionClassName="bg-green-500"
-              >
-                <Button variant={"florest"} size={"icon"}>
-                  <Medal className="h-4 w-4 text-white" />
-                </Button>
-              </AlertWrapper>
+              {checkPermission(accessPermission, "/promote", "PUT") && (
+                <AlertWrapper
+                  onAction={() => {
+                    const promoteData = {
+                      uuid: row.original.uuid,
+                      role_name: "Admin",
+                    };
+                    promoteUser(promoteData);
+                  }}
+                  title="Confirm promoting this user to admin?"
+                  description="After Click Ok, This User Will Be A Admin"
+                  actionText="Ok"
+                  cancelText="Cancel"
+                  actionClassName="bg-green-500"
+                >
+                  <Button variant={"florest"} size={"icon"}>
+                    <Medal className="h-4 w-4 text-white" />
+                  </Button>
+                </AlertWrapper>
+              )}
             </div>
           );
         },

@@ -31,7 +31,7 @@ export interface Permission {
 export function checkPermission(
   userPermissions: Permission[],
   route: string,
-  method: string
+  method: "PUT" | "POST" | "DELETE" | "GET"
 ): boolean {
   return userPermissions.some((p) => {
     return p.route === route && p.method.includes(method);

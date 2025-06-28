@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import DetailDialog from "./DetailUserAdminDialog";
 import EditDialog from "./EditUserAdminDialog";
 import { UserAdmin, UserAdminData } from "./page";
+import { checkPermission } from "@/lib/utils";
 
 interface UserAdminProps {
   searchParams: Record<string, string | undefined>;
@@ -21,7 +22,10 @@ interface UserAdminProps {
   accessPermission: ISessionPermission[];
 }
 
-const UserAdminTable: React.FC<UserAdminProps> = ({ data }) => {
+const UserAdminTable: React.FC<UserAdminProps> = ({
+  data,
+  accessPermission,
+}) => {
   const [detailDialog, setDetailDialog] = useState<{
     data: UserAdmin | null;
     isOpen: boolean;
@@ -82,15 +86,17 @@ const UserAdminTable: React.FC<UserAdminProps> = ({ data }) => {
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2">
-              <Button
-                variant={"default"}
-                size={"icon"}
-                onClick={() => {
-                  setEditDialog({ data: row.original, isOpen: true });
-                }}
-              >
-                <Pen className="h-4 w-4 text-white" />
-              </Button>
+              {checkPermission(accessPermission, "/user/admin", "PUT") && (
+                <Button
+                  variant={"default"}
+                  size={"icon"}
+                  onClick={() => {
+                    setEditDialog({ data: row.original, isOpen: true });
+                  }}
+                >
+                  <Pen className="h-4 w-4 text-white" />
+                </Button>
+              )}
               <Button
                 variant={"warning"}
                 size={"icon"}
@@ -100,24 +106,26 @@ const UserAdminTable: React.FC<UserAdminProps> = ({ data }) => {
               >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
-              <AlertWrapper
-                onAction={() => {
-                  const promoteData = {
-                    uuid: row.original.uuid,
-                    role_name: "User",
-                  };
-                  demotingUser(promoteData);
-                }}
-                title="Confirm demoting this user to regular user?"
-                description="After clicking OK, this user will no longer have admin access."
-                actionText="Ok"
-                cancelText="Cancel"
-                actionClassName="bg-green-500"
-              >
-                <Button variant={"destructive"} size={"icon"}>
-                  <Medal className="h-4 w-4 text-white" />
-                </Button>
-              </AlertWrapper>
+              {checkPermission(accessPermission, "/promote", "PUT") && (
+                <AlertWrapper
+                  onAction={() => {
+                    const promoteData = {
+                      uuid: row.original.uuid,
+                      role_name: "User",
+                    };
+                    demotingUser(promoteData);
+                  }}
+                  title="Confirm demoting this user to regular user?"
+                  description="After clicking OK, this user will no longer have admin access."
+                  actionText="Ok"
+                  cancelText="Cancel"
+                  actionClassName="bg-green-500"
+                >
+                  <Button variant={"destructive"} size={"icon"}>
+                    <Medal className="h-4 w-4 text-white" />
+                  </Button>
+                </AlertWrapper>
+              )}
             </div>
           );
         },

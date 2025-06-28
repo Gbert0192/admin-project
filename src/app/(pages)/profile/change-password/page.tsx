@@ -20,8 +20,9 @@ import {
 } from "@/lib/schema/UserSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { KeyRound, Loader2, Lock } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -33,6 +34,9 @@ export interface tes {
 
 export default function ChangePasswordPage() {
   const router = useRouter();
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<ChangePasswordSchemaType>({
     resolver: zodResolver(changePasswordSchema),
@@ -96,10 +100,40 @@ export default function ChangePasswordPage() {
                       <FormItem>
                         <FormLabel>Current Password</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Your Current Password"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showCurrentPassword ? "text" : "password"}
+                              placeholder="Enter Your Current Password"
+                              {...field}
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() =>
+                                setShowCurrentPassword((prev) => !prev)
+                              }
+                            >
+                              {showCurrentPassword ? (
+                                <EyeOff
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <Eye
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              )}
+                              <span className="sr-only">
+                                {showCurrentPassword
+                                  ? "Hide password"
+                                  : "Show password"}
+                              </span>
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -111,14 +145,43 @@ export default function ChangePasswordPage() {
                     name="newPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Permissions</FormLabel>
+                        <FormLabel>New Password</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Your New Password"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showNewPassword ? "text" : "password"}
+                              placeholder="Enter Your New Password"
+                              {...field}
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() =>
+                                setShowNewPassword((prev) => !prev)
+                              }
+                            >
+                              {showNewPassword ? (
+                                <EyeOff
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <Eye
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              )}
+                              <span className="sr-only">
+                                {showNewPassword
+                                  ? "Hide password"
+                                  : "Show password"}
+                              </span>
+                            </Button>
+                          </div>
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -129,25 +192,54 @@ export default function ChangePasswordPage() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Permissions</FormLabel>
+                        <FormLabel>Confirm New Password</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Your Confirm Password"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Enter Your Confirm Password"
+                              {...field}
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() =>
+                                setShowConfirmPassword((prev) => !prev)
+                              }
+                            >
+                              {showConfirmPassword ? (
+                                <EyeOff
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <Eye
+                                  className="h-4 w-4 text-gray-500"
+                                  aria-hidden="true"
+                                />
+                              )}
+                              <span className="sr-only">
+                                {showConfirmPassword
+                                  ? "Hide password"
+                                  : "Show password"}
+                              </span>
+                            </Button>
+                          </div>
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
 
-                <Button type="submit" className="text-white">
+                <Button type="submit" className="text-white w-full">
                   {isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isPending ? "Creating..." : "Create Role"}
+                  {isPending ? "Changing Password..." : "Change Password"}
                 </Button>
               </form>
             </Form>

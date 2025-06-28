@@ -1,6 +1,7 @@
 "use client";
 
 import { ISessionPermission } from "@/app/types/next.auth";
+import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
 import { DataTable } from "@/components/data-table/data-table";
 import { DeleteWrapper } from "@/components/delete-wrapper/delete-wrapper";
 import { Badge } from "@/components/ui/badge";
@@ -11,23 +12,15 @@ import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import {
-  BookA,
-  CircleArrowDown,
-  CircleArrowUp,
-  Eye,
-  Pen,
-  Trash2,
-} from "lucide-react";
+import { BookA, CircleArrowUp, Eye, Pen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import CreateDialog from "./CreateFormHuaweiDialog";
-import { FormHuawei, FormHuaweiData } from "./page";
-import EditDialog from "./EditFormHuaweiDialog";
 import DetailDialog from "./DetailFormHuaweiDialog";
+import EditDialog from "./EditFormHuaweiDialog";
+import { FormHuawei, FormHuaweiData } from "./page";
 import PublishFormHuaweiDialog from "./PublishFormHuaweiDialog";
-import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
 
 interface FormsHuaweiProps {
   searchParams: Record<string, string | undefined>;
@@ -65,20 +58,20 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
     },
   });
 
-  const { mutate: unPublishForm, isPending: unPublishFormIsPending } =
-    useMutation({
-      mutationFn: async (uuid: string) => {
-        await api.put(`/form-huawei/unpublish/${uuid}`);
-      },
-      onSuccess: () => {
-        toast.success("Form Unpublish successfully.");
-        router.refresh();
-      },
-      onError: (error) => {
-        errorHandler(error);
-        toast.error("Failed to Unpublish Form.");
-      },
-    });
+  // const { mutate: unPublishForm, isPending: unPublishFormIsPending } =
+  //   useMutation({
+  //     mutationFn: async (uuid: string) => {
+  //       await api.put(`/form-huawei/unpublish/${uuid}`);
+  //     },
+  //     onSuccess: () => {
+  //       toast.success("Form Unpublish successfully.");
+  //       router.refresh();
+  //     },
+  //     onError: (error) => {
+  //       errorHandler(error);
+  //       toast.error("Failed to Unpublish Form.");
+  //     },
+  //   });
   const columns = useMemo<ColumnDef<FormHuawei>[]>(
     () => [
       {
@@ -111,9 +104,9 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
           return (
             <div>
               {row.original.is_published ? (
-                <Badge variant={"success"}>True</Badge>
+                <Badge variant={"success"}>Published</Badge>
               ) : (
-                <Badge variant={"destructive"}>False</Badge>
+                <Badge variant={"destructive"}>Draft</Badge>
               )}
             </div>
           );
@@ -124,15 +117,17 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2">
-              <Button
-                variant={"default"}
-                size={"icon"}
-                onClick={() => {
-                  setEditDialog({ data: row.original, isOpen: true });
-                }}
-              >
-                <Pen className="h-4 w-4 text-white" />
-              </Button>
+              {!row.original.is_published && (
+                <Button
+                  variant={"default"}
+                  size={"icon"}
+                  onClick={() => {
+                    setEditDialog({ data: row.original, isOpen: true });
+                  }}
+                >
+                  <Pen className="h-4 w-4 text-white" />
+                </Button>
+              )}
               <Button
                 variant={"warning"}
                 size={"icon"}
@@ -142,42 +137,28 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
               >
                 <Eye className="h-4 w-4 text-white" />
               </Button>
-              <Button
-                variant={"florest"}
-                size={"icon"}
-                onClick={() => {
-                  router.push(`/admin/forms/huawei/${row.original.uuid}`);
-                }}
-              >
-                <BookA className="h-4 w-4 text-white" />
-              </Button>
-              {row.original.is_published ? (
-                <>
-                  <AlertWrapper
-                    title="Unpublish?"
-                    description="After This Action, This Form Will Be Unpublished"
-                    actionText="Unpublish"
-                    cancelText="Cancel"
-                    actionClassName="bg-red-500"
-                    onAction={() => unPublishForm(row.original.uuid)}
-                  >
-                    <Button variant={"destructive"} size={"icon"}>
-                      <CircleArrowDown className="h-4 w-4 text-white" />
-                    </Button>
-                  </AlertWrapper>
-                </>
-              ) : (
+              {!row.original.is_published && (
+                <Button
+                  variant={"florest"}
+                  size={"icon"}
+                  onClick={() => {
+                    router.push(`/admin/forms/huawei/${row.original.uuid}`);
+                  }}
+                >
+                  <BookA className="h-4 w-4 text-white" />
+                </Button>
+              )}
+              {!row.original.is_published && (
                 <>
                   <AlertWrapper
                     title="Publish?"
-                    description="After This Action, This Form Will Be Published"
+                    description="After This Action, This Form Will Be Published, and cannot be edited or unpublished. because it is related to user history, are you sure?"
                     actionText="Publish"
                     cancelText="Cancel"
                     actionClassName="bg-red-500"
                     onAction={() => {
                       setPublishDialog({ data: row.original, isOpen: true });
                     }}
-                    isPending={unPublishFormIsPending}
                   >
                     <Button variant={"destructive"} size={"icon"}>
                       <CircleArrowUp className="h-4 w-4 text-white" />
@@ -185,14 +166,16 @@ const FormHuaweiTable: React.FC<FormsHuaweiProps> = ({ data }) => {
                   </AlertWrapper>
                 </>
               )}
-              <DeleteWrapper
-                onConfirm={() => deleteForm(row.original.uuid)}
-                isPending={isPending}
-              >
-                <Button variant={"destructive"} size={"icon"}>
-                  <Trash2 className="h-4 w-4 text-white" />
-                </Button>
-              </DeleteWrapper>
+              {!row.original.is_published && (
+                <DeleteWrapper
+                  onConfirm={() => deleteForm(row.original.uuid)}
+                  isPending={isPending}
+                >
+                  <Button variant={"destructive"} size={"icon"}>
+                    <Trash2 className="h-4 w-4 text-white" />
+                  </Button>
+                </DeleteWrapper>
+              )}
             </div>
           );
         },
