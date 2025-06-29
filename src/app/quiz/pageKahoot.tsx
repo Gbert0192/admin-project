@@ -40,7 +40,6 @@ const getFormsKahoot = async ({
   const { data } = await serverApi.get<{ data: FormKahoot }>(
     `form-kahoot/${uuid.toString()}`
   );
-  console.log("data", data);
   return data.data;
 };
 
