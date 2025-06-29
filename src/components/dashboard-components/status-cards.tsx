@@ -12,6 +12,7 @@ export const StatusCards = () => {
       const res = await api.get("/dashboard-user/quiz-complete");
       return res.data.data;
     },
+    refetchOnWindowFocus: false,
   });
 
   const { data: quizCount, isLoading: isLoadingCount } = useQuery({
@@ -20,6 +21,7 @@ export const StatusCards = () => {
       const res = await api.get("/dashboard-user/quiz-count");
       return res.data.data;
     },
+    refetchOnWindowFocus: false,
   });
 
   const { data: avgScore, isLoading: isLoadingScore } = useQuery({
@@ -28,6 +30,7 @@ export const StatusCards = () => {
       const res = await api.get("/dashboard-user/average-score");
       return res.data.data;
     },
+    refetchOnWindowFocus: false,
   });
 
   return (
