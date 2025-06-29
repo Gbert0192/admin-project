@@ -128,7 +128,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
         <Button
           size="lg"
           onClick={onRetakeQuiz}
-          className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] shadow-md"
+          className="bg-[var(--primary)] text-primary-foreground hover:bg-[var(--primary-blue-light)] shadow-md text-white"
         >
           Retake Quiz
           <ArrowRight className="w-4 h-4 ml-2" />

@@ -1,16 +1,26 @@
 import { auth } from "@/auth";
 import React from "react";
-import DashboardPage from "./dashboard";
+import DashboardAdminContent from "./DashboardAdminContent";
+import serverApi from "@/lib/api/serverApi";
 
-const Page = async () => {
+export interface Dashboard {
+  total_huawei_forms: number;
+  total_kahoot_forms: number;
+  total_users: number;
+}
+
+const DashboardAdminPage = async () => {
   const session = await auth();
   if (!session) {
     return null;
   }
+
+  const response = await serverApi.get<{ data: Dashboard }>("dashboard");
+  const data = response.data.data;
   return (
     <>
-      <DashboardPage session={session} />
+      <DashboardAdminContent session={session} data={data} />
     </>
   );
 };
-export default Page;
+export default DashboardAdminPage;

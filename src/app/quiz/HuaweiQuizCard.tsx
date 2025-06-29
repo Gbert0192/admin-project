@@ -1,7 +1,13 @@
 "use client";
 
-import React from "react";
-import { ArrowRight, BookOpen, HelpCircle } from "lucide-react";
+import React, { useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  HelpCircle,
+  Loader2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +17,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FormHuawei } from "./page";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { FormHuawei } from "./page";
 
 interface Props {
   data: FormHuawei;
@@ -22,21 +31,46 @@ interface Props {
 
 const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(false);
+
+  const { refetch: checkIsAllowed } = useQuery({
+    queryKey: ["isAllowed", uuid],
+    queryFn: async () => {
+      const res = await api.get<{ data: boolean }>(
+        `/quiz-huawei/${uuid}/allowed`
+      );
+      return res.data.data;
+    },
+    enabled: false,
+  });
+
+  const handleClick = async () => {
+    setIsChecking(true);
+    try {
+      const { data: isAllowed, isSuccess } = await checkIsAllowed();
+
+      if (isSuccess && !isAllowed) {
+        router.push(`/quiz/huawei/${uuid}`);
+      } else {
+        toast.error("You have already taken this quiz or are not allowed.");
+        router.replace(`/quizzes`);
+      }
+    } catch {
+      toast.error("Failed to check quiz eligibility. Please try again.");
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
       <Card className="w-full max-w-2xl shadow-lg rounded-xl">
         <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div>
-              <CardTitle className="text-2xl font-bold mb-1">
-                {data.form_title} Quiz
-              </CardTitle>
-            </div>
-            <Badge
-              variant="outline"
-              className="mt-1 sm:mt-0 text-md py-1 px-3 whitespace-nowrap bg-blue-500"
-            >
+          <div className="flex justify-between items-center w-full">
+            <CardTitle className="text-2xl font-bold">
+              {data.form_title} Quiz
+            </CardTitle>
+            <Badge variant="default" className="whitespace-nowrap">
               Form Quiz
             </Badge>
           </div>
@@ -45,15 +79,16 @@ const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground border-t pt-6">
             <div className="flex items-center gap-3">
-              <HelpCircle className="w-5 h-5 flex-shrink-0 text-[var(--primary)]" />
+              <HelpCircle className="w-5 h-5 flex-shrink-0 text-primary" />
               <span className="font-medium">{totalQuestions} Questions</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-5 h-5 flex-shrink-0 text-primary" />
+              <span className="font-medium">{data.durations} Minutes</span>
             </div>
           </div>
           <div>
-            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-[var(--secondary)]" />
-              Instructions
-            </h3>
+            <h3 className="font-semibold text-lg mb-3">Instructions</h3>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-2">
               <li>This quiz consists of {totalQuestions} questions.</li>
               <li>Ensure a stable internet connection.</li>
@@ -66,16 +101,23 @@ const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-end bg-muted/50 p-6 rounded-b-xl">
+        <CardFooter className="flex justify-between items-center bg-slate-50 p-6 rounded-b-xl border-t">
+          <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
           <Button
-            onClick={() => {
-              router.push(`/quiz/huawei/${uuid}`);
-            }}
+            onClick={handleClick}
             size="lg"
-            className="w-full sm:w-auto shadow-md bg-[var(--primary)] hover:bg-[var(--primary-blue-light)] text-white"
+            disabled={isChecking}
+            className="shadow-md text-white"
           >
+            {isChecking ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <ArrowRight className="w-4 h-4 mr-2" />
+            )}
             Start Quiz
-            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </CardFooter>
       </Card>
