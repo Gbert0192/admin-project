@@ -1,13 +1,7 @@
 import { auth } from "@/auth";
 import React from "react";
 import DashboardAdminContent from "./DashboardAdminContent";
-import serverApi from "@/lib/api/serverApi";
-
-export interface Dashboard {
-  total_huawei_forms: number;
-  total_kahoot_forms: number;
-  total_users: number;
-}
+import { dashboardServerApi } from "@/lib/api/dashboard";
 
 const DashboardAdminPage = async () => {
   const session = await auth();
@@ -15,8 +9,18 @@ const DashboardAdminPage = async () => {
     return null;
   }
 
-  const response = await serverApi.get<{ data: Dashboard }>("dashboard");
-  const data = response.data.data;
+  const [basicStats, formTrends, formAttemptStats] = await Promise.all([
+    dashboardServerApi.getBasicStatistics(),
+    dashboardServerApi.getFormCreationTrends(12),
+    dashboardServerApi.getFormAttemptStats(),
+  ]);
+
+  const data = {
+    basicStats,
+    formTrends,
+    formAttemptStats,
+  };
+
   return (
     <>
       <DashboardAdminContent session={session} data={data} />

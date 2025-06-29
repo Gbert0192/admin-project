@@ -6,7 +6,7 @@ export const createFormKahootPayload = z.object({
     .string()
     .min(1, { message: "Form Description is required." }),
   // is_published: z.boolean().default(false),
-  duration: z.number().min(5).max(120),
+  duration: z.number().min(5),
 });
 
 const optionKahootSchema = z.object({
@@ -60,6 +60,7 @@ export const publishFormKahootPayload = z.object({
   multiple_choice_question: z.string(),
   single_choice_question: z.string(),
   true_false_question: z.string(),
+  duration: z.number().min(5).max(120),
 });
 
 export type CreateFormKahootPayload = z.infer<typeof createFormKahootPayload>;

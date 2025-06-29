@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +17,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -28,12 +26,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FormKahoot } from "./page";
 import { cn } from "@/lib/utils";
-import { AlertWrapper } from "@/components/alert-wrapper/alert-wrapper";
 import { useRef } from "react";
 import {
   PublishFormKahootPayload,
   publishFormKahootPayload,
 } from "@/lib/schema/FormKahootSchema";
+import { Progress } from "@radix-ui/react-progress";
+import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 
 interface PublishFormKahootDialogProps {
   isOpen: boolean;
@@ -57,7 +56,9 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
       multiple_choice_question: "",
       single_choice_question: "",
       true_false_question: "",
+      duration: 20,
     },
+    mode: "onChange",
   });
 
   const onSubmit = (payload: PublishFormKahootPayload) => {
@@ -92,6 +93,17 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
     toast.error("Please fill in all required fields correctly.");
   };
 
+  const { isValid } = form.formState;
+
+  const singleChoiceCount = Number(form.watch("single_choice_question"));
+  const multipleChoiceCount = Number(form.watch("multiple_choice_question"));
+  const trueFalseCount = Number(form.watch("true_false_question"));
+
+  const isOverLimit =
+    singleChoiceCount > (data?.single_choice_count ?? 0) ||
+    multipleChoiceCount > (data?.multiple_choice_count ?? 0) ||
+    trueFalseCount > (data?.true_false_count ?? 0);
+
   return (
     <Dialog
       open={isOpen}
@@ -106,7 +118,7 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
             Publish Form Kahoot
           </DialogTitle>
           <DialogDescription>
-            This is for count the number of questions in the form.
+            Configure the test by selecting the number of questions.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,22 +134,36 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
                 name="single_choice_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Single Choice</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
-                    </FormControl>
-                    <FormMessage />
-                    <span
-                      className={cn(
-                        Number(form.watch("single_choice_question")) >
-                          (data?.single_choice_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max Single Choice Questions are{" "}
-                      {data?.single_choice_count}
-                    </span>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Single Choice</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (singleChoiceCount /
+                                (data?.single_choice_count ?? 1)) *
+                                100,
+                              100
+                            )}
+                            className={cn(
+                              singleChoiceCount >
+                                (data?.single_choice_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {singleChoiceCount} /{" "}
+                            {data?.single_choice_count ?? 0} Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
                   </FormItem>
                 )}
               />
@@ -146,22 +172,40 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
                 name="multiple_choice_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Multiple Choice Question</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
-                    </FormControl>
-                    <span
-                      className={cn(
-                        Number(form.watch("multiple_choice_question")) >
-                          (data?.multiple_choice_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max Multiples Choice Questions are{" "}
-                      {data?.multiple_choice_count}
-                    </span>
-                    <FormMessage />
+                    <FormItem>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">
+                            Multiple Choice
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <FormControl>
+                            <InputWithOutNumber field={field} placeholder="0" />
+                          </FormControl>
+                          <div className="space-y-2">
+                            <Progress
+                              value={Math.min(
+                                (multipleChoiceCount /
+                                  (data?.multiple_choice_count ?? 1)) *
+                                  100,
+                                100
+                              )}
+                              className={cn(
+                                multipleChoiceCount >
+                                  (data?.multiple_choice_count ?? 0) &&
+                                  "[&>div]:bg-red-500"
+                              )}
+                            />
+                            <p className="text-xs text-muted-foreground text-right">
+                              {multipleChoiceCount} /{" "}
+                              {data?.multiple_choice_count ?? 0} Questions
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <FormMessage className="pl-2" />
+                    </FormItem>
                   </FormItem>
                 )}
               />
@@ -171,20 +215,57 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
                 name="true_false_question"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>True False Questions</FormLabel>
-                    <FormControl>
-                      <InputWithOutNumber field={field} placeholder="5" />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">True/False</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormControl>
+                          <InputWithOutNumber field={field} placeholder="0" />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <Progress
+                            value={Math.min(
+                              (trueFalseCount / (data?.true_false_count ?? 1)) *
+                                100,
+                              100
+                            )}
+                            className={cn(
+                              trueFalseCount > (data?.true_false_count ?? 0) &&
+                                "[&>div]:bg-red-500"
+                            )}
+                          />
+                          <p className="text-xs text-muted-foreground text-right">
+                            {trueFalseCount} / {data?.true_false_count ?? 0}{" "}
+                            Questions
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <FormMessage className="pl-2" />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="pt-2">
+              <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className="font-medium">Durations (minute)</label>
+                    <FormControl className="mt-2">
+                      <InputWithOutNumber
+                        field={{
+                          ...field,
+                          value: field.value.toString(),
+                          onChange: (value: string) =>
+                            field.onChange(parseInt(value) || 0),
+                        }}
+                        placeholder="e.g., 60"
+                      />
                     </FormControl>
-                    <span
-                      className={cn(
-                        Number(form.watch("true_false_question")) >
-                          (data?.true_false_count ?? 0)
-                          ? "text-xs text-red-500"
-                          : "text-xs text-gray-300"
-                      )}
-                    >
-                      Max True False Questions are {data?.true_false_count ?? 0}
-                    </span>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -192,29 +273,13 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
             </div>
 
             <DialogFooter>
-              <AlertWrapper
-                onAction={() => {
-                  formRef.current?.requestSubmit();
-                }}
-                title="Publish?"
-                description="This action can't be reversed!"
-                actionText="Publish"
-                cancelText="Cancel"
-                actionClassName="bg-orange-500"
+              <Button
+                type="submit"
+                className="text-white"
+                disabled={!isValid || isPending || isOverLimit}
               >
-                <Button
-                  type="button"
-                  className="text-white"
-                  disabled={isPending}
-                >
-                  <span>
-                    {isPending && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    {isPending ? "Publishing..." : "Publish?"}
-                  </span>
-                </Button>
-              </AlertWrapper>
+                <span>{isPending ? "Publishing..." : "Publish"}</span>
+              </Button>
             </DialogFooter>
           </form>
         </Form>

@@ -1,9 +1,9 @@
 "use client";
 
 import { quizData, TIME_LIMIT_MINUTES, UserAnswers } from "@/app/lib/quiz-data";
-import { QuizGame } from "@/components/quiz/flashcard/quiz-game";
-import { QuizInfo } from "@/components/quiz/flashcard/quiz-info";
-import { QuizResult } from "@/components/quiz/flashcard/quiz-result";
+import { QuizGame } from "@/components/quiz/kahoot/quiz-game";
+import { QuizInfo } from "@/components/quiz/kahoot/quiz-info";
+import { QuizResult } from "@/components/quiz/kahoot/quiz-result";
 import {
   AlertDialogFooter,
   AlertDialogHeader,
