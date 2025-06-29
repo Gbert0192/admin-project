@@ -21,7 +21,8 @@ interface AttemptAnswer {
 interface SubmissionPayload {
   form_uuid: string;
   score: number;
-  duration: number;
+  max_score: number;
+  duration_seconds: number;
   attempt_answers: AttemptAnswer[];
 }
 
@@ -34,6 +35,19 @@ export function useQuiz({ questions, durations, form_uuid }: UseQuizProps) {
   const [totalScore, setTotalScore] = useState(0);
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
+  const { mutate: createFormHuawei, isPending: isSubmitting } = useMutation({
+    mutationFn: (payload: SubmissionPayload) => {
+      return api.post("/quiz-huawei", payload);
+    },
+    onSuccess: () => {
+      toast.success("Quiz submitted successfully!");
+      setSubmitted(true);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const currentQuestion = questions?.[currentIndex];
   const answeredCount = Object.keys(answers).filter((k) =>
     answers[+k]?.some((ans) => ans.trim() !== "")
@@ -45,24 +59,9 @@ export function useQuiz({ questions, durations, form_uuid }: UseQuizProps) {
     }
   }, [durations, remainingTime]);
 
-  const { mutate: createFormHuawei, isPending: isSubmitting } = useMutation({
-    mutationFn: (payload: SubmissionPayload) => {
-      const filterdPayload = {
-        ...payload,
-        duration_seconds: Number(durations),
-      };
-      return api.post("/quiz-huawei", filterdPayload);
-    },
-    onSuccess: () => {
-      toast.success("Quiz submitted successfully!");
-      setSubmitted(true);
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to submit quiz. Please try again.");
-    },
-  });
-
-  const handleSubmit = (isAutoSubmit = false) => {
+  const handleSubmit = (
+    isAutoSubmit = false
+  ): "show_uncertain_alert" | void => {
     if (!questions || !form_uuid) return;
     if (!isAutoSubmit && answeredCount < questions.length) {
       toast.error("Please answer all questions before submitting.");
@@ -101,11 +100,18 @@ export function useQuiz({ questions, durations, form_uuid }: UseQuizProps) {
 
     setReview(reviewResult);
     setTotalScore(score);
+
+    const maxScore = questions.reduce(
+      (total, question) => total + (question.point || 0),
+      0
+    );
     const durationTaken = durations * 60 - (remainingTime ?? 0);
+
     const finalPayload: SubmissionPayload = {
       form_uuid,
       score,
-      duration: durationTaken,
+      max_score: maxScore,
+      duration_seconds: durationTaken,
       attempt_answers: formattedAnswers,
     };
 

@@ -66,7 +66,6 @@ export default tseslint.config(
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/no-explicit-any": "warn",
-
       "no-console": "warn",
     },
   },

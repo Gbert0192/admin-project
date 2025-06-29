@@ -43,26 +43,6 @@ export const QuizHistory = () => (
     </CardHeader>
     <CardContent>
       <Tabs defaultValue="all">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger
-            value="all"
-            className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            All
-          </TabsTrigger>
-          <TabsTrigger
-            value="graded"
-            className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            Graded
-          </TabsTrigger>
-          <TabsTrigger
-            value="draft"
-            className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            Draft
-          </TabsTrigger>
-        </TabsList>
         <TabsContent value="all">
           <div className="space-y-4 mt-4">
             <HistoryItem

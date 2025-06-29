@@ -196,6 +196,7 @@ const HuaweiFormQuestionTable: React.FC<FormsHuaweiProps> = ({
         isOpen={editDialog.isOpen}
         setIsOpen={() => setEditDialog({ ...editDialog, isOpen: false })}
         data={editDialog.data}
+        uuid={formUuid}
       />
     </>
   );

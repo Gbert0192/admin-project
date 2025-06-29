@@ -42,12 +42,14 @@ interface EditFormHuaweiQuestionDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   data: QuestionHuawei | null;
+  uuid: string;
 }
 
 const EditDialog = ({
   data,
   setIsOpen,
   isOpen,
+  uuid,
 }: EditFormHuaweiQuestionDialogProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -83,6 +85,7 @@ const EditDialog = ({
       const filterPayload = {
         ...payload,
         uuid: data?.uuid,
+        formUuid: uuid,
       };
       const res = await api.put(`/form-huawei/question`, filterPayload);
       return res.data as QuestionHuawei;

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { StatusCards } from "@/components/dashboard-components/status-cards";
 import { QuizHistory } from "@/components/dashboard-components/quiz-history";
