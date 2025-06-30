@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Question } from "./page";
+import { useRouter } from "next/navigation";
 
 interface UseQuizProps {
   questions: Question[];
@@ -163,8 +164,31 @@ export function useQuiz({ questions, durations, form_uuid }: UseQuizProps) {
         ? p.filter((i) => i !== currentIndex)
         : [...p, currentIndex]
     );
-  const handleRetake = () => window.location.reload();
 
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const handleRetake = async (uuid: string) => {
+    try {
+      const isAllowed = await queryClient.fetchQuery({
+        queryKey: ["isAllowed", uuid],
+        queryFn: async () => {
+          const res = await api.get<{ data: boolean }>(
+            `/quiz-huawei/${uuid}/allowed`
+          );
+          return res.data.data;
+        },
+      });
+
+      if (isAllowed) {
+        window.location.reload();
+      } else {
+        toast.error("You have already taken this quiz or are not allowed.");
+        router.replace("/quizzes");
+      }
+    } catch {
+      toast.error("Failed to check access.");
+    }
+  };
   return {
     currentIndex,
     answers,

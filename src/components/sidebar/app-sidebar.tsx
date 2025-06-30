@@ -45,11 +45,6 @@ const feature: Item[] = [
     url: "/users",
     icon: Users,
   },
-  {
-    title: "Ranking",
-    url: "/ranking",
-    icon: Target,
-  },
 
   {
     title: "Recent Activity",

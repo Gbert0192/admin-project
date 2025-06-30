@@ -18,6 +18,7 @@ export interface FormHuawei {
   multiple_choice_count: number;
   true_false_count: number;
   durations: number;
+  trial_limit: number;
   created_at: string;
   updated_at?: string | null;
   deleted_at?: string | null;
@@ -95,7 +96,12 @@ const QuizPage = async ({ searchParams }: SearchParams) => {
       Number(data.published_essay_count);
 
     return (
-      <HuaweiQuizCard data={data} totalQuestions={totalQuestions} uuid={uuid} />
+      <HuaweiQuizCard
+        data={data}
+        totalQuestions={totalQuestions}
+        uuid={uuid}
+        trial_limit={data.trial_limit}
+      />
     );
   }
 };
