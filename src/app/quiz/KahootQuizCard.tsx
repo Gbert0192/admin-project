@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { FormKahoot } from "./pageKahoot";
+import { FormKahoot } from "./page";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+
 import api from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -33,30 +33,21 @@ const KahootQuizCard = ({ data, totalQuestions, uuid }: Props) => {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(false);
 
-  const { refetch: checkIsAllowed } = useQuery({
-    queryKey: ["isAllowed", uuid],
-    queryFn: async () => {
-      const res = await api.get<{ data: boolean }>(
-        `/quiz-kahoot/${uuid}/allowed`
-      );
-      return res.data.data;
-    },
-    enabled: false,
-  });
-
   const handleClick = async () => {
     setIsChecking(true);
     try {
-      const { data: isAllowed, isSuccess } = await checkIsAllowed();
-
-      if (isSuccess && !isAllowed) {
-        router.push(`/quiz/kahoot/${uuid}`);
-      } else {
+      await api.get(`form-kahoot/quiz/${uuid}`);
+      router.push(`/quiz/kahoot/${uuid}`);
+    } catch (error) {
+      const err = error as { response?: { status: number } };
+      if (err.response?.status === 404) {
+        toast.error("Quiz not found or no longer available.");
+      } else if (err.response?.status === 403) {
         toast.error("You have already taken this quiz or are not allowed.");
-        router.replace(`/quizzes`);
+      } else {
+        toast.error("Failed to start quiz. Please try again.");
       }
-    } catch {
-      toast.error("Failed to check quiz eligibility. Please try again.");
+      router.replace(`/quizzes`);
     } finally {
       setIsChecking(false);
     }
