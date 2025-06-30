@@ -10,6 +10,7 @@ interface UseKahootQuizProps {
   questions: Question[];
   duration_seconds: number;
   form_uuid: string | null;
+  question_duration?: number;
 }
 
 interface AttemptAnswer {
@@ -33,12 +34,15 @@ export function useKahootQuiz({
   questions,
   duration_seconds,
   form_uuid,
+  question_duration,
 }: UseKahootQuizProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
   const [review, setReview] = useState<Record<number, boolean>>({});
-  const [questionTimer, setQuestionTimer] = useState<number>(30);
+  const [questionTimer, setQuestionTimer] = useState<number>(
+    question_duration ?? 30
+  );
   const [showAnswerReview, setShowAnswerReview] = useState(false);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [startTime] = useState(Date.now());
@@ -107,13 +111,14 @@ export function useKahootQuiz({
 
       const maxScore = 1000;
       const minScore = 200;
+      const timeLimit = question_duration ?? 30;
       const baseScore = Math.floor(
-        minScore + (maxScore - minScore) * (timeRemaining / 30)
+        minScore + (maxScore - minScore) * (timeRemaining / timeLimit)
       );
 
       return Math.max(minScore, baseScore);
     },
-    []
+    [question_duration]
   );
 
   const handleTimeUp = useCallback(
@@ -131,7 +136,8 @@ export function useKahootQuiz({
       const questionStartTime =
         questionTimings[currentIndex]?.started_at || now;
       const timeTakenSeconds = (now - questionStartTime) / 1000;
-      const timeRemaining = Math.max(0, 30 - timeTakenSeconds);
+      const timeLimit = question_duration ?? 30;
+      const timeRemaining = Math.max(0, timeLimit - timeTakenSeconds);
 
       setQuestionTimings((prev) => ({
         ...prev,
@@ -211,7 +217,8 @@ export function useKahootQuiz({
   useEffect(() => {
     if (!showAnswerReview && !submitted) {
       const now = Date.now();
-      setQuestionTimer(30);
+      const timeLimit = question_duration ?? 30;
+      setQuestionTimer(timeLimit);
 
       setQuestionTimings((prev) => ({
         ...prev,
@@ -220,7 +227,7 @@ export function useKahootQuiz({
         },
       }));
     }
-  }, [currentIndex, showAnswerReview, submitted]);
+  }, [currentIndex, showAnswerReview, submitted, question_duration]);
 
   const handleAnswer = useCallback(
     (option: string) => {
@@ -313,7 +320,7 @@ export function useKahootQuiz({
   });
 
   const handleSubmit = useCallback(() => {
-    if (!questions || !form_uuid) {
+    if (!questions || !form_uuid || isSubmitting) {
       return;
     }
 
@@ -324,12 +331,15 @@ export function useKahootQuiz({
       const userAnswer = answers[index] ?? [];
       const hasAnswer =
         userAnswer.length > 0 && userAnswer.some((ans) => ans.trim() !== "");
-      const isCorrect = hasAnswer ? isAnswerCorrect(userAnswer) : false;
+
+      const isCorrect = hasAnswer && review[index] === true;
+
       const timing = questionTimings[index];
       const answeredAt = timing?.answered_at ?? timing?.started_at ?? now;
       const startedAt = timing?.started_at || now;
+      const timeLimit = question_duration ?? 30;
       const questionDuration = Math.min(
-        30,
+        timeLimit,
         Math.round((answeredAt - startedAt) / 1000)
       );
 
@@ -345,7 +355,7 @@ export function useKahootQuiz({
 
     const finalPayload: SubmissionPayload = {
       form_uuid,
-      score: 0,
+      score: provisionalScore,
       duration_seconds: totalDurationSeconds,
       submitted_at: new Date().toISOString(),
       attempt_answers: formattedAnswers,
@@ -360,17 +370,19 @@ export function useKahootQuiz({
     questionTimings,
     submitKahootQuiz,
     isAnswerCorrect,
+    isSubmitting,
   ]);
 
   useEffect(() => {
     if (isQuizCompleted && !submitted) {
       handleSubmit();
     }
-  }, [isQuizCompleted, submitted, handleSubmit]);
+  }, [isQuizCompleted, submitted]);
 
   const handleRetake = () => window.location.reload();
 
-  const timerPercentage = (questionTimer / 30) * 100;
+  const timeLimit = question_duration ?? 30;
+  const timerPercentage = (questionTimer / timeLimit) * 100;
 
   return {
     currentIndex,

@@ -55,18 +55,18 @@ export function QuizResultKahoot({
   const percentage = Math.round((correctCount / quizData.length) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
+    <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-5xl mx-auto">
         {/* Main Result Card */}
-        <Card className="shadow-2xl mb-6 border-0 bg-white/95 backdrop-blur">
-          <CardHeader className="text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+        <Card className="shadow-lg mb-6 border">
+          <CardHeader className="text-center bg-white rounded-t-lg">
             <div className="flex justify-center mb-4">
-              <Trophy className="w-16 h-16 text-yellow-300" />
+              <Trophy className="w-16 h-16 text-yellow-500" />
             </div>
-            <CardTitle className="text-4xl font-bold mb-2">
+            <CardTitle className="text-4xl font-bold mb-2 text-gray-800">
               Quiz Completed!
             </CardTitle>
-            <CardDescription className="text-white/90 text-lg">
+            <CardDescription className="text-gray-600 text-lg">
               Here&apos;s how you performed
             </CardDescription>
           </CardHeader>
@@ -74,7 +74,7 @@ export function QuizResultKahoot({
           <CardContent className="p-8">
             {/* Score Display */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white mb-4">
+              <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-blue-500 text-white mb-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold">{percentage}%</div>
                   <div className="text-sm">Score</div>
@@ -130,7 +130,7 @@ export function QuizResultKahoot({
           <CardFooter className="flex justify-center gap-4 p-6 bg-gray-50 rounded-b-lg">
             <Button
               variant="outline"
-              onClick={() => router.push("/quizzes/kahoot")}
+              onClick={() => router.push("/quizzes")}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -138,7 +138,7 @@ export function QuizResultKahoot({
             </Button>
             <Button
               onClick={onRetake}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Retake Quiz
             </Button>
@@ -146,7 +146,7 @@ export function QuizResultKahoot({
         </Card>
 
         {/* Question Review */}
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur">
+        <Card className="shadow-lg border">
           <CardHeader className="bg-gray-50 rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-xl text-gray-800">
               <ListTodo className="w-6 h-6 text-blue-500" />

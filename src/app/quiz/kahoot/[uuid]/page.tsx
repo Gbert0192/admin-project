@@ -168,6 +168,7 @@ export default function QuizKahootPage() {
     questions: quizData?.data ?? [],
     duration_seconds: quizData?.duration ?? 30,
     form_uuid: quizData?.form_uuid ?? null,
+    question_duration: quizData?.duration ?? 30,
   });
 
   if (isPending) {
@@ -349,7 +350,7 @@ export default function QuizKahootPage() {
           <div className="bg-white rounded-lg p-8 text-center">
             <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-600" />
             <p className="text-lg font-semibold text-gray-800">
-              Submitting your quiz...
+              Calculating your score...
             </p>
           </div>
         </div>
