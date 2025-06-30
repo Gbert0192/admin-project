@@ -55,7 +55,7 @@ function AnswerReview({
   const isUnanswered = userAnswer.length === 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl shadow-2xl border-0">
         <CardContent className="p-8 text-center space-y-6">
           <div className="flex justify-center">
@@ -135,7 +135,7 @@ function AnswerReview({
 
           <Button
             onClick={onNext}
-            className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            className="w-full h-12 text-lg font-semibold bg-green-500 hover:bg-green-700 text-white transition-colors duration-200"
           >
             Continue
           </Button>

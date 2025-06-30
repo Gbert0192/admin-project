@@ -55,7 +55,7 @@ export function QuizResultKahoot({
   const percentage = Math.round((correctCount / quizData.length) * 100);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-5xl mx-auto">
         {/* Main Result Card */}
         <Card className="shadow-lg mb-6 border">
