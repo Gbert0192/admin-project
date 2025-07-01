@@ -42,12 +42,24 @@ interface FormKahootData {
   data: KahootQuiz[];
 }
 
+const themeVariants = {
+  blue: {
+    heading: "text-blue-500 border-blue-500",
+    button: "bg-blue-600 hover:bg-blue-700",
+  },
+  orange: {
+    heading: "text-orange-500 border-orange-500",
+    button: "bg-orange-500 hover:bg-orange-600",
+  },
+};
+
 interface QuizCardProps {
   quiz: HuaweiQuiz | KahootQuiz;
   type: "huawei" | "kahoot";
+  themeName: keyof typeof themeVariants;
 }
 
-function QuizCard({ quiz, type }: QuizCardProps) {
+function QuizCard({ quiz, type, themeName }: QuizCardProps) {
   const isHuawei = type === "huawei";
   const huaweiQuiz = isHuawei ? (quiz as HuaweiQuiz) : null;
   const kahootQuiz = !isHuawei ? (quiz as KahootQuiz) : null;
@@ -68,6 +80,8 @@ function QuizCard({ quiz, type }: QuizCardProps) {
   const linkHref = isHuawei
     ? `/quiz?uuid=${quiz.uuid}`
     : `/quiz?type=kahoot&uuid=${quiz.uuid}`;
+
+  const buttonClasses = themeVariants[themeName].button;
 
   return (
     <Card
@@ -102,7 +116,9 @@ function QuizCard({ quiz, type }: QuizCardProps) {
           </div>
         </div>
         <Link href={linkHref} className="w-full mt-4">
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors duration-200 flex items-center justify-center gap-2">
+          <Button
+            className={`w-full text-white font-semibold transition-colors duration-200 flex items-center justify-center gap-2 ${buttonClasses}`}
+          >
             Start Assignment <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>
@@ -111,7 +127,6 @@ function QuizCard({ quiz, type }: QuizCardProps) {
   );
 }
 
-// --- Main Page Component ---
 export default function FormsPage() {
   const { data: huaweiForms, isPending: huaweiFormsIsPending } = useQuery<
     HuaweiQuiz[]
@@ -139,47 +154,58 @@ export default function FormsPage() {
     isPending: boolean,
     type: "huawei" | "kahoot",
     seeAllLink: string,
-    theme: { color: string; hover: string }
-  ) => (
-    <div className="mb-12">
-      <h2
-        className={`text-xl sm:text-2xl lg:text-3xl font-bold text-${theme.color} mb-6 border-l-4 border-${theme.color} pl-4`}
-      >
-        {title}
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-        {isPending ? (
-          <div className="col-span-full flex items-center justify-center h-64">
-            <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
-          </div>
-        ) : forms && forms.length > 0 ? (
-          forms
-            .slice(0, 3)
-            .map((form) => <QuizCard key={form.uuid} quiz={form} type={type} />)
-        ) : (
-          <div className="col-span-full text-center py-16">
-            <p className="text-lg text-gray-500">
-              No {title} available at the moment.
-            </p>
-          </div>
-        )}
+    themeName: keyof typeof themeVariants
+  ) => {
+    const theme = themeVariants[themeName];
+
+    return (
+      <div className="mb-12">
+        <h2
+          className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-6 border-l-4 pl-4 ${theme.heading}`}
+        >
+          {title}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {isPending ? (
+            <div className="col-span-full flex items-center justify-center h-64">
+              <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
+            </div>
+          ) : forms && forms.length > 0 ? (
+            forms
+              .slice(0, 3)
+              .map((form) => (
+                <QuizCard
+                  key={form.uuid}
+                  quiz={form}
+                  type={type}
+                  themeName={themeName}
+                />
+              ))
+          ) : (
+            <div className="col-span-full text-center py-16">
+              <p className="text-lg text-gray-500">
+                No {title} available at the moment.
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end mt-6">
+          <Link href={seeAllLink}>
+            <Button
+              className={`text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md ${theme.button}`}
+            >
+              See All {title}
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className="flex justify-end mt-6">
-        <Link href={seeAllLink}>
-          <Button
-            className={`bg-${theme.color} hover:bg-${theme.hover} text-white font-semibold py-2 px-6 rounded-md transition-colors duration-200 shadow-md`}
-          >
-            See All {title}
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-custom-page-bg py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-blue-dark mb-10 text-center">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-blue-dark mb-10 text-center ">
           Quizzes For Huawei Or Kahoot List
         </h1>
 
@@ -189,7 +215,7 @@ export default function FormsPage() {
           huaweiFormsIsPending,
           "huawei",
           "/quizzes/huawei",
-          { color: "blue-500", hover: "primary-blue-light" }
+          "blue"
         )}
 
         {renderQuizSection(
@@ -198,7 +224,7 @@ export default function FormsPage() {
           kahootFormsIsPending,
           "kahoot",
           "/quizzes/kahoot",
-          { color: "custom-orange", hover: "custom-pink" }
+          "orange"
         )}
       </div>
     </div>
