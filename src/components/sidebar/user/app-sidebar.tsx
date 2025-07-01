@@ -40,29 +40,6 @@ const mainMenu: MenuItem[] = [
     url: "/quizzes",
     icon: SquarePen,
   },
-  {
-    title: "My History",
-    url: "/history",
-    icon: FileClock,
-  },
-  {
-    title: "Leaderboard",
-    url: "/leaderboard",
-    icon: Trophy,
-  },
-];
-
-const accountMenu: MenuItem[] = [
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-  {
-    title: "Help",
-    url: "/help",
-    icon: CircleHelp,
-  },
 ];
 
 export function UserSidebar() {
@@ -89,17 +66,6 @@ export function UserSidebar() {
                 Main Menu
               </h1>
               {mainMenu.map((item) => (
-                <SidebarLinkItem
-                  key={item.title}
-                  item={item}
-                  isActive={pathname === `${item.url}`}
-                />
-              ))}
-
-              <h1 className="text-sm sm:text-lg font-semibold text-gray-500 mb-0 px-0 h-auto mt-4">
-                Account
-              </h1>
-              {accountMenu.map((item) => (
                 <SidebarLinkItem
                   key={item.title}
                   item={item}

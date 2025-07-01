@@ -17,13 +17,13 @@ import { CheckCircle, XCircle, ListTodo, Timer, ArrowLeft } from "lucide-react";
 type AnswerState = Record<number, string[]>;
 type ReviewState = Record<number, boolean>;
 
-interface QuizResultProps {
+export interface QuizResultProps {
   score: number;
   review: ReviewState;
   answers: AnswerState;
   quizData: QuizItem[];
   duration: number;
-  onRetake: () => void;
+  onRetake?: () => void;
 }
 
 export function QuizResultHuawei({
@@ -74,9 +74,11 @@ export function QuizResultHuawei({
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to List
           </Button>
-          <Button onClick={onRetake} className="text-white">
-            Retake Quiz
-          </Button>
+          {onRetake && (
+            <Button onClick={onRetake} className="text-white">
+              Retake Quiz
+            </Button>
+          )}
         </CardFooter>
       </Card>
 

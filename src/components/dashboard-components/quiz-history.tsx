@@ -11,10 +11,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import api from "@/lib/api";
 import { toTitleCase } from "@/lib/utils";
+import Link from "next/link";
 
 interface HistoryData {
-  id: number;
-  uuid: string;
+  form_uuid: string;
+  attempt_uuid: string;
   user_id: string;
   form_huawei_id: string;
   score: number | null;
@@ -59,12 +60,12 @@ const HistoryItem = ({
 );
 
 export const QuizHistory = () => {
-  const { data: history, isLoading: isLoadingHistory } = useQuery<
-    HistoryData[]
-  >({
+  const { data: history, isLoading: isLoadingHistory } = useQuery({
     queryKey: ["history"],
     queryFn: async () => {
-      const res: any = await api.get("/dashboard-user/history");
+      const res = await api.get<{ data: HistoryData[] }>(
+        "/dashboard-user/history"
+      );
       return res.data.data;
     },
     refetchOnWindowFocus: false,
@@ -116,14 +117,19 @@ export const QuizHistory = () => {
 
       const title = toTitleCase(item.source);
 
-      console.log(title);
       return (
-        <HistoryItem
-          key={item.id}
-          title={`Form : ${title}`}
-          status={status}
-          detail={detail}
-        />
+        <Link
+          href={`/history/${item.attempt_uuid}`}
+          key={item.attempt_uuid}
+          className="block rounded-lg transition-transform transform hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          <HistoryItem
+            key={item.attempt_uuid}
+            title={`Form : ${title}`}
+            status={status}
+            detail={detail}
+          />
+        </Link>
       );
     });
   };

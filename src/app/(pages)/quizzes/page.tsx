@@ -112,7 +112,7 @@ function QuizCard({ quiz, type, themeName }: QuizCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4" />
-            <span>{quiz.trial_limit} Limit</span>
+            {quiz.trial_limit && <span>{quiz.trial_limit} Limit</span>}
           </div>
         </div>
         <Link href={linkHref} className="w-full mt-4">
@@ -203,7 +203,7 @@ export default function FormsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-custom-page-bg py-8">
+    <div className="min-h-screen  py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-blue-dark mb-10 text-center ">
           Quizzes For Huawei Or Kahoot List
