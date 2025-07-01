@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Target } from "lucide-react";
+import { FileText } from "lucide-react";
 import { FormAttemptStatsResponse } from "@/lib/types/dashboard";
 
 interface FormAttemptStatsProps {
@@ -26,40 +26,41 @@ const FormAttemptStats: React.FC<FormAttemptStatsProps> = ({ data }) => {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 flex-1 flex flex-col">
-        <div className="space-y-4 flex-1 overflow-y-auto">
-          {data.huawei_forms.length === 0 && data.kahoot_forms.length === 0 ? (
-            /* No Data State */
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center py-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-slate-400 dark:text-slate-500" />
-                </div>
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
-                  No Form Data Available
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Create some Huawei or Kahoot forms to see user attempt
-                  statistics here.
-                </p>
+      <CardContent className="pt-0 flex-1 flex flex-col min-h-0">
+        {data.huawei_forms.length === 0 && data.kahoot_forms.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                <FileText className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                No Form Data Available
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Create some Huawei or Kahoot forms to see user attempt
+                statistics here.
+              </p>
             </div>
-          ) : (
-            <>
-              {/* Huawei Forms Section */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Huawei Forms
-                  </h3>
-                </div>
-                {data.huawei_forms.length === 0 ? (
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col gap-4 min-h-0">
+            {/* Huawei Forms Section */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Huawei Forms
+                </h3>
+              </div>
+              {data.huawei_forms.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center">
                   <div className="text-center py-4 text-slate-500 dark:text-slate-400 text-sm">
                     No Huawei forms available yet
                   </div>
-                ) : (
-                  <div className="space-y-2">
+                </div>
+              ) : (
+                <div className="flex-1 overflow-y-auto overflow-x-hidden pr-1">
+                  <div className="space-y-2 pr-3">
                     {data.huawei_forms.map((form) => (
                       <div
                         key={form.form_id}
@@ -81,23 +82,27 @@ const FormAttemptStats: React.FC<FormAttemptStatsProps> = ({ data }) => {
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-
-              {/* Kahoot Forms Section */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Kahoot Forms
-                  </h3>
                 </div>
-                {data.kahoot_forms.length === 0 ? (
+              )}
+            </div>
+
+            {/* Kahoot Forms Section */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Kahoot Forms
+                </h3>
+              </div>
+              {data.kahoot_forms.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center">
                   <div className="text-center py-4 text-slate-500 dark:text-slate-400 text-sm">
                     No Kahoot forms available yet
                   </div>
-                ) : (
-                  <div className="space-y-2">
+                </div>
+              ) : (
+                <div className="flex-1 overflow-y-auto overflow-x-hidden pr-1">
+                  <div className="space-y-2 pr-3">
                     {data.kahoot_forms.map((form) => (
                       <div
                         key={form.form_id}
@@ -119,11 +124,11 @@ const FormAttemptStats: React.FC<FormAttemptStatsProps> = ({ data }) => {
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
