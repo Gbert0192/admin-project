@@ -103,6 +103,7 @@ export default function QuizHuaweiPage() {
       type: q.type,
       points: q.point,
     }));
+
     return (
       <div className="p-4 max-w-5xl mx-auto">
         <QuizResultHuawei
@@ -111,7 +112,7 @@ export default function QuizHuaweiPage() {
           answers={quizLogic.answers}
           quizData={mappedQuizData}
           duration={durationTaken}
-          onRetake={quizLogic.handleRetake}
+          onRetake={() => quizLogic.handleRetake(uuid)}
         />
       </div>
     );
@@ -300,6 +301,7 @@ export default function QuizHuaweiPage() {
               <Button
                 onClick={quizLogic.handlePrev}
                 disabled={quizLogic.currentIndex === 0}
+                className="text-white"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" /> Previous
               </Button>
@@ -316,6 +318,7 @@ export default function QuizHuaweiPage() {
               <Button
                 onClick={quizLogic.handleNext}
                 disabled={quizLogic.currentIndex === quizData.data.length - 1}
+                className="text-white"
               >
                 Next <ChevronRight className="w-4 h-4 ml-2" />
               </Button>

@@ -39,7 +39,7 @@ export const StatusCards = () => {
         <CheckCircle2 className="absolute -right-4 -bottom-4 h-28 w-28 text-white/10" />
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-base font-medium">
-            Quizzes Completed
+            Quizzes Huawei Completed
           </CardTitle>
           <CheckCircle2 className="h-5 w-5 text-white" />
         </CardHeader>
@@ -57,7 +57,9 @@ export const StatusCards = () => {
       <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white transform hover:scale-105 transition-all duration-300">
         <Target className="absolute -right-4 -bottom-4 h-28 w-28 text-white/10" />
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-medium">Average Score</CardTitle>
+          <CardTitle className="text-base font-medium">
+            Average Huawei Score
+          </CardTitle>
           <Target className="h-5 w-5 text-white" />
         </CardHeader>
         <CardContent>

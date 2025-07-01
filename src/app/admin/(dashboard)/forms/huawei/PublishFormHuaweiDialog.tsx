@@ -54,6 +54,7 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
       single_choice_question: "",
       true_false_question: "",
       durations: "",
+      trial_limit: "",
     },
     mode: "onChange",
   });
@@ -278,6 +279,22 @@ const PublishFormHuaweiDialog: React.FC<PublishFormHuaweiDialogProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <label className="font-medium">Durations (minute)</label>
+                    <FormControl className="mt-2">
+                      <InputWithOutNumber
+                        field={field}
+                        placeholder="e.g., 60"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="trial_limit"
+                render={({ field }) => (
+                  <FormItem>
+                    <label className="font-medium">Trial Limit (number)</label>
                     <FormControl className="mt-2">
                       <InputWithOutNumber
                         field={field}

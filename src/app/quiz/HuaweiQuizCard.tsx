@@ -27,6 +27,7 @@ interface Props {
   data: FormHuawei;
   totalQuestions: number;
   uuid: string;
+  trial_limit: number;
 }
 
 const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
@@ -49,7 +50,7 @@ const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
     try {
       const { data: isAllowed, isSuccess } = await checkIsAllowed();
 
-      if (isSuccess && !isAllowed) {
+      if (isSuccess && isAllowed) {
         router.push(`/quiz/huawei/${uuid}`);
       } else {
         toast.error("You have already taken this quiz or are not allowed.");
@@ -77,7 +78,7 @@ const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground border-t pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground border-t pt-6">
             <div className="flex items-center gap-3">
               <HelpCircle className="w-5 h-5 flex-shrink-0 text-primary" />
               <span className="font-medium">{totalQuestions} Questions</span>
@@ -85,6 +86,10 @@ const HuaweiQuizCard = ({ data, totalQuestions, uuid }: Props) => {
             <div className="flex items-center gap-3">
               <BookOpen className="w-5 h-5 flex-shrink-0 text-primary" />
               <span className="font-medium">{data.durations} Minutes</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-5 h-5 flex-shrink-0 text-primary" />
+              <span className="font-medium">{data.trial_limit} Limits</span>
             </div>
           </div>
           <div>

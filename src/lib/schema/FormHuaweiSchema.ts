@@ -20,49 +20,89 @@ export const createHuaweiQuestionPayload = z
     question: z.string().min(1, { message: "Question is required." }),
     options: z.array(optionSchema),
   })
-  .refine(
-    (data) =>
-      (data.type !== "SINGLE_CHOICE" && data.type !== "MULTIPLE_CHOICE") ||
-      data.options.length > 1,
-    {
-      message:
-        "Options must have more than 1 item for Single Choice or Multiple Choice",
-      path: ["options"],
+  .superRefine((data, ctx) => {
+    const correctOptionsCount = data.options.filter(
+      (opt) => opt.is_correct
+    ).length;
+
+    switch (data.type) {
+      case "SINGLE_CHOICE":
+        if (data.options.length < 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Single Choice questions must have at least 2 options.",
+            path: ["options"],
+          });
+        }
+        if (correctOptionsCount !== 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Single Choice questions must have exactly one correct answer.",
+            path: ["options"],
+          });
+        }
+        break;
+
+      case "MULTIPLE_CHOICE":
+        if (data.options.length < 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Multiple Choice questions must have at least 2 options.",
+            path: ["options"],
+          });
+        }
+        if (correctOptionsCount < 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Multiple Choice questions must have at least 2 correct answers.",
+            path: ["options"],
+          });
+        }
+        break;
+
+      case "TRUE_FALSE":
+        if (data.options.length !== 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "True/False questions must have exactly 2 options.",
+            path: ["options"],
+          });
+        }
+        if (correctOptionsCount !== 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "True/False questions must have exactly one correct answer.",
+            path: ["options"],
+          });
+        }
+        break;
+
+      case "ESSAY":
+        if (data.options.length !== 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Essay questions must have exactly one option.",
+            path: ["options"],
+          });
+        }
+        break;
     }
-  )
-  .refine(
-    (data) => {
-      if (data.type === "MULTIPLE_CHOICE") {
-        const correctOptions = data.options.filter(
-          (option) => option.is_correct
-        ).length;
-        return correctOptions >= 2;
+
+    if (data.type === "SINGLE_CHOICE" || data.type === "MULTIPLE_CHOICE") {
+      const optionTexts = data.options.map((opt) => opt.option_text);
+      const uniqueOptionTexts = new Set(optionTexts);
+      if (uniqueOptionTexts.size !== optionTexts.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Options must not have duplicate text.",
+          path: ["options"],
+        });
       }
-      return true;
-    },
-    {
-      message:
-        "Multiple Choice questions must have at least 2 correct answers.",
-      path: ["options"],
     }
-  )
-  .refine((data) => data.type !== "TRUE_FALSE" || data.options.length === 2, {
-    message: "True/False must have exactly 2 options.",
-    path: ["options"],
-  })
-  .refine((data) => data.type !== "ESSAY" || data.options.length === 1, {
-    message: "Essay must only have 1 option.",
-    path: ["options"],
-  })
-  .refine(
-    (data) =>
-      data.type === "ESSAY" ||
-      data.options.some((opt) => opt.is_correct === true),
-    {
-      message: "At least one option must be marked as correct.",
-      path: ["options"],
-    }
-  );
+  });
 
 export const publishFormPayload = z.object({
   is_published: z.boolean().default(true).optional(),
@@ -77,6 +117,7 @@ export const publishFormPayload = z.object({
     .string()
     .min(1, { message: "True/False Question is required." }),
   durations: z.string(),
+  trial_limit: z.string().min(1, { message: "Trial Limit is required." }),
 });
 
 export type PublishFormBody = z.infer<typeof publishFormPayload>;

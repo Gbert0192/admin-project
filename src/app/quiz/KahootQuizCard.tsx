@@ -82,6 +82,7 @@ const KahootQuizCard = ({ data, totalQuestions, uuid }: Props) => {
             <h3 className="font-semibold text-lg mb-3">Instructions</h3>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground pl-2">
               <li>This quiz consists of {totalQuestions} questions.</li>
+              <li>Multiple choice question has more than 1 answer</li>
               <li>Ensure a stable internet connection.</li>
               <li>Complete the quiz in one session once started.</li>
               <li>Do not refresh or close the page.</li>
