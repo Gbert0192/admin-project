@@ -56,7 +56,6 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
       multiple_choice_question: "",
       single_choice_question: "",
       true_false_question: "",
-      duration: 20,
     },
     mode: "onChange",
   });
@@ -243,30 +242,6 @@ const PublishFormKahootDialog: React.FC<PublishFormKahootDialogProps> = ({
                       </CardContent>
                     </Card>
                     <FormMessage className="pl-2" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="pt-2">
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <label className="font-medium">Durations (minute)</label>
-                    <FormControl className="mt-2">
-                      <InputWithOutNumber
-                        field={{
-                          ...field,
-                          value: field.value.toString(),
-                          onChange: (value: string) =>
-                            field.onChange(parseInt(value) || 0),
-                        }}
-                        placeholder="e.g., 60"
-                      />
-                    </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
