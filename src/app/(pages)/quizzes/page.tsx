@@ -112,7 +112,7 @@ function QuizCard({ quiz, type, themeName }: QuizCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4" />
-            <span>{quiz.trial_limit} Limit</span>
+            <span>{quiz.trial_limit || 0} Limit</span>
           </div>
         </div>
         <Link href={linkHref} className="w-full mt-4">
