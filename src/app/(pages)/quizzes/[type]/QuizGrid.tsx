@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -11,7 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Clock, HelpCircle, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Clock,
+  HelpCircle,
+  Loader2,
+} from "lucide-react";
 import api from "@/lib/api";
 import { toTitleCase } from "@/lib/utils";
 
@@ -33,6 +40,7 @@ interface ApiResponse {
 }
 
 export default function QuizGrid({ quizType }: { quizType: string }) {
+  const router = useRouter();
   const { data: quizzes, isPending } = useQuery({
     queryKey: ["allQuizzes", quizType],
     queryFn: async () => {
@@ -53,9 +61,19 @@ export default function QuizGrid({ quizType }: { quizType: string }) {
     <>
       <div className="min-h-screen bg-custom-page-bg py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-blue-dark mb-10 text-center">
-            {pageTitle}
-          </h1>
+          <div className="relative mb-10 flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.back()}
+              className="absolute left-0"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-blue-dark text-center">
+              {pageTitle}
+            </h1>
+          </div>
           {isPending ? (
             <div className="flex items-center justify-center h-96">
               <Loader2 className="w-16 h-16 animate-spin text-blue-600" />
